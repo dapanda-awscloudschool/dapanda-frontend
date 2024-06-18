@@ -20,6 +20,7 @@ const Pagination = ({
     params.set("page", pageNumber.toString());
     replace(`${pathname}?${params.toString()}`);
   };
+
   return (
     <div className="mt-12 flex justify-between w-full ">
       <button

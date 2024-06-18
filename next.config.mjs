@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "static.wixstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "dapanda-files-test.s3.ap-northeast-2.amazonaws.com",
+      },
     ],
   },
 };

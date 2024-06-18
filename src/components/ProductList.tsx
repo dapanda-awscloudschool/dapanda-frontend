@@ -4,6 +4,32 @@ import Image from "next/image";
 import Link from "next/link";
 import DOMPurify from "isomorphic-dompurify";
 import Pagination from "./Pagination";
+import { getProductList } from "./action";
+import { Button } from "@nextui-org/react";
+import { CiHeart } from "react-icons/ci";
+
+interface IProduct {
+  product_id: number;
+  register_member: number;
+  category: string;
+  product_name: string;
+  register_date: string;
+  start_date: string;
+  end_date: string;
+  term_price: number;
+  start_price: number;
+  highest_price: number;
+  bid_member_name: null | string;
+  immediate_purchase_price: number;
+  immediate_purchase_status: number;
+  num_bid: number;
+  auction_status: number;
+  product_info: string;
+  file_count: number;
+  bid_member: null | number;
+  register_member_name: string;
+  imageUrl: string; // 이미지 URL을 추가
+}
 
 const PRODUCT_PER_PAGE = 8;
 
@@ -16,97 +42,47 @@ const ProductList = async ({
   limit?: number;
   searchParams?: any;
 }) => {
-  const wixClient = await wixClientServer();
-
-  let productQuery = wixClient.products
-    .queryProducts()
-    .startsWith("name", searchParams?.name || "")
-    .eq("collectionIds", categoryId)
-    .hasSome("productType", [searchParams?.type || "physical", "digital"])
-    .gt("priceData.price", searchParams?.min || 0)
-    .lt("priceData.price", searchParams?.max || 999999)
-    .limit(limit || PRODUCT_PER_PAGE)
-    .skip(
-      searchParams?.page
-        ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
-        : 0
-    );
-
-  let res = await productQuery.find();
-
-  if (searchParams?.sort) {
-    const [sortType, sortBy] = searchParams.sort.split(" ");
-
-    if (sortType === "asc") {
-      res = await productQuery.ascending(sortBy).find();
-    } else if (sortType === "desc") {
-      res = await productQuery.descending(sortBy).find();
-    }
-  }
-
-  // 응답 데이터를 안전하게 처리하기 위해 확인
-  if (res.items && res.items.length > 0) {
-    // console.log(res.items[0].price);
-  } else {
-    // console.log("아이템이 없거나 items 배열이 비어 있습니다");
-  }
+  const res = await getProductList();
 
   return (
     <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
-      {res.items && res.items.length > 0 ? (
-        res.items.map((product: products.Product) => (
+      {res && res.length > 0 ? (
+        res.map((product: IProduct) => (
           <Link
-            href={"/product/" + product.slug}
+            href={"/product/" + product.product_id}
             className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]"
-            key={product._id}
+            key={product.product_id}
           >
             <div className="relative w-full h-80">
               <Image
-                src={product.media?.mainMedia?.image?.url || "/product.png"}
-                alt=""
+                src={`https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${product.product_id}/1.jpg`} // 템플릿 리터럴을 사용하여 URL에 변수 삽입
+                alt={product.product_name}
                 fill
                 sizes="25vw"
-                className="absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity easy duration-500"
+                className="absolute object-cover rounded-md"
               />
-              {product.media?.items && (
-                <Image
-                  src={product.media?.items[1]?.image?.url || "/product.png"}
-                  alt=""
-                  fill
-                  sizes="25vw"
-                  className="absolute object-cover rounded-md"
-                />
-              )}
             </div>
-            <div className="flex justify-between">
-              <span className="font-medium">{product.name}</span>
-              <span className="font-semibold">${product.price?.price}</span>
+            <div className="flex flex-col justify-center items-center gap-2">
+              <p className="font-medium">{product.product_name}</p>
+              <p className="font-semibold">현재가: {product.highest_price}원</p>
+              <Button
+                className="text-dapanda border-dapanda w-1/2 disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+                variant="bordered"
+                startContent={<CiHeart />}
+              >
+                찜하기
+              </Button>
             </div>
-            {product.additionalInfoSections && (
-              <div
-                className="text-sm text-gray-500"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(
-                    product.additionalInfoSections.find(
-                      (section: any) => section.title === "shortDesc"
-                    )?.description || ""
-                  ),
-                }}
-              ></div>
-            )}
-            <button className="rounded-2xl ring-1 ring-dapanda text-dapanda w-max py-2 px-4 text-xs hover:bg-dapanda hover:text-white">
-              찜하기
-            </button>
           </Link>
         ))
       ) : (
         <p>상품이 없습니다.</p> // 아이템이 없을 때의 처리
       )}
-      <Pagination
+      {/* <Pagination
         currentPage={res.currentPage || 0}
         hasPrev={res.hasPrev()}
         hasNext={res.hasNext()}
-      />
+      /> */}
     </div>
   );
 };
