@@ -7,6 +7,7 @@ import Pagination from "./Pagination";
 import { getProductList } from "./action";
 import { Button } from "@nextui-org/react";
 import { CiHeart } from "react-icons/ci";
+import { formatCurrency } from "./formatCurrency";
 
 interface IProduct {
   product_id: number;
@@ -64,7 +65,9 @@ const ProductList = async ({
             </div>
             <div className="flex flex-col justify-center items-center gap-2">
               <p className="font-medium">{product.product_name}</p>
-              <p className="font-semibold">현재가: {product.highest_price}원</p>
+              <p className="font-semibold">
+                현재가: {formatCurrency(product.highest_price)}
+              </p>
               <Button
                 className="text-dapanda border-dapanda w-1/2 disabled:bg-pink-200 disabled:text-white disabled:ring-none"
                 variant="bordered"

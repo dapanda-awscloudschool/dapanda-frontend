@@ -4,6 +4,7 @@ import ProductImages from "@/components/ProductImages";
 import { wixClientServer } from "@/lib/wixClientServer";
 import { notFound } from "next/navigation";
 import { getProductDetail } from "./action";
+import { formatCurrency } from "@/components/formatCurrency";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -34,11 +35,15 @@ const SinglePage = async ({ params }: { params: { slug: number } }) => {
         <div className="h-[2px] bg-gray-100" />
         <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">시작가:</h3>
-          <h2 className="font-medium text-2xl">{product.start_price}원</h2>
+          <h2 className="font-medium text-2xl">
+            {formatCurrency(product.start_price)}
+          </h2>
         </div>
         <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">현재가:</h3>
-          <h2 className="font-medium text-2xl">{product.highest_price}원</h2>
+          <h2 className="font-medium text-2xl">
+            {formatCurrency(product.highest_price)}
+          </h2>
         </div>
         <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">시작 시간:</h3>

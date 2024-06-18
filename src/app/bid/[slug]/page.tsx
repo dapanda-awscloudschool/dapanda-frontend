@@ -1,8 +1,13 @@
 import { getProductDetail } from "@/app/product/[slug]/action";
 import { products } from "@wix/stores";
 import { getProductList } from "@/components/action";
-import BidInput from "@/components/BID/BidInput";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import { formatCurrency } from "@/components/formatCurrency";
+
+const BidInput = dynamic(() => import("@/components/BID/BidInput"), {
+  ssr: false,
+});
 
 interface IProduct {
   product_id: number;
@@ -44,24 +49,23 @@ const BidPage = async ({ params }: { params: { slug: number } }) => {
       </div>
       <div className="w-full lg:w-1/2 flex flex-col gap-6">
         <h1 className="text-4xl font-medium">{product?.product_name}</h1>
-        <p className="text-lg mb-2">현재 가격: {product?.highest_price} 원</p>
-        <p className="text-lg mb-2">현재 입찰자 수: {product?.bid_member} 명</p>
         <p className="text-lg mb-2">
-          현재 입찰자 명: {product?.bid_member_name}
+          현재 가격: {formatCurrency(product?.highest_price)}
         </p>
+        <p className="text-lg mb-2">
+          최소 입찰 단가: {formatCurrency(product?.term_price)}
+        </p>
+        <p className="text-lg mb-2">현재 입찰자 수: {product?.num_bid} 명</p>
+        <p className="text-lg mb-2">현재 입찰자 명: {product?.bid_member}</p>
         <div className="flex items-center mb-4">
-          <label
-            htmlFor="bid                                                                                          Price"
-            className="mr-2"
-          >
+          <label htmlFor="bidPrice" className="mr-2">
             입찰:
           </label>
-          <input
-            type="number"
-            id="bidPrice"
-            className="border rounded-md p-2"
-          />{" "}
-          원
+          <BidInput
+            highestPrice={product?.highest_price}
+            termPrice={product?.term_price}
+          />
+          <div className="px-2">원</div>
         </div>
         <button className="w-1/2 text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
           입찰 확인
