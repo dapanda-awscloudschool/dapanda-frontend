@@ -1,7 +1,7 @@
 "use server";
 
 // API URL 가져오기
-const API_URL = process.env.API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * 상품 상세 가져오기. (Spring API)

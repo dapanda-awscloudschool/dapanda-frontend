@@ -1,6 +1,6 @@
 "use server";
 
-const API_URL = process.env.API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getProductList() {
   const res = await fetch(`${API_URL}/api/django/product`);

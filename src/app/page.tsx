@@ -35,7 +35,7 @@ const HomePage = async () => {
         <h1 className="text-2xl">Featured Products</h1>
         <Suspense fallback={"loading"}>
           <ProductList
-            categoryId={process.env.FEATURED_PRODUCTS_CATEGORY_ID!}
+            categoryId={process.env.NEXT_PUBLIC_FEATURED_PRODUCTS_CATEGORY_ID!}
             limit={8}
           />
         </Suspense>
