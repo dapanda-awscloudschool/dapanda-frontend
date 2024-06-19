@@ -1,15 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useContext } from "react";
-import Cookies from "js-cookie";
+import { useState, useContext } from "react";
 import { UserContext } from "@/components/login/UserContext";
 
 const API_URL_SPRING = process.env.NEXT_PUBLIC_API_URL_SPRING || "";
 
 const LoginPage = () => {
   const router = useRouter();
-  const { setUser } = useContext(UserContext);
+  const userContext = useContext(UserContext);
 
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +43,13 @@ const LoginPage = () => {
         if (data.memberId === 0) {
           setError("Login failed!");
         } else {
-          setUser({ memberId: data.memberId, name: data.name });
+          if (userContext) {
+            userContext.setUser({ memberId: data.memberId, name: data.name });
+            localStorage.setItem(
+              "user",
+              JSON.stringify({ memberId: data.memberId, name: data.name })
+            );
+          }
           setMessage("Login successful!");
           router.push("/"); // 메인 페이지로 리디렉션
         }
