@@ -1,6 +1,6 @@
 "use server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = "http://dpd-be-django-svc.dpd-be-ns.svc.cluster.local:8000";
 
 export async function getProductList() {
   const res = await fetch(`${API_URL}/api/django/product`);

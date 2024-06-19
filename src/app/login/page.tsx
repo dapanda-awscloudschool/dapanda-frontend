@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import { UserContext } from "@/components/login/UserContext";
 
-const API_URL_SPRING = process.env.NEXT_PUBLIC_API_URL_SPRING || "";
+const API_URL_SPRING =
+  "http://dpd-be-spring-svc.dpd-be-ns.svc.cluster.local:8080" || "";
 
 const LoginPage = () => {
   const router = useRouter();

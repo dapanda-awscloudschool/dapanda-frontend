@@ -7,7 +7,8 @@ import { UserContext } from "@/components/login/UserContext";
 import BidInput from "@/components/BID/BidInput";
 import { useRouter } from "next/navigation";
 
-const API_URL_SPRING = process.env.NEXT_PUBLIC_API_URL_SPRING || "";
+const API_URL_SPRING =
+  "http://dpd-be-spring-svc.dpd-be-ns.svc.cluster.local:8080" || "";
 
 interface IProduct {
   product_id: number;
