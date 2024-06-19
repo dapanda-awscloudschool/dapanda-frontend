@@ -1,7 +1,7 @@
 "use server";
 
 // API URL 가져오기
-const API_URL = "http://dpd-be-django-svc.dpd-be-ns.svc.cluster.local:8000";
+const API_URL = process.env.API_URL_DJANGO;
 
 /**
  * 상품 상세 가져오기. (Spring API)
@@ -22,6 +22,6 @@ export async function getProductDetail(id: number) {
   }
 
   const productDetail = await res.json();
-  console.log(productDetail);
+  //console.log(productDetail);
   return productDetail;
 }

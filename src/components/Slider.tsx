@@ -1,6 +1,5 @@
 "use client";
 
-import { url } from "inspector";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";

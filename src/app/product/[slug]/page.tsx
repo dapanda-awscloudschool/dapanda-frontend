@@ -1,8 +1,5 @@
 import Add from "@/components/Add";
-import CustomizeProducts from "@/components/CustomizeProducts";
 import ProductImages from "@/components/ProductImages";
-import { wixClientServer } from "@/lib/wixClientServer";
-import { notFound } from "next/navigation";
 import { getProductDetail } from "./action";
 import { formatCurrency } from "@/components/formatCurrency";
 
@@ -20,7 +17,7 @@ const formatDate = (dateString: string) => {
 };
 
 const SinglePage = async ({ params }: { params: { slug: number } }) => {
-  console.log(params.slug);
+  //console.log(params.slug);
   const product = await getProductDetail(params.slug);
 
   return (

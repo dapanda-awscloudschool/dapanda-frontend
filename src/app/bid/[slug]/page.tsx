@@ -1,14 +1,9 @@
 "use client";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { getProductDetail } from "@/app/product/[slug]/action";
 import Image from "next/image";
 import { formatCurrency } from "@/components/formatCurrency";
-import { UserContext } from "@/components/login/UserContext";
 import BidInput from "@/components/BID/BidInput";
-import { useRouter } from "next/navigation";
-
-const API_URL_SPRING =
-  "http://dpd-be-spring-svc.dpd-be-ns.svc.cluster.local:8080" || "";
 
 interface IProduct {
   product_id: number;
@@ -34,8 +29,6 @@ interface IProduct {
 }
 
 const BidPage = ({ params }: { params: { slug: number } }) => {
-  const router = useRouter();
-  const userContext = useContext(UserContext);
   const [product, setProduct] = useState<IProduct | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
 
@@ -49,39 +42,6 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
 
     fetchProduct();
   }, [params.slug]);
-
-  const handleBidSubmit = async () => {
-    if (!userContext || !userContext.user || !product) {
-      console.error("User not logged in or product not loaded");
-      return;
-    }
-
-    const userinfo = JSON.stringify({
-      bidProductId: product.product_id,
-      bidMemberID: userContext.user.memberId,
-      bidPrice: bidPrice,
-    });
-
-    const blob = new Blob([userinfo], { type: "application/json" });
-    const formData = new FormData();
-    formData.append("BidReqInfo", blob);
-
-    try {
-      const response = await fetch(`${API_URL_SPRING}/api/spring/bid`, {
-        method: "POST",
-        body: formData,
-        mode: "cors", // CORS 모드 설정
-      });
-
-      if (response.ok) {
-        router.push(`/product/${product.product_id}`);
-      } else {
-        console.error("Failed to submit bid:", await response.text());
-      }
-    } catch (error) {
-      console.error("Failed to submit bid:", error);
-    }
-  };
 
   if (!product) {
     return <div>Loading...</div>;
@@ -113,13 +73,8 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
           termPrice={product?.term_price}
           bidPrice={bidPrice}
           setBidPrice={setBidPrice}
+          productId={product?.product_id}
         />
-        <button
-          className="w-1/2 text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
-          onClick={handleBidSubmit}
-        >
-          입찰 확인
-        </button>
       </div>
     </div>
   );

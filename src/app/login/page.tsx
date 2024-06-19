@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
-import { UserContext } from "@/components/login/UserContext";
+import { UserContext } from "@/context/userContext";
+import { LoginAPI } from "./action";
 
-const API_URL_SPRING =
-  "http://dpd-be-spring-svc.dpd-be-ns.svc.cluster.local:8080" || "";
+const API_URL_SPRING = process.env.NEXT_PUBLIC_API_URL_SPRING || "";
 
 const LoginPage = () => {
   const router = useRouter();
-  const userContext = useContext(UserContext);
+  const { setUserData } = useContext(UserContext);
 
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,51 +18,11 @@ const LoginPage = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    setError("");
-    setMessage("");
-
-    const userinfo = JSON.stringify({
-      name: username,
-    });
-
-    const blob = new Blob([userinfo], { type: "application/json" });
-    const formData = new FormData();
-    formData.append("MemberLoginReqDto", blob);
-
-    try {
-      const response = await fetch(`${API_URL_SPRING}/api/spring/member`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      console.log("Response Status:", response.status, response.statusText);
-      console.log("Response Data:", data);
-
-      if (response.ok) {
-        if (data.memberId === 0) {
-          setError("Login failed!");
-        } else {
-          if (userContext) {
-            userContext.setUser({ memberId: data.memberId, name: data.name });
-            localStorage.setItem(
-              "user",
-              JSON.stringify({ memberId: data.memberId, name: data.name })
-            );
-          }
-          setMessage("Login successful!");
-          router.push("/"); // 메인 페이지로 리디렉션
-        }
-      } else {
-        setError("Login failed!");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      setError("Something went wrong!");
-    } finally {
-      setIsLoading(false);
-    }
+    const data = await LoginAPI(username);
+    setIsLoading(false);
+    setUserData(data);
+    localStorage.setItem("userData", JSON.stringify(data));
+    router.push("/");
   };
 
   return (

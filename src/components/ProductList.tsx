@@ -1,9 +1,6 @@
-import { wixClientServer } from "@/lib/wixClientServer";
-import { products } from "@wix/stores";
 import Image from "next/image";
 import Link from "next/link";
-import DOMPurify from "isomorphic-dompurify";
-import Pagination from "./Pagination";
+
 import { getProductList } from "./action";
 import { Button } from "@nextui-org/react";
 import { CiHeart } from "react-icons/ci";
@@ -29,20 +26,13 @@ interface IProduct {
   file_count: number;
   bid_member: null | number;
   register_member_name: string;
-  imageUrl: string; // 이미지 URL을 추가
+  imageUrl: string;
 }
 
 const PRODUCT_PER_PAGE = 8;
+const IMG_URL = process.env.API_URL_IMG;
 
-const ProductList = async ({
-  categoryId,
-  limit,
-  searchParams,
-}: {
-  categoryId: string;
-  limit?: number;
-  searchParams?: any;
-}) => {
+const ProductList = async () => {
   const res = await getProductList();
 
   return (
@@ -56,7 +46,7 @@ const ProductList = async ({
           >
             <div className="relative w-full h-80">
               <Image
-                src={`https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${product.product_id}/1.jpg`} // 템플릿 리터럴을 사용하여 URL에 변수 삽입
+                src={`${process.env.API_URL_IMG}/${product.product_id}/1.jpg`}
                 alt={product.product_name}
                 fill
                 sizes="25vw"

@@ -1,11 +1,24 @@
 "use client";
 
 // components/BID/BidInput.tsx
-import { useState, useContext } from "react";
-import { Input } from "@nextui-org/react";
-import { UserContext } from "../login/UserContext";
+import { useState, useEffect } from "react";
+
+import { useRouter } from "next/navigation";
+import { BidRequest, CheckRequest } from "./action";
+import { revalidatePath } from "next/cache";
+
+interface IResult {
+  id: number;
+  bidProductId: number;
+  bidMemberId: number;
+  bidPrice: number;
+  bidDate: string;
+  transactionId: string;
+  isSuccess: number;
+}
 
 const BidInput = ({
+  productId,
   highestPrice,
   termPrice,
   bidPrice,
@@ -14,9 +27,23 @@ const BidInput = ({
   highestPrice: number;
   termPrice: number;
   bidPrice: number;
+  productId: number;
   setBidPrice: (price: number) => void;
 }) => {
-  const userContext = useContext(UserContext);
+  const [user, setUser] = useState(null);
+  const [result, setResult] = useState<IResult | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const userData = localStorage.getItem("userData");
+
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData.memberId);
+      //console.log(parsedUserData);
+    }
+  }, []);
 
   const handleInput = (e: any) => {
     const newValue = parseInt(e.target.value, 10);
@@ -30,6 +57,31 @@ const BidInput = ({
       setBidPrice(newValue);
     }
   };
+
+  const handleBidSubmit = async () => {
+    const bidinfo = JSON.stringify({
+      bidProductId: productId,
+      bidMemberId: user,
+      bidPrice: bidPrice,
+    });
+
+    const blob = new Blob([bidinfo], { type: "application/json" });
+    const formData = new FormData();
+    formData.append("BidReqInfo", blob);
+
+    const data = await BidRequest(formData);
+    let check;
+    if (data) check = await CheckRequest(data);
+    if (check) setResult(check);
+    //console.log(check);
+  };
+
+  useEffect(() => {
+    if (result && result.isSuccess === 1) {
+      alert("입찰 성공");
+      router.push(`/product/${productId}`);
+    }
+  }, [result, router, productId]);
 
   return (
     <>
@@ -48,6 +100,12 @@ const BidInput = ({
           onChange={handleInput}
         />
         <div className="px-2">원</div>
+        <button
+          className="w-1/2 w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+          onClick={handleBidSubmit}
+        >
+          입찰 확인
+        </button>
       </div>
     </>
   );

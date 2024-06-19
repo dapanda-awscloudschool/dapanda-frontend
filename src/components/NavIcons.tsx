@@ -3,24 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import CartModal from "./CartModal";
-import { useWixClient } from "@/hooks/useWixClient";
-import Cookies from "js-cookie";
+import { UserContext } from "@/context/userContext";
 
 const NavIcons = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { isUserDataEmpty, clearUserData } = useContext(UserContext);
   const router = useRouter();
   const pathName = usePathname();
 
-  const wixClient = useWixClient();
-  const isLoggedIn = wixClient.auth.loggedIn();
-
   const handleProfile = () => {
-    if (!isLoggedIn) {
+    if (!isUserDataEmpty) {
       router.push("/login");
     } else {
       setIsProfileOpen((prev) => !prev);
@@ -28,12 +24,8 @@ const NavIcons = () => {
   };
 
   const handleLogout = async () => {
-    setIsLoading(true);
-    Cookies.remove("refreshToken");
-    const { logoutUrl } = await wixClient.auth.logout(window.location.href);
-    setIsLoading(false);
+    clearUserData();
     setIsProfileOpen(false);
-    router.push(logoutUrl);
   };
 
   return (
