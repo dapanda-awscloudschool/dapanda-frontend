@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { WixClientContextProvider } from "@/context/wixContext";
 import { UIProvider } from "@/context/nextuiContext";
+import { UserProvider } from "@/components/login/UserContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,9 +24,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <WixClientContextProvider>
           <UIProvider>
-            <Navbar />
-            {children}
-            <Footer />
+            <UserProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </UserProvider>
           </UIProvider>
         </WixClientContextProvider>
       </body>

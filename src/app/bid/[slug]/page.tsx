@@ -1,13 +1,13 @@
+"use client";
+import { useEffect, useState, useContext } from "react";
 import { getProductDetail } from "@/app/product/[slug]/action";
-import { products } from "@wix/stores";
-import { getProductList } from "@/components/action";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { formatCurrency } from "@/components/formatCurrency";
+import { UserContext } from "@/components/login/UserContext";
+import BidInput from "@/components/BID/BidInput";
+import { useRouter } from "next/navigation";
 
-const BidInput = dynamic(() => import("@/components/BID/BidInput"), {
-  ssr: false,
-});
+const API_URL_SPRING = process.env.NEXT_PUBLIC_API_URL_SPRING || "";
 
 interface IProduct {
   product_id: number;
@@ -32,15 +32,65 @@ interface IProduct {
   imageUrl: string; // 이미지 URL을 추가
 }
 
-const BidPage = async ({ params }: { params: { slug: number } }) => {
-  const product_id = params.slug;
-  const product = await getProductDetail(product_id);
+const BidPage = ({ params }: { params: { slug: number } }) => {
+  const router = useRouter();
+  const userContext = useContext(UserContext);
+  const [product, setProduct] = useState<IProduct | null>(null);
+  const [bidPrice, setBidPrice] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const product_id = params.slug;
+      const productDetail = await getProductDetail(product_id);
+      setProduct(productDetail);
+      setBidPrice(productDetail.highest_price + productDetail.term_price);
+    };
+
+    fetchProduct();
+  }, [params.slug]);
+
+  const handleBidSubmit = async () => {
+    if (!userContext || !userContext.user || !product) {
+      console.error("User not logged in or product not loaded");
+      return;
+    }
+
+    const userinfo = JSON.stringify({
+      bidProductId: product.product_id,
+      bidMemberID: userContext.user.memberId,
+      bidPrice: bidPrice,
+    });
+
+    const blob = new Blob([userinfo], { type: "application/json" });
+    const formData = new FormData();
+    formData.append("BidReqInfo", blob);
+
+    try {
+      const response = await fetch(`${API_URL_SPRING}/api/spring/bid`, {
+        method: "POST",
+        body: formData,
+        mode: "cors", // CORS 모드 설정
+      });
+
+      if (response.ok) {
+        router.push(`/product/${product.product_id}`);
+      } else {
+        console.error("Failed to submit bid:", await response.text());
+      }
+    } catch (error) {
+      console.error("Failed to submit bid:", error);
+    }
+  };
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-20">
       <div className="w-full lg:w-1/3 lg:sticky top-20 h-max">
         <Image
-          src={`https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${product_id}/1.jpg`}
+          src={`https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${product.product_id}/1.jpg`}
           alt={product?.product_name}
           className="object-cover w-full h-auto rounded-md"
           width={200}
@@ -57,17 +107,16 @@ const BidPage = async ({ params }: { params: { slug: number } }) => {
         </p>
         <p className="text-lg mb-2">현재 입찰자 수: {product?.num_bid} 명</p>
         <p className="text-lg mb-2">현재 입찰자 명: {product?.bid_member}</p>
-        <div className="flex items-center mb-4">
-          <label htmlFor="bidPrice" className="mr-2">
-            입찰:
-          </label>
-          <BidInput
-            highestPrice={product?.highest_price}
-            termPrice={product?.term_price}
-          />
-          <div className="px-2">원</div>
-        </div>
-        <button className="w-1/2 text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
+        <BidInput
+          highestPrice={product?.highest_price}
+          termPrice={product?.term_price}
+          bidPrice={bidPrice}
+          setBidPrice={setBidPrice}
+        />
+        <button
+          className="w-1/2 text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+          onClick={handleBidSubmit}
+        >
           입찰 확인
         </button>
       </div>
@@ -76,5 +125,3 @@ const BidPage = async ({ params }: { params: { slug: number } }) => {
 };
 
 export default BidPage;
-
-export const revalidate = 0;

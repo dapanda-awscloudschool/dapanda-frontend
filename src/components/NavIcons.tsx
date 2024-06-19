@@ -44,6 +44,7 @@ const NavIcons = () => {
         width={22}
         height={22}
         className="cursor-pointer"
+        // onClick={login}
         onClick={handleProfile}
       />
       {isProfileOpen && (

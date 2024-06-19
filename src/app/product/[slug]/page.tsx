@@ -57,6 +57,12 @@ const SinglePage = async ({ params }: { params: { slug: number } }) => {
             {formatDate(product.end_date)}
           </h2>
         </div>
+        <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">
+            현재 입찰자:
+          </h3>
+          <h2 className="font-medium text-xl">{product.bid_member}</h2>
+        </div>
         <div className="h-[2px] bg-gray-100" />
         <Add id={product.product_id} />
         <div className="h-[2px] bg-gray-100" />
