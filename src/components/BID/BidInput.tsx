@@ -2,10 +2,10 @@
 
 // components/BID/BidInput.tsx
 import { useState, useEffect } from "react";
-
 import { useRouter } from "next/navigation";
 import { BidRequest, CheckRequest } from "./action";
 import { revalidatePath } from "next/cache";
+import Swal from "sweetalert2";
 
 interface IResult {
   id: number;
@@ -77,9 +77,22 @@ const BidInput = ({
   };
 
   useEffect(() => {
-    if (result && result.isSuccess === 1) {
-      alert("입찰 성공");
-      router.push(`/product/${productId}`);
+    if (result) {
+      if (result.isSuccess === 1) {
+        Swal.fire({
+          icon: "success",
+          title: "축하합니다.",
+          text: "입찰에 성공했습니다!",
+        }).then(() => {
+          router.push(`/product/${productId}`);
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "입찰 실패",
+          text: "입찰에 실패했습니다.",
+        });
+      }
     }
   }, [result, router, productId]);
 

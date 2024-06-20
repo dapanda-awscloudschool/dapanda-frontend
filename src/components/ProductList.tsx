@@ -1,10 +1,13 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getProductList } from "./action";
+import { getProductList, getImageURL } from "./action";
 import { Button } from "@nextui-org/react";
 import { CiHeart } from "react-icons/ci";
 import { formatCurrency } from "./formatCurrency";
+import useSWR from "swr";
+import { useEffect, useState } from "react";
 
 interface IProduct {
   product_id: number;
@@ -29,16 +32,26 @@ interface IProduct {
   imageUrl: string;
 }
 
-const PRODUCT_PER_PAGE = 8;
-const IMG_URL = process.env.API_URL_IMG;
+const ProductList = () => {
+  const {
+    data: productList,
+    error,
+    isLoading,
+  } = useSWR("getProductList", getProductList);
 
-const ProductList = async () => {
-  const res = await getProductList();
+  const [imgUrl, setImgUrl] = useState("");
+  useEffect(() => {
+    const fetchData = async () => {
+      const imageurl = await getImageURL();
+      if (imageurl) setImgUrl(imageurl);
+    };
+    fetchData();
+  });
 
   return (
     <div className="mt-12 flex gap-x-11 gap-y-16 justify-start flex-wrap">
-      {res && res.length > 0 ? (
-        res.map((product: IProduct) => (
+      {productList && productList.length > 0 ? (
+        productList.map((product: IProduct) => (
           <Link
             href={"/product/" + product.product_id}
             className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]"
@@ -46,7 +59,7 @@ const ProductList = async () => {
           >
             <div className="relative w-full h-80">
               <Image
-                src={`${process.env.API_URL_IMG}/${product.product_id}/1.jpg`}
+                src={`${imgUrl}/${product.product_id}/1.jpg`}
                 alt={product.product_name}
                 fill
                 sizes="25vw"
@@ -63,7 +76,7 @@ const ProductList = async () => {
                 variant="bordered"
                 startContent={<CiHeart />}
               >
-                찜하기
+                상세보기
               </Button>
             </div>
           </Link>
@@ -71,11 +84,6 @@ const ProductList = async () => {
       ) : (
         <p>상품이 없습니다.</p> // 아이템이 없을 때의 처리
       )}
-      {/* <Pagination
-        currentPage={res.currentPage || 0}
-        hasPrev={res.hasPrev()}
-        hasNext={res.hasNext()}
-      /> */}
     </div>
   );
 };

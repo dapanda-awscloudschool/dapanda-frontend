@@ -1,7 +1,11 @@
+"use client";
+
 import Add from "@/components/Add";
 import ProductImages from "@/components/ProductImages";
 import { getProductDetail } from "./action";
 import { formatCurrency } from "@/components/formatCurrency";
+import useSWR from "swr";
+import { useRouter } from "next/navigation";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -16,9 +20,15 @@ const formatDate = (dateString: string) => {
   return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분${seconds}초`;
 };
 
-const SinglePage = async ({ params }: { params: { slug: number } }) => {
-  //console.log(params.slug);
-  const product = await getProductDetail(params.slug);
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const SinglePage = ({ params }: { params: { slug: number } }) => {
+  const { data: product, error } = useSWR(`/api/product/${params.slug}`, () =>
+    getProductDetail(params.slug)
+  );
+
+  if (error) return <div>Failed to load product</div>;
+  if (!product) return <div>Loading...</div>;
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16">
@@ -53,6 +63,20 @@ const SinglePage = async ({ params }: { params: { slug: number } }) => {
           <h2 className="font-medium text-xl">
             {formatDate(product.end_date)}
           </h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">
+            마지막 입찰 시간:
+          </h3>
+          <h2 className="font-medium text-xl">
+            {formatDate(product.last_bid_date)}
+          </h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">
+            총 입찰자 수:
+          </h3>
+          <h2 className="font-medium text-xl">{product.num_bid}</h2>
         </div>
         <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">

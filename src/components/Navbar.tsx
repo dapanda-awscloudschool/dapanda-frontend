@@ -26,11 +26,11 @@ const Navbar = () => {
             <div className="text-2xl tracking-wide">DAPANDA</div>
           </Link>
           <div className="hidden xl:flex gap-4">
-            <Link href="/">HomePage</Link>
+            {/* <Link href="/">HomePage</Link>
             <Link href="/">Shop</Link>
             <Link href="/">Deals</Link>
             <Link href="/">About</Link>
-            <Link href="/">Contact</Link>
+            <Link href="/">Contact</Link> */}
           </div>
         </div>
         {/* RIGHT */}

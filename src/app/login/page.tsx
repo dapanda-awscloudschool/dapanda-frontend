@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import { UserContext } from "@/context/userContext";
 import { LoginAPI } from "./action";
+import Swal from "sweetalert2"; // SweetAlert2 import
 
 const API_URL_SPRING = process.env.API_URL_SPRING || "";
 
@@ -21,8 +22,22 @@ const LoginPage = () => {
     const data = await LoginAPI(username);
     setIsLoading(false);
     setUserData(data);
-    localStorage.setItem("userData", JSON.stringify(data));
-    router.push("/");
+    if (data.name === "로그인 실패") {
+      Swal.fire({
+        icon: "warning",
+        title: "로그인 실패",
+        text: "본인ID가 맞는지 확인해주세요!",
+      });
+    } else {
+      localStorage.setItem("userData", JSON.stringify(data));
+      Swal.fire({
+        icon: "success",
+        title: "로그인 성공",
+        text: "로그인에 성공했습니다!",
+      }).then(() => {
+        router.push("/");
+      });
+    }
   };
 
   return (
