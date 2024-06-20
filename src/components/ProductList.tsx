@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { getProductList, getImageURL } from "./action";
+import { getProductList } from "./action";
 import { Button } from "@nextui-org/react";
 import { CiHeart } from "react-icons/ci";
 import { formatCurrency } from "./formatCurrency";
@@ -39,17 +39,19 @@ const ProductList = () => {
     isLoading,
   } = useSWR("getProductList", getProductList);
 
-  const [imgUrl, setImgUrl] = useState("");
+  // Use the image URL directly from the environment variable
+  const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
+
   useEffect(() => {
-    const fetchData = async () => {
-      const imageurl = await getImageURL();
-      if (imageurl) setImgUrl(imageurl);
-    };
-    fetchData();
-  });
+    if (!imgUrl) {
+      console.error("Image URL is not defined in the environment variables.");
+    }
+  }, [imgUrl]);
 
   return (
     <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Failed to load products</p>}
       {productList && productList.length > 0 ? (
         productList.map((product: IProduct) => (
           <Link
@@ -64,6 +66,11 @@ const ProductList = () => {
                 fill
                 sizes="25vw"
                 className="absolute object-cover rounded-md"
+                onError={(e) => {
+                  console.error(
+                    `Failed to load image for product ${product.product_id}: ${e.currentTarget.src}`
+                  );
+                }}
               />
             </div>
             <div className="flex flex-col justify-center items-center gap-2">

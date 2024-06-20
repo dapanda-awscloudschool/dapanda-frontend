@@ -1,11 +1,9 @@
 "use client";
 
-// components/BID/BidInput.tsx
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BidRequest, CheckRequest } from "./action";
-import { revalidatePath } from "next/cache";
 import Swal from "sweetalert2";
+import { BidRequest, CheckRequest } from "./action";
 
 interface IResult {
   id: number;
@@ -32,26 +30,32 @@ const BidInput = ({
 }) => {
   const [user, setUser] = useState(null);
   const [result, setResult] = useState<IResult | null>(null);
-
+  const [retryCount, setRetryCount] = useState(0); // 추가
   const router = useRouter();
 
   useEffect(() => {
     const userData = localStorage.getItem("userData");
-
     if (userData) {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData.memberId);
-      //console.log(parsedUserData);
     }
   }, []);
 
   const handleInput = (e: any) => {
     const newValue = parseInt(e.target.value, 10);
     if (newValue < highestPrice + termPrice) {
-      alert("현재가보다 낮거나 같게 입력할 수 없습니다.");
+      Swal.fire({
+        icon: "error",
+        title: "입찰 오류",
+        text: "현재가보다 낮거나 같게 입력할 수 없습니다.",
+      });
       setBidPrice(highestPrice + termPrice);
     } else if (newValue > 2000000000) {
-      alert("최대 2,000,000,000까지 입력가능");
+      Swal.fire({
+        icon: "error",
+        title: "입찰 오류",
+        text: "최대 2,000,000,000까지 입력가능",
+      });
       setBidPrice(2000000000);
     } else {
       setBidPrice(newValue);
@@ -73,7 +77,6 @@ const BidInput = ({
     let check;
     if (data) check = await CheckRequest(data);
     if (check) setResult(check);
-    //console.log(check);
   };
 
   useEffect(() => {
@@ -86,15 +89,28 @@ const BidInput = ({
         }).then(() => {
           router.push(`/product/${productId}`);
         });
-      } else {
+      } else if (result.isSuccess === 0) {
         Swal.fire({
           icon: "error",
           title: "입찰 실패",
           text: "입찰에 실패했습니다.",
         });
+      } else {
+        // isSuccess가 1이나 0이 아닌 경우 API를 다시 호출
+        if (retryCount < 3) {
+          // 최대 3번 재시도
+          setRetryCount(retryCount + 1);
+          handleBidSubmit(); // API 다시 호출
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "에러",
+            text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
+          });
+        }
       }
     }
-  }, [result, router, productId]);
+  }, [result, router, productId, retryCount]);
 
   return (
     <>
