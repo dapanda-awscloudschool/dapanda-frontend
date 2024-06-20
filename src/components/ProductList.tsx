@@ -49,7 +49,7 @@ const ProductList = () => {
   });
 
   return (
-    <div className="mt-12 flex gap-x-11 gap-y-16 justify-start flex-wrap">
+    <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
       {productList && productList.length > 0 ? (
         productList.map((product: IProduct) => (
           <Link
