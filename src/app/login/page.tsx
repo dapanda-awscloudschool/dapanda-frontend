@@ -5,7 +5,7 @@ import { useState, useContext } from "react";
 import { UserContext } from "@/context/userContext";
 import { LoginAPI } from "./action";
 
-const API_URL_SPRING = process.env.NEXT_PUBLIC_API_URL_SPRING || "";
+const API_URL_SPRING = process.env.API_URL_SPRING || "";
 
 const LoginPage = () => {
   const router = useRouter();

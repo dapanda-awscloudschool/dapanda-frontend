@@ -1,7 +1,7 @@
 // "use client";
 
 import { Suspense } from "react";
-import CategoryList from "@/components/CategoryList";
+// import CategoryList from "@/components/CategoryList";
 import ProductList from "@/components/ProductList";
 import Slider from "@/components/Slider";
 
