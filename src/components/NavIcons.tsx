@@ -17,6 +17,7 @@ const NavIcons = () => {
 
   const handleProfile = () => {
     if (!isUserDataEmpty) {
+      setIsProfileOpen(false); // 프로필 메뉴를 닫습니다
       router.push("/login");
     } else {
       setIsProfileOpen((prev) => !prev);
@@ -24,7 +25,9 @@ const NavIcons = () => {
   };
 
   const handleLogout = async () => {
-    clearUserData();
+    setIsLoading(true);
+    await clearUserData(); // 사용자 데이터를 지우기 전에 await를 사용하여 비동기 처리를 기다립니다
+    setIsLoading(false);
     setIsProfileOpen(false);
   };
 
@@ -36,12 +39,13 @@ const NavIcons = () => {
         width={22}
         height={22}
         className="cursor-pointer"
-        // onClick={login}
         onClick={handleProfile}
       />
       {isProfileOpen && (
         <div className="absolute p-4 rounded-md top-12 left-0 bg-white text-sm shadow-[0_3px_10px_rgb(0,0,0,0.2)] z-20">
-          <Link href="/profile">Profile</Link>
+          <Link href="/login" onClick={() => setIsProfileOpen(false)}>
+            Login
+          </Link>
           <div className="mt-2 cursor-pointer" onClick={handleLogout}>
             {isLoading ? "Logging out" : "Logout"}
           </div>
