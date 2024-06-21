@@ -30,7 +30,7 @@ const BidInput = ({
 }) => {
   const [user, setUser] = useState(null);
   const [result, setResult] = useState<IResult | null>(null);
-  const [retryCount, setRetryCount] = useState(0); // 추가
+  const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -73,13 +73,20 @@ const BidInput = ({
     const formData = new FormData();
     formData.append("BidReqInfo", blob);
 
-    const data = await BidRequest(formData);
-    let check;
-    if (data) check = await CheckRequest(data);
-    if (check) setResult(check);
+    try {
+      const data = await BidRequest(formData);
+      console.log("BidRequest data:", data);
+      let check;
+      if (data) check = await CheckRequest(data);
+      console.log("CheckRequest data:", check);
+      if (check) setResult(check);
+    } catch (error) {
+      console.error("Error during bid submission:", error);
+    }
   };
 
   useEffect(() => {
+    console.log("Result changed:", result);
     if (result) {
       if (result.isSuccess === 1) {
         Swal.fire({
@@ -97,8 +104,7 @@ const BidInput = ({
         });
       } else {
         // isSuccess가 1이나 0이 아닌 경우 API를 다시 호출
-        if (retryCount < 3) {
-          // 최대 3번 재시도
+        if (retryCount < 10) {
           setRetryCount(retryCount + 1);
           handleBidSubmit(); // API 다시 호출
         } else {

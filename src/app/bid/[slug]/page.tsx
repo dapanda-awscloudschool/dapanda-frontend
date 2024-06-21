@@ -66,7 +66,7 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
         <p className="text-lg mb-2">
           최소 입찰 단가: {formatCurrency(product?.term_price)}
         </p>
-        <p className="text-lg mb-2">현재 입찰자 수: {product?.num_bid} 명</p>
+        <p className="text-lg mb-2">현재 입찰 횟수: {product?.num_bid} 번</p>
         <p className="text-lg mb-2">현재 입찰자 명: {product?.bid_member}</p>
         <BidInput
           highestPrice={product?.highest_price}
