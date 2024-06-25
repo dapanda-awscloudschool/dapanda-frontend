@@ -16,9 +16,6 @@ const Add = ({ id }: IAdd) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <button className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
-        즉시 구매
-      </button>
       <button
         className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
         onClick={handleBidClick}

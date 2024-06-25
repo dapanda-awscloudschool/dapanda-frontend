@@ -18,6 +18,9 @@ interface UserContextType {
   setUserData: (data: UserData[]) => void;
   clearUserData: () => void;
   isUserDataEmpty: () => boolean;
+  favorites: number[];
+  addFavorite: (memberId: string, productId: number) => Promise<void>;
+  removeFavorite: (memberId: string, productId: number) => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -25,6 +28,9 @@ export const UserContext = createContext<UserContextType>({
   setUserData: () => [],
   isUserDataEmpty: () => false,
   clearUserData: () => [],
+  favorites: [],
+  addFavorite: async () => {},
+  removeFavorite: async () => {},
 });
 
 interface UserProviderProps {
@@ -39,14 +45,24 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
     return [];
   });
+
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    if (typeof window !== "undefined") {
+      const localFavorites = localStorage.getItem("favorites");
+      return localFavorites ? JSON.parse(localFavorites) : [];
+    }
+    return [];
+  });
+
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("userData", JSON.stringify(userData));
+      localStorage.setItem("favorites", JSON.stringify(favorites));
       setIsInitialized(true);
     }
-  }, [userData]);
+  }, [userData, favorites]);
 
   const isUserDataEmpty = useCallback(() => userData.length === 0, [userData]);
 
@@ -57,6 +73,50 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const addFavorite = async (memberId: string, productId: number) => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL_DJANGO}/api/django/wishlist/${memberId}/${productId}/`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        member_id: memberId,
+        product_id: productId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add to wishlist");
+    }
+
+    setFavorites((prevFavorites) => [...prevFavorites, productId]);
+  };
+
+  const removeFavorite = async (memberId: string, productId: number) => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL_DJANGO}/api/django/wishlist/${memberId}/${productId}/`;
+
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        member_id: memberId,
+        product_id: productId,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to remove from wishlist");
+    }
+
+    setFavorites((prevFavorites) =>
+      prevFavorites.filter((id) => id !== productId)
+    );
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -64,6 +124,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUserData,
         isUserDataEmpty,
         clearUserData,
+        favorites,
+        addFavorite,
+        removeFavorite,
       }}
     >
       {isInitialized ? children : null}

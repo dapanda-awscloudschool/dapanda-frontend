@@ -12,17 +12,27 @@ const NavIcons = () => {
 
   const handleProfile = () => {
     setIsProfileOpen((prev) => !prev);
+    checkLoginStatus(); // 프로필 열 때 로그인 상태 확인
   };
 
   const handleLogout = async () => {
     localStorage.removeItem("userData");
+    localStorage.removeItem("wishlist");
+    setIsLoggined(false); // 로그아웃 시 로그인 상태를 false로 변경
     setIsProfileOpen(false);
+    window.location.reload(); // 페이지 새로고침
+  };
+
+  const checkLoginStatus = () => {
+    if (localStorage.getItem("userData")) {
+      setIsLoggined(true);
+    } else {
+      setIsLoggined(false);
+    }
   };
 
   useEffect(() => {
-    if (localStorage.getItem("userData")) {
-      setIsLoggined(true);
-    }
+    checkLoginStatus(); // 컴포넌트 마운트 시 로그인 상태 확인
   }, []);
 
   return (

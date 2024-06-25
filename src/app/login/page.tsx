@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import { UserContext } from "@/context/userContext";
-import { LoginAPI } from "./action";
+import { LoginAPI, getWishlist } from "./action";
 import Swal from "sweetalert2"; // SweetAlert2 import
 
 const API_URL_SPRING = process.env.API_URL_SPRING || "";
@@ -30,6 +30,9 @@ const LoginPage = () => {
       });
     } else {
       localStorage.setItem("userData", JSON.stringify(data));
+      const wishlist = await getWishlist(data.memberId);
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      //console.log(wishlist);
       Swal.fire({
         icon: "success",
         title: "로그인 성공",
