@@ -32,6 +32,21 @@ interface IProduct {
   imageUrl: string;
 }
 
+const formatTimeDifference = (ms: number) => {
+  const totalMinutes = Math.floor(ms / 1000 / 60);
+  const minutes = totalMinutes % 60;
+  const totalHours = Math.floor(totalMinutes / 60);
+  const hours = totalHours % 24;
+  const days = Math.floor(totalHours / 24);
+
+  const parts = [];
+  if (days > 0) parts.push({ value: `${days}`, unit: "일" });
+  if (hours > 0) parts.push({ value: `${hours}`, unit: "시간" });
+  if (minutes > 0) parts.push({ value: `${minutes}`, unit: "분" });
+
+  return parts;
+};
+
 const ProductList = () => {
   const {
     data: productList,
@@ -53,41 +68,57 @@ const ProductList = () => {
       {isLoading && <p>Loading...</p>}
       {error && <p>Failed to load products</p>}
       {productList && productList.length > 0 ? (
-        productList.map((product: IProduct) => (
-          <Link
-            href={"/product/" + product.product_id}
-            className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]"
-            key={product.product_id}
-          >
-            <div className="relative w-full h-80">
-              <Image
-                src={`${imgUrl}/${product.product_id}/1.jpg`}
-                alt={product.product_name}
-                fill
-                sizes="25vw"
-                className="absolute object-cover rounded-md"
-                onError={(e) => {
-                  console.error(
-                    `Failed to load image for product ${product.product_id}: ${e.currentTarget.src}`
-                  );
-                }}
-              />
-            </div>
-            <div className="flex flex-col justify-center items-center gap-2">
-              <p className="font-medium">{product.product_name}</p>
-              <p className="font-semibold">
-                현재가: {formatCurrency(product.highest_price)}
-              </p>
-              <Button
-                className="text-dapanda border-dapanda w-1/2 disabled:bg-pink-200 disabled:text-white disabled:ring-none"
-                variant="bordered"
-                startContent={<CiHeart />}
-              >
-                상세보기
-              </Button>
-            </div>
-          </Link>
-        ))
+        productList.map((product: IProduct) => {
+          const remainingTime =
+            new Date(product.end_date).getTime() - Date.now();
+          const formattedTime = formatTimeDifference(remainingTime);
+          return (
+            <Link
+              href={"/product/" + product.product_id}
+              className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%] border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
+              key={product.product_id}
+            >
+              <div className="relative w-full h-80">
+                <Image
+                  src={`${imgUrl}/${product.product_id}/1.jpg`}
+                  alt={product.product_name}
+                  fill
+                  sizes="25vw"
+                  className="absolute object-cover rounded-md"
+                  onError={(e) => {
+                    console.error(
+                      `Failed to load image for product ${product.product_id}: ${e.currentTarget.src}`
+                    );
+                  }}
+                />
+              </div>
+              <div className="flex flex-col justify-center items-center gap-2">
+                <p className="font-bold font-sans text-xl">
+                  {product.product_name}
+                </p>
+                <p className="font-semibold">
+                  현재가: {formatCurrency(product.highest_price)}
+                </p>
+                <p className="font-semibold">
+                  남은 시간:{" "}
+                  {formattedTime.map((part, index) => (
+                    <span key={index} className="text-red-500">
+                      {part.value}
+                      {part.unit}{" "}
+                    </span>
+                  ))}
+                </p>
+                <Button
+                  className="text-dapanda border-dapanda w-1/2 disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+                  variant="bordered"
+                  startContent={<CiHeart />}
+                >
+                  상세보기
+                </Button>
+              </div>
+            </Link>
+          );
+        })
       ) : (
         <p>상품이 없습니다.</p> // 아이템이 없을 때의 처리
       )}

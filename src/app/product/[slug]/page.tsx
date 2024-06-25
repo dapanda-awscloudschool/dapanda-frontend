@@ -15,9 +15,23 @@ const formatDate = (dateString: string) => {
   const day = String(date.getDate()).padStart(2, "0");
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
 
-  return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분${seconds}초`;
+  return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분`;
+};
+
+const formatTimeDifference = (ms: number) => {
+  const totalMinutes = Math.floor(ms / 1000 / 60);
+  const minutes = totalMinutes % 60;
+  const totalHours = Math.floor(totalMinutes / 60);
+  const hours = totalHours % 24;
+  const days = Math.floor(totalHours / 24);
+
+  const parts = [];
+  if (days > 0) parts.push(`${days}일`);
+  if (hours > 0) parts.push(`${hours}시간`);
+  if (minutes > 0) parts.push(`${minutes}분`);
+
+  return parts.join(" ");
 };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -29,6 +43,8 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
 
   if (error) return <div>Failed to load product</div>;
   if (!product) return <div>Loading...</div>;
+
+  const remainingTime = new Date(product.end_date).getTime() - Date.now();
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16">
@@ -53,6 +69,14 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
           </h2>
         </div>
         <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">
+            즉시 구매가:
+          </h3>
+          <h2 className="font-medium text-2xl">
+            {formatCurrency(product.immediate_purchase_price)}
+          </h2>
+        </div>
+        <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">시작 시간:</h3>
           <h2 className="font-medium text-xl">
             {formatDate(product.start_date)}
@@ -62,6 +86,12 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
           <h3 className="text-medium font-medium text-gray-700">종료 시간:</h3>
           <h2 className="font-medium text-xl">
             {formatDate(product.end_date)}
+          </h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">남은 시간:</h3>
+          <h2 className="font-medium text-xl text-red-600">
+            {formatTimeDifference(remainingTime)}
           </h2>
         </div>
         <div className="flex items-center gap-4">
