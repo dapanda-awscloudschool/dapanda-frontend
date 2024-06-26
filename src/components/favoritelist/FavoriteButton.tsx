@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { AddToWishlistRequest } from "./action";
+import { AddToWishlistRequest, RemoveFromWishlistRequest } from "./action";
 
 interface FavoriteButtonProps {
   productId: number;
@@ -37,9 +37,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   const handleFavoriteClick = async () => {
     try {
       if (favorite) {
-        removeFavorite(productId);
-      } else {
-        // member_id가 올바르게 전달되는지 확인
+        // Remove from wishlist
         if (!user) {
           console.error("Member ID is missing");
           Swal.fire({
@@ -50,7 +48,22 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
           return;
         }
         const wishlistItem = { member_id: Number(user), product_id: productId };
-        console.log("Favorite button clicked, sending request:", wishlistItem); // 요청 데이터 로그 추가
+        console.log("Removing from wishlist, sending request:", wishlistItem); // 요청 데이터 로그 추가
+        await RemoveFromWishlistRequest(wishlistItem);
+        removeFavorite(productId);
+      } else {
+        // Add to wishlist
+        if (!user) {
+          console.error("Member ID is missing");
+          Swal.fire({
+            icon: "error",
+            title: "오류 발생",
+            text: "회원 ID가 누락되었습니다.",
+          });
+          return;
+        }
+        const wishlistItem = { member_id: Number(user), product_id: productId };
+        console.log("Adding to wishlist, sending request:", wishlistItem); // 요청 데이터 로그 추가
         await AddToWishlistRequest(wishlistItem);
         addFavorite(productId);
       }

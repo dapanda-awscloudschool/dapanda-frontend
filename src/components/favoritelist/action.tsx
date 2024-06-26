@@ -32,3 +32,33 @@ export async function AddToWishlistRequest(wishlist: {
     throw error;
   }
 }
+
+export async function RemoveFromWishlistRequest(wishlist: {
+  member_id: number;
+  product_id: number;
+}) {
+  try {
+    console.log("Sending delete request to server:", wishlist); // 요청 데이터 로그 추가
+    const response = await fetch(`${API_URL}/api/django/wishlist/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(wishlist),
+    });
+
+    console.log("Server response status:", response.status); // 응답 상태 로그 추가
+    if (response.status === 204) {
+      console.log("Server response: No Content"); // 응답 데이터 로그 추가
+      return { message: "Item successfully removed from wishlist." };
+    } else {
+      const errorText = await response.json();
+      throw new Error(
+        `Failed to remove from wishlist on server: ${response.status} - ${errorText}`
+      );
+    }
+  } catch (error) {
+    console.error("Error removing from wishlist on server:", error);
+    throw error;
+  }
+}
