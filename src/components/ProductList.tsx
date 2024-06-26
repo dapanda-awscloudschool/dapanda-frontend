@@ -8,7 +8,7 @@ import { Button } from "@nextui-org/react";
 import { formatCurrency } from "./formatCurrency";
 import useSWR from "swr";
 import { UserContext } from "@/context/userContext";
-import FavoriteButton from "./FavoriteButton";
+import FavoriteButton from "./favoritelist/FavoriteButton";
 
 interface IProduct {
   product_id: number;

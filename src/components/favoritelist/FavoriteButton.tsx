@@ -1,22 +1,29 @@
 "use client";
 
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
 import Swal from "sweetalert2";
-
-// const DJANGO = process.env.API_URL_DJANGO;
+import { AddToWishlistRequest } from "./action";
 
 interface FavoriteButtonProps {
   productId: number;
+  memberId: number; // 새로운 memberId prop 추가
 }
 
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
-  // 버튼 눌렀는지 안눌렀는지
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({
+  productId,
+  memberId,
+}) => {
   const [favorite, setFavorite] = useState(false);
-  // 서버에 실제로 저장되어 있는 wishlist
   const [wishlist, setWishlist] = useState<number[]>([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData.memberId);
+    }
     const data = localStorage.getItem("wishlist");
     if (data) {
       const wish = JSON.parse(data) as number[];
@@ -30,9 +37,22 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   const handleFavoriteClick = async () => {
     try {
       if (favorite) {
-        await removeFavorite(productId); // 예시: 서버에 찜 제거 요청
+        removeFavorite(productId);
       } else {
-        await addFavorite(productId); // 예시: 서버에 찜 추가 요청
+        // member_id가 올바르게 전달되는지 확인
+        if (!user) {
+          console.error("Member ID is missing");
+          Swal.fire({
+            icon: "error",
+            title: "오류 발생",
+            text: "회원 ID가 누락되었습니다.",
+          });
+          return;
+        }
+        const wishlistItem = { member_id: Number(user), product_id: productId };
+        console.log("Favorite button clicked, sending request:", wishlistItem); // 요청 데이터 로그 추가
+        await AddToWishlistRequest(wishlistItem);
+        addFavorite(productId);
       }
 
       const updatedWishlist = favorite
@@ -65,14 +85,11 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   );
 };
 
-// 예시로 사용할 찜 추가 및 제거 함수들
 const addFavorite = async (productId: number) => {
-  // 서버에 찜 추가 요청하는 로직
   console.log(`Adding product ${productId} to favorites`);
 };
 
 const removeFavorite = async (productId: number) => {
-  // 서버에 찜 제거 요청하는 로직
   console.log(`Removing product ${productId} from favorites`);
 };
 
