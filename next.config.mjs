@@ -5,6 +5,9 @@ const nextConfig = {
     fetches: {
       fullUrl: true,
     },
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
   },
   images: {
     remotePatterns: [

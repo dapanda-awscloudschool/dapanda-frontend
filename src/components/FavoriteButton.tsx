@@ -2,8 +2,9 @@
 
 import { useState, useContext, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
-import { UserContext } from "@/context/userContext";
 import Swal from "sweetalert2";
+
+// const DJANGO = process.env.API_URL_DJANGO;
 
 interface FavoriteButtonProps {
   productId: number;

@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getProductList } from "./action";
 import { Button } from "@nextui-org/react";
-import { FaHeart } from "react-icons/fa";
 import { formatCurrency } from "./formatCurrency";
 import useSWR from "swr";
 import { UserContext } from "@/context/userContext";
@@ -56,77 +55,15 @@ const ProductList = () => {
     isLoading,
   } = useSWR("getProductList", getProductList);
   const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
-  const API_URL = process.env.API_URL_DJANGO;
 
   const { userData } = useContext(UserContext);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
-    //console.log("API_URL:", API_URL);
     if (!imgUrl) {
       console.error("Image URL is not defined in the environment variables.");
     }
-    //console.log("userData:", userData);
-  }, [imgUrl, userData]);
-
-  const handleFavoriteClick = async (
-    e: React.MouseEvent,
-    productId: number
-  ) => {
-    e.preventDefault(); // 링크로 이동하지 않도록 방지
-
-    const memberId = userData[0]?.memberId;
-    //console.log("memberId:", memberId);
-    //console.log("productId:", productId);
-
-    if (!API_URL || !memberId) {
-      console.error("API_URL or memberId is not defined.");
-      return;
-    }
-
-    if (favorites[productId]) {
-      // 이미 찜된 상태라면 찜 목록에서 제거하는 로직을 추가할 수 있습니다.
-      setFavorites((prevFavorites) => ({
-        ...prevFavorites,
-        [productId]: !prevFavorites[productId],
-      }));
-      return;
-    }
-
-    const url = `${API_URL}/api/django/wishlist/${memberId}/${productId}/`;
-    const body = JSON.stringify({
-      member_id: memberId,
-      product_id: productId,
-    });
-
-    // console.log("POST URL:", url);
-    //console.log("POST Body:", body);
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: body,
-      });
-
-      // console.log("response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error response text:", errorText);
-        throw new Error("Failed to add to wishlist");
-      }
-
-      setFavorites((prevFavorites) => ({
-        ...prevFavorites,
-        [productId]: !prevFavorites[productId],
-      }));
-    } catch (error) {
-      console.error("Error adding to wishlist:", error);
-    }
-  };
+  }, [imgUrl]);
 
   return (
     <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
@@ -139,11 +76,11 @@ const ProductList = () => {
           const formattedTime = formatTimeDifference(remainingTime);
 
           return (
-            <div className="relative w-full flex flex-col gap-4 sm:w-[45%] lg:w-[30%] border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300">
-              <Link
-                href={"/product/" + product.product_id}
-                key={product.product_id}
-              >
+            <div
+              className="relative w-full flex flex-col gap-4 sm:w-[45%] lg:w-[30%] border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
+              key={product.product_id}
+            >
+              <Link href={"/product/" + product.product_id}>
                 <div className="relative w-full h-80">
                   <Image
                     src={`${imgUrl}/${product.product_id}/1.jpg`}
@@ -177,10 +114,7 @@ const ProductList = () => {
                 </div>
               </Link>
               <div className="flex flex-row gap-5 items-center justify-center">
-                <Link
-                  href={"/product/" + product.product_id}
-                  key={product.product_id}
-                >
+                <Link href={"/product/" + product.product_id}>
                   <Button
                     className="text-dapanda border-dapanda w-1/2 disabled:bg-pink-200 disabled:text-white disabled:ring-none"
                     variant="bordered"
