@@ -1,42 +1,79 @@
-"use client";
+"use client"
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Corrected import
+import { Input, Tooltip } from "@nextui-org/react";
+import { getRanking } from "./action";
 
-import React from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/react";
-import { FaSearch } from "react-icons/fa";
+interface IScore {
+    keyword: string;
+    score: number;
+}
+
 const SearchBar = () => {
-  const router = useRouter();
+    const router = useRouter();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [data, setData] = useState<IScore[]>([]);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get("name") as string;
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+        router.replace(`/list?name=${encodeURIComponent(value)}`);
+    };
 
-    if (name) {
-      router.push(`/list?name=${name}`);
-    }
-  };
+    const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (searchQuery.trim() !== "") {
+            router.push(`/list?name=${encodeURIComponent(searchQuery)}`);
+        }
+    };
 
-  return (
-    <form
-      className="flex ic justify-between gap-4 bg-gray-100 p-2 rounded-md flex-1"
-      onSubmit={handleSearch}
-    >
-       
-      <Input
-        startContent={<FaSearch/>}
-        type="text"
-        name="name"
-        placeholder="Search"
-        className="flex-1 bg-transparent outline-none"
-      />
-      <Button type="submit">
-        검색
-      </Button>
+    const fetchRankingData = async () => {
+        try {
+            const result = await getRanking(); // Assuming getRanking is your async function
+            setData(result);
+        } catch (error) {
+            console.error('Error fetching ranking data:', error);
+        }
+    };
 
-    </form>
-  );
+    useEffect(() => {
+        fetchRankingData();
+    }, []);
+
+    const getRankingContent = () => {
+        return (
+            <div className="px-1 py-2 w-[320px] flex flex-col gap-3">
+                <p className="text-xl font-bold text-center">Top Ranking</p>
+                {data.map((item: IScore, index: number) => (
+                    <div key={index} className="flex flex-row gap-2 px-5">
+                        <p>{index + 1}</p>
+                        <p>{item.keyword}</p>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    return (
+        <form
+            className="flex items-center justify-between gap-4 bg-gray-100 p-2 rounded-md flex-1"
+            onSubmit={handleSearchSubmit}
+        >
+            <Tooltip content={getRankingContent()}>
+                <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    name="name"
+                    placeholder="Real-time Search"
+                    className="flex-1 bg-transparent outline-none"
+                />
+            </Tooltip>
+            <button type="submit" className="btn">
+                Search
+            </button>
+        </form>
+    );
 };
 
 export default SearchBar;

@@ -1,11 +1,22 @@
-// // action.ts
-// export const getProductList = async (query: string = "") => {
-//   const response = await fetch(
-//     `http://3.34.192.71:8000/api/django/search/?q=${query}`
-//   );
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch product list");
-//   }
-//   const data = await response.json();
-//   return data;
-// };
+"use server"
+
+const API_URL = process.env.API_URL_DJANGO;
+
+export async function getRanking() {
+    const res = await fetch(`${API_URL}/api/django/redis/ranking`, {
+      method: "GET",
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    });
+  
+    if (!res.ok) {
+      throw new Error("Failed to fetch data");
+    }
+  
+    const topRanking = await res.json();
+    console.log(topRanking);
+    return topRanking;
+  }
