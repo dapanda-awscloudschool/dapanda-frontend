@@ -1,6 +1,25 @@
 "use client";
+import { useEffect, useState } from "react";
+import { pWishList } from "./action";
 import Image from "next/image";
-import React, { useState } from "react";
+
+// 사용자 ID를 가져오는 헬퍼 함수
+const getUserId = () => {
+  const userData = localStorage.getItem("userData");
+  if (userData) {
+    const user = JSON.parse(userData);
+    return user.memberId;
+  }
+  return null;
+};
+
+interface IWishlist {
+  id: number;
+  product_name: string;
+  price: number;
+  my_bid: number | null;
+  imageUrl: string;
+}
 
 const MyPage = () => {
   const [profile, setProfile] = useState({
@@ -10,39 +29,55 @@ const MyPage = () => {
     address: "서울특별시 마포구 독막로112",
   });
 
-  const [wishList, setWishList] = useState([
-    {
-      id: 1,
-      product_name: "Product",
-      price: 122,
-      my_bid: 100,
-      imageUrl: "/path/to/image1.jpg",
-    },
-    {
-      id: 2,
-      product_name: "Product",
-      price: 155,
-      my_bid: null,
-      imageUrl: "/path/to/image2.jpg",
-    },
-  ]);
-
+  const [wishList, setWishList] = useState<IWishlist[]>([]);
   const [history, setHistory] = useState([
     {
       id: 1,
       product_name: "Product",
       price: 122,
       my_bid: 100,
-      imageUrl: "/path/to/image1.jpg",
+      imageUrl:
+        "https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/1/1.jpg",
     },
     {
       id: 2,
       product_name: "Product",
       price: 189,
       my_bid: 189,
-      imageUrl: "/path/to/image2.jpg",
+      imageUrl:
+        "https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/2/1.jpg",
     },
   ]);
+
+  useEffect(() => {
+    async function fetchWishlist() {
+      try {
+        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        if (!userId) {
+          throw new Error("User ID not found");
+        }
+
+        const data = await pWishList(parseInt(userId)); // 필요한 ID로 변경
+        if (data && Array.isArray(data)) {
+          setWishList(
+            data.map((item) => ({
+              id: item.product.product_id,
+              product_name: item.product.product_name,
+              price: item.product.highest_price,
+              my_bid: null, // API 데이터에 따라 수정
+              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product.product_id}/1.jpg`,
+            }))
+          );
+        } else {
+          console.error("Invalid data structure:", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch wishlist:", error);
+      }
+    }
+
+    fetchWishlist();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -50,7 +85,7 @@ const MyPage = () => {
       <div className="border p-4 rounded-lg shadow-lg mb-8">
         <div className="flex items-center mb-4">
           <Image
-            src="/path/to/profile-image.jpg"
+            src="/path/to/profile-image.jpg" // 실제 프로필 이미지 경로로 변경
             alt="Profile Image"
             width={80}
             height={80}
@@ -85,7 +120,7 @@ const MyPage = () => {
               <div className="ml-4">
                 <p className="font-semibold">{item.product_name}</p>
                 <p>현재 입찰가: ${item.price}</p>
-                {item.my_bid && <p>내 입찰가: ${item.my_bid}</p>}
+                {item.my_bid !== null && <p>내 입찰가: ${item.my_bid}</p>}
               </div>
             </div>
           ))}

@@ -135,7 +135,7 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
                     상세보기
                   </Button>
                 </Link>
-                <FavoriteButton productId={product.product_id} />
+                <FavoriteButton productId={product.product_id} memberId={0} />
               </div>
             </div>
           );
