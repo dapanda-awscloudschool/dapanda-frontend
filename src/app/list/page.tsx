@@ -1,5 +1,4 @@
 import Image from "next/image";
-//import Filter from "@/components/Filter";
 import ProductList from "@/components/ProductList";
 import { Suspense } from "react";
 
@@ -26,7 +25,7 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
       {/* PRODUCT */}
       <h1 className="mt-12 text-xl font-semibold">something</h1>
       <Suspense fallback={"Loading..."}>
-        <ProductList />
+        <ProductList searchParams={searchParams} />
       </Suspense>
     </div>
   );

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getProductList } from "./action";
+import { getProductList, searchProducts } from "./action";
 import { Button } from "@nextui-org/react";
 import { formatCurrency } from "./formatCurrency";
 import useSWR from "swr";
@@ -48,16 +48,25 @@ const formatTimeDifference = (ms: number) => {
   return parts;
 };
 
-const ProductList = () => {
+const ProductList = ({ searchParams }: { searchParams: any }) => {
+  // searchParams가 정의되지 않았을 경우를 대비한 기본값 설정
+  const searchQuery = searchParams?.name || "";
+
+  const fetcher = searchQuery
+    ? () => searchProducts(searchQuery)
+    : getProductList;
+
   const {
     data: productList,
     error,
     isLoading,
-  } = useSWR("getProductList", getProductList);
+  } = useSWR(["getProductList", searchQuery], fetcher);
+
   const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
 
   const { userData } = useContext(UserContext);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
+  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
 
   useEffect(() => {
     if (!imgUrl) {
@@ -79,11 +88,15 @@ const ProductList = () => {
             <div
               className="relative w-full flex flex-col gap-4 sm:w-[45%] lg:w-[30%] border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
               key={product.product_id}
+              onMouseEnter={() => setHoveredProduct(product.product_id)}
+              onMouseLeave={() => setHoveredProduct(null)}
             >
               <Link href={"/product/" + product.product_id}>
                 <div className="relative w-full h-80">
                   <Image
-                    src={`${imgUrl}/${product.product_id}/1.jpg`}
+                    src={`${imgUrl}/${product.product_id}/${
+                      hoveredProduct === product.product_id ? "2" : "1"
+                    }.jpg`}
                     alt={product.product_name}
                     fill
                     sizes="25vw"
