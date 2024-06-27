@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FaHeart } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { AddToWishlistRequest, RemoveFromWishlistRequest } from "./action";
+import { Button } from "@nextui-org/react";
 
 interface FavoriteButtonProps {
   productId: number;
@@ -86,15 +87,13 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   };
 
   return (
-    <button
-      key={productId}
-      className={`p-2 rounded-full bg-black ${
-        favorite ? "text-red-500" : "text-gray-500"
-      }`}
-      onClick={handleFavoriteClick}
-    >
-      <FaHeart size={24} />
-    </button>
+    <Button key={productId} isIconOnly  aria-label="Like" onClick={handleFavoriteClick} className={`p-2 rounded-full ${
+      favorite ? "text-red-500" : "text-gray-500"
+    }`}>
+        <FaHeart size={24} />
+  </Button>  
+
+
   );
 };
 
