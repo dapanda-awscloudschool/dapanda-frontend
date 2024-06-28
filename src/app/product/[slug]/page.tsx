@@ -69,14 +69,6 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
           </h2>
         </div>
         <div className="flex items-center gap-4">
-          <h3 className="text-medium font-medium text-gray-700">
-            즉시 구매가:
-          </h3>
-          <h2 className="font-medium text-2xl">
-            {formatCurrency(product.immediate_purchase_price)}
-          </h2>
-        </div>
-        <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">시작 시간:</h3>
           <h2 className="font-medium text-xl">
             {formatDate(product.start_date)}
