@@ -17,8 +17,7 @@ export async function member(id: number) {
   }
 
   const member = await res.json();
-  //console.log(member);
-  return member; // 전체 데이터를 반환
+  return member;
 }
 
 export async function pWishList(id: number) {
@@ -36,8 +35,7 @@ export async function pWishList(id: number) {
   }
 
   const productWishlist = await res.json();
-  //console.log(productWishlist);
-  return productWishlist; // 전체 데이터를 반환
+  return productWishlist;
 }
 
 export async function saleHistory(user: number) {
@@ -59,8 +57,7 @@ export async function saleHistory(user: number) {
   }
 
   const saleHistory = await res.json();
-  //console.log(saleHistory);
-  return saleHistory; // 전체 데이터를 반환
+  return saleHistory;
 }
 
 export async function buyHistory(user: number) {
@@ -82,8 +79,7 @@ export async function buyHistory(user: number) {
   }
 
   const buyHistory = await res.json();
-  //console.log(buyHistory);
-  return buyHistory; // 전체 데이터를 반환
+  return buyHistory;
 }
 
 export async function salebid(user: number) {
@@ -101,8 +97,7 @@ export async function salebid(user: number) {
   }
 
   const salebid = await res.json();
-  //console.log(salebid);
-  return salebid; // 전체 데이터를 반환
+  return salebid;
 }
 
 export async function mybid(user: number) {
@@ -120,6 +115,23 @@ export async function mybid(user: number) {
   }
 
   const mybid = await res.json();
-  //console.log(mybid);
-  return mybid; // 전체 데이터를 반환
+  return mybid;
+}
+
+export async function updateMember(id: number, data: any) {
+  const res = await fetch(`${DJANGO}/api/django/member/${id}/`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update data");
+  }
+
+  const updatedMember = await res.json();
+  console.log(updateMember);
+  return updatedMember;
 }

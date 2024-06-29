@@ -10,13 +10,13 @@ import {
   buyHistory,
   salebid,
   mybid,
+  updateMember,
 } from "./action";
 import Image from "next/image";
 import { GalleryIcon } from "./GalleryIcon";
 import { MusicIcon } from "./MusicIcon";
 import { VideoIcon } from "./videoIcon";
 
-// 사용자 ID를 가져오는 헬퍼 함수
 const getUserId = () => {
   const userData = localStorage.getItem("userData");
   if (userData) {
@@ -75,16 +75,19 @@ const MyPage = () => {
   const [saleBid, setSaleBid] = useState<Historyproduct[]>([]);
   const [myBid, setMyBid] = useState<Historyproduct[]>([]);
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [formValues, setFormValues] = useState(profile);
+
   useEffect(() => {
     async function fetchMemberInfo() {
       try {
-        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        const userId = getUserId();
         if (!userId) {
           throw new Error("User ID not found");
         }
-
-        const data = await member(parseInt(userId)); // 필요한 ID로 변경
+        const data = await member(parseInt(userId));
         setProfile(data);
+        setFormValues(data);
       } catch (error) {
         console.error("Failed to fetch member info:", error);
       }
@@ -92,19 +95,18 @@ const MyPage = () => {
 
     async function fetchWishlist() {
       try {
-        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        const userId = getUserId();
         if (!userId) {
           throw new Error("User ID not found");
         }
-
-        const data = await pWishList(parseInt(userId)); // 필요한 ID로 변경
+        const data = await pWishList(parseInt(userId));
         if (data && Array.isArray(data)) {
           setWishList(
             data.map((item) => ({
               id: item.product.product_id,
               product_name: item.product.product_name,
               price: item.product.highest_price,
-              my_bid: null, // API 데이터에 따라 수정
+              my_bid: null,
               imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product.product_id}/1.jpg`,
             }))
           );
@@ -118,17 +120,16 @@ const MyPage = () => {
 
     async function fetchHistory() {
       try {
-        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        const userId = getUserId();
         if (!userId) {
           throw new Error("User ID not found");
         }
-
-        const data = await saleHistory(parseInt(userId)); // 필요한 ID로 변경
+        const data = await saleHistory(parseInt(userId));
         if (data && Array.isArray(data)) {
           setHistory(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`, // 이미지 URL 설정
+              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -141,17 +142,16 @@ const MyPage = () => {
 
     async function fetchBuyHistory() {
       try {
-        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        const userId = getUserId();
         if (!userId) {
           throw new Error("User ID not found");
         }
-
-        const data = await buyHistory(parseInt(userId)); // 필요한 ID로 변경
+        const data = await buyHistory(parseInt(userId));
         if (data && Array.isArray(data)) {
           setBHistory(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`, // 이미지 URL 설정
+              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -164,17 +164,16 @@ const MyPage = () => {
 
     async function fetchSaleBid() {
       try {
-        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        const userId = getUserId();
         if (!userId) {
           throw new Error("User ID not found");
         }
-
-        const data = await salebid(parseInt(userId)); // 필요한 ID로 변경
+        const data = await salebid(parseInt(userId));
         if (data && Array.isArray(data)) {
           setSaleBid(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`, // 이미지 URL 설정
+              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -187,17 +186,16 @@ const MyPage = () => {
 
     async function fetchMyBid() {
       try {
-        const userId = getUserId(); // 로그인된 사용자의 ID 가져오기
+        const userId = getUserId();
         if (!userId) {
           throw new Error("User ID not found");
         }
-
-        const data = await mybid(parseInt(userId)); // 필요한 ID로 변경
+        const data = await mybid(parseInt(userId));
         if (data && Array.isArray(data)) {
           setMyBid(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`, // 이미지 URL 설정
+              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -216,6 +214,38 @@ const MyPage = () => {
     fetchMyBid();
   }, []);
 
+  const handleEditClick = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const userId = getUserId();
+      if (!userId) {
+        throw new Error("User ID not found");
+      }
+
+      const updatedProfile = await updateMember(parseInt(userId), formValues);
+      setProfile(updatedProfile);
+      handleClosePopup();
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+    }
+  };
+
   const isExpired = (endDate: string) => {
     const now = new Date();
     const end = new Date(endDate);
@@ -228,7 +258,7 @@ const MyPage = () => {
       <div className="border p-4 rounded-lg shadow-lg mb-8">
         <div className="flex items-center mb-4">
           <Image
-            src="/path/to/profile-image.jpg" // 실제 프로필 이미지 경로로 변경
+            src="/path/to/profile-image.jpg"
             alt="Profile Image"
             width={80}
             height={80}
@@ -243,7 +273,10 @@ const MyPage = () => {
           <p>Email: {profile.email}</p>
           <p>Delivery Address: {profile.address}</p>
         </div>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={handleEditClick}
+        >
           수정
         </button>
       </div>
@@ -277,7 +310,7 @@ const MyPage = () => {
               <div
                 key={item.id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.id}`)} // 클릭 시 이동
+                onClick={() => router.push(`/product/${item.id}`)}
               >
                 <Image
                   src={item.imageUrl}
@@ -312,7 +345,7 @@ const MyPage = () => {
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)} // 클릭 시 이동
+                onClick={() => router.push(`/product/${item.product_id}`)}
               >
                 <Image
                   src={item.imageUrl}
@@ -355,7 +388,7 @@ const MyPage = () => {
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)} // 클릭 시 이동
+                onClick={() => router.push(`/product/${item.product_id}`)}
               >
                 <Image
                   src={item.imageUrl}
@@ -398,7 +431,7 @@ const MyPage = () => {
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)} // 클릭 시 이동
+                onClick={() => router.push(`/product/${item.product_id}`)}
               >
                 <Image
                   src={item.imageUrl}
@@ -441,7 +474,7 @@ const MyPage = () => {
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)} // 클릭 시 이동
+                onClick={() => router.push(`/product/${item.product_id}`)}
               >
                 <Image
                   src={item.imageUrl}
@@ -468,6 +501,86 @@ const MyPage = () => {
           </div>
         </Tab>
       </Tabs>
+
+      {isPopupOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">회원정보 수정</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium">
+                  이름
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formValues.name}
+                  onChange={handleChange}
+                  className="mt-1 p-2 w-full border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="phone_num"
+                  className="block text-sm font-medium"
+                >
+                  전화번호
+                </label>
+                <input
+                  type="text"
+                  id="phone_num"
+                  name="phone_num"
+                  value={formValues.phone_num}
+                  onChange={handleChange}
+                  className="mt-1 p-2 w-full border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="address" className="block text-sm font-medium">
+                  주소
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={formValues.address}
+                  onChange={handleChange}
+                  className="mt-1 p-2 w-full border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-medium">
+                  이메일
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formValues.email}
+                  onChange={handleChange}
+                  className="mt-1 p-2 w-full border rounded"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleClosePopup}
+                  className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  저장
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
