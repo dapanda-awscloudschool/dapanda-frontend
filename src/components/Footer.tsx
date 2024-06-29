@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <div className="py-24 px-4 md:px-8 lg:px-16 xl:32 2xl:px-64 bg-gray-100 text-sm mt-24">
+    <div className="py-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 bg-gray-100 text-sm mt-24">
       {/* TOP */}
       <div className="flex flex-col md:flex-row justify-between gap-24">
         {/* LEFT */}
@@ -59,7 +59,7 @@ const Footer = () => {
         <div className="w-full md:w-1/2 lg:w-1/4 flex flex-col gap-8">
           <h1 className="font-semibold text-lg">구독</h1>
           <p>
-            Be the firtst to get the latest news about trends, promotions, and
+            Be the first to get the latest news about trends, promotions, and
             much more!
           </p>
           <div className="flex">
@@ -93,6 +93,19 @@ const Footer = () => {
             <span className="font-medium">₩ KRW</span>
           </div>
         </div>
+      </div>
+      <div className="flex items-center justify-center gap-4 mt-16">
+        <Link href="/with">
+          <div className="flex items-center gap-4">
+            <div className="text-lg">with</div>
+            <Image
+              src="/cloud school logo.png"
+              alt="With Image"
+              width={160}
+              height={160}
+            />
+          </div>
+        </Link>
       </div>
     </div>
   );
