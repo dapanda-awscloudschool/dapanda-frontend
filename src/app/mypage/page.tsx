@@ -74,7 +74,6 @@ const MyPage = () => {
   const [bHistory, setBHistory] = useState<Historyproduct[]>([]);
   const [saleBid, setSaleBid] = useState<Historyproduct[]>([]);
   const [myBid, setMyBid] = useState<Historyproduct[]>([]);
-
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formValues, setFormValues] = useState(profile);
 

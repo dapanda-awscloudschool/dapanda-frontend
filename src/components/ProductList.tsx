@@ -48,8 +48,17 @@ const formatTimeDifference = (ms: number) => {
   return parts;
 };
 
-const ProductList = ({ searchParams }: { searchParams: any }) => {
-  // searchParams가 정의되지 않았을 경우를 대비한 기본값 설정
+const ProductList = ({
+  searchParams,
+  maxItems,
+  sortCriteria,
+  sortOrder,
+}: {
+  searchParams: any;
+  maxItems?: number;
+  sortCriteria?: string;
+  sortOrder?: "asc" | "desc";
+}) => {
   const searchQuery = searchParams?.name || "";
 
   const fetcher = searchQuery
@@ -74,12 +83,27 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
     }
   }, [imgUrl]);
 
+  // Sort and limit the product list
+  let sortedProductList = productList;
+  if (productList) {
+    if (sortCriteria) {
+      sortedProductList = [...productList].sort((a, b) => {
+        const dateA = new Date(a[sortCriteria]).getTime();
+        const dateB = new Date(b[sortCriteria]).getTime();
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      });
+    }
+    if (maxItems) {
+      sortedProductList = sortedProductList.slice(0, maxItems);
+    }
+  }
+
   return (
     <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
       {isLoading && <p>Loading...</p>}
       {error && <p>Failed to load products</p>}
-      {productList && productList.length > 0 ? (
-        productList.map((product: IProduct) => {
+      {sortedProductList && sortedProductList.length > 0 ? (
+        sortedProductList.map((product: IProduct) => {
           const remainingTime =
             new Date(product.end_date).getTime() - Date.now();
           const formattedTime = formatTimeDifference(remainingTime);
@@ -95,7 +119,10 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
                 <div className="relative w-full h-80">
                   <Image
                     src={`${imgUrl}/${product.product_id}/${
-                      hoveredProduct === product.product_id ? "2" : "1"
+                      hoveredProduct === product.product_id &&
+                      product.file_count > 1
+                        ? "2"
+                        : "1"
                     }.jpg`}
                     alt={product.product_name}
                     fill
@@ -141,7 +168,7 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
           );
         })
       ) : (
-        <p>상품이 없습니다.</p> // 아이템이 없을 때의 처리
+        <p>상품이 없습니다.</p>
       )}
     </div>
   );

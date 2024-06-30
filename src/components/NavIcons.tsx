@@ -2,13 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CartModal from "./Cart/CartModal";
 
 const NavIcons = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggined, setIsLoggined] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const cartRef = useRef<HTMLDivElement>(null);
 
   const handleProfile = () => {
     setIsProfileOpen((prev) => !prev);
@@ -35,6 +37,30 @@ const NavIcons = () => {
     checkLoginStatus(); // 컴포넌트 마운트 시 로그인 상태 확인
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileOpen(false);
+      }
+      if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
+        setIsCartOpen(false);
+      }
+    };
+
+    if (isProfileOpen || isCartOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProfileOpen, isCartOpen]);
+
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">
       <Image
@@ -46,7 +72,10 @@ const NavIcons = () => {
         onClick={handleProfile}
       />
       {isProfileOpen && (
-        <div className="absolute p-4 rounded-md top-12 left-0 bg-white text-sm shadow-[0_3px_10px_rgb(0,0,0,0.2)] z-20">
+        <div
+          ref={profileRef}
+          className="absolute p-4 rounded-md top-12 left-0 bg-white text-sm shadow-[0_3px_10px_rgb(0,0,0,0.2)] z-20"
+        >
           {isLoggined ? (
             <div className="mt-2 cursor-pointer" onClick={handleLogout}>
               <Link href="/" onClick={() => setIsProfileOpen(false)}>
@@ -76,7 +105,11 @@ const NavIcons = () => {
           0
         </div>
       </div>
-      {isCartOpen && <CartModal />}
+      {isCartOpen && (
+        <div ref={cartRef}>
+          <CartModal />
+        </div>
+      )}
     </div>
   );
 };
