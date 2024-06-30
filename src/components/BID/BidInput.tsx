@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { BidRequest, CheckRequest } from "./action";
+import { sendBidMessage } from "./action";
 
 interface IResult {
   id: number;
@@ -74,12 +75,12 @@ const BidInput = ({
     formData.append("BidReqInfo", blob);
 
     try {
-      const data = await BidRequest(formData);
-      console.log("BidRequest data:", data);
-      let check;
-      if (data) check = await CheckRequest(data);
-      console.log("CheckRequest data:", check);
-      if (check) setResult(check);
+      // const data = await BidRequest(formData);
+      // console.log("BidRequest data:", data);
+      // let check;
+      // if (data) check = await CheckRequest(data);
+      // console.log("CheckRequest data:", check);
+      // if (check) setResult(check);
     } catch (error) {
       console.error("Error during bid submission:", error);
     }

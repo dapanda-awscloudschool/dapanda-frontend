@@ -5,7 +5,6 @@ import ProductImages from "@/components/ProductImages";
 import { getProductDetail } from "./action";
 import { formatCurrency } from "@/components/formatCurrency";
 import useSWR from "swr";
-import { useRouter } from "next/navigation";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -33,8 +32,6 @@ const formatTimeDifference = (ms: number) => {
 
   return parts.join(" ");
 };
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const SinglePage = ({ params }: { params: { slug: number } }) => {
   const { data: product, error } = useSWR(`/api/product/${params.slug}`, () =>
