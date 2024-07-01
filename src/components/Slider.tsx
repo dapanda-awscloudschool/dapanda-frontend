@@ -11,7 +11,7 @@ const slides = [
     description: "저렴하게 원하는 물건을 GET!",
     image:
       "https://images.pexels.com/photos/5668473/pexels-photo-5668473.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    url: "/",
+    url: "/list",
     bg: "bg-gradient-to-r from-yellow-50 to-pink-50",
   },
   {

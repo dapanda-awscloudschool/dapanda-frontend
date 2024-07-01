@@ -55,8 +55,11 @@ const WithPage = () => {
               <div>
                 <h2 className="text-xl font-semibold">DAPANDA</h2>
                 <p className="mt-2 text-gray-600">
-                  남녀노소 누구나 참여할 수 있는 경매 사이트
-                  <br /> 당신도 참여해보세요!
+                  네고에 지친 당신, DAPANDA에서 최적의 중고 거래를 경험해보세요.
+                  <br />
+                  경매의 재미와 다양한 물품 거래로 스트레스 없이 할 수 있는
+                  중고거래,
+                  <br /> Welcome to DAPANDA!
                 </p>
               </div>
             </div>
@@ -74,7 +77,11 @@ const WithPage = () => {
               />
               <div>
                 <h2 className="text-xl font-semibold">퀵 캐치</h2>
-                <p className="mt-2 text-gray-600">홈쇼핑 사이트 ...</p>
+                <p className="mt-2 text-gray-600">
+                  QuickCatch는 실시간 홈쇼핑 방송과 상품 정보, 그리고 해당
+                  상품의 인터넷 최저가를 제공합니다. 또한, 알찬 리뷰 요약과
+                  할인율 순위를 통해 최적의 쇼핑 환경을 제공합니다.
+                </p>
               </div>
             </div>
           </Link>

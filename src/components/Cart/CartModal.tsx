@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { createProduct } from "./action"; // Import the createProduct function
+import { createProduct } from "./action";
+import Swal from "sweetalert2";
 
 const CartModal = () => {
   const cartItems = true;
@@ -53,12 +54,28 @@ const CartModal = () => {
       formData.append("start_price", String(formValues.start_price));
       formData.append("product_info", formValues.product_info);
       formData.append("register_member", String(formValues.register_member));
-      imageFiles.forEach((file) => {
-        formData.append("images", file);
+      imageFiles.forEach((file, index) => {
+        formData.append(`images[${index}]`, file); // 이미지 배열로 추가
       });
 
       const result = await createProduct(formData); // Use the createProduct function from action.tsx
       console.log("Product registered:", result);
+
+      // 등록 성공 메시지 표시
+      Swal.fire({
+        icon: "success",
+        title: "Product registered successfully",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+
       handleClosePopup();
     } catch (error) {
       console.error("Failed to register product:", error);

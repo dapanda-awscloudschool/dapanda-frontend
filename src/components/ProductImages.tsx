@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Product {
   product_id: string;
@@ -17,6 +17,10 @@ const ProductImages = ({ product }: { product: Product }) => {
       product.product_id
     }/${i + 1}.jpg`,
   }));
+
+  useEffect(() => {
+    console.log("Image URLs:", images);
+  }, [images]);
 
   return (
     <div className="">

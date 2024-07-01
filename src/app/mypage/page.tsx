@@ -332,7 +332,7 @@ const MyPage = () => {
           title={
             <div className="flex items-center space-x-2">
               <MusicIcon />
-              <span>나의 판매 목록</span>
+              <span>나의 과거 판매 목록</span>
               <Chip size="sm" variant="faded">
                 {history.length}
               </Chip>
@@ -344,7 +344,9 @@ const MyPage = () => {
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)}
+                onClick={() =>
+                  router.push(`/product_history/${item.product_id}`)
+                }
               >
                 <Image
                   src={item.imageUrl}
@@ -375,7 +377,7 @@ const MyPage = () => {
           title={
             <div className="flex items-center space-x-2">
               <VideoIcon />
-              <span>나의 구매 목록</span>
+              <span>나의 과거 구매 목록</span>
               <Chip size="sm" variant="faded">
                 {bHistory.length}
               </Chip>
@@ -387,7 +389,9 @@ const MyPage = () => {
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)}
+                onClick={() =>
+                  router.push(`/product_history/${item.product_id}`)
+                }
               >
                 <Image
                   src={item.imageUrl}
@@ -418,7 +422,7 @@ const MyPage = () => {
           title={
             <div className="flex items-center space-x-2">
               <VideoIcon />
-              <span>나의 판매 입찰 목록</span>
+              <span>현재 진행중인 나의 경매 목록</span>
               <Chip size="sm" variant="faded">
                 {saleBid.length}
               </Chip>
@@ -461,7 +465,7 @@ const MyPage = () => {
           title={
             <div className="flex items-center space-x-2">
               <VideoIcon />
-              <span>나의 입찰 목록</span>
+              <span>현재 진행중인 나의 입찰 목록</span>
               <Chip size="sm" variant="faded">
                 {myBid.length}
               </Chip>
