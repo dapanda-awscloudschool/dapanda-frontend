@@ -55,11 +55,10 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
     ? () => searchProducts(searchQuery)
     : getProductList;
 
-  const {
-    data: productList,
-    error,
-    isLoading,
-  } = useSWR(["getProductList", searchQuery], fetcher);
+  const { data: productList, error, isLoading } = useSWR(
+    ["getProductList", searchQuery],
+    fetcher
+  );
 
   const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
 
@@ -71,21 +70,6 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
     }
   }, [imgUrl]);
 
-  // Sort and limit the product list
-  let sortedProductList = productList;
-  if (productList) {
-    if (sortCriteria) {
-      sortedProductList = [...productList].sort((a, b) => {
-        const dateA = new Date(a[sortCriteria]).getTime();
-        const dateB = new Date(b[sortCriteria]).getTime();
-        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      });
-    }
-    if (maxItems) {
-      sortedProductList = sortedProductList.slice(0, maxItems);
-    }
-  }
-
   // Apply sorting logic based on sortQuery
   const sortedProducts = productList
     ? [...productList].sort((a, b) => {
@@ -96,19 +80,15 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
           // 낮은 가격 순서로 정렬
           return a.highest_price - b.highest_price;
         } else if (sortQuery === "recent") {
-          return (
-            new Date(b.end_date).getTime() - new Date(a.end_date).getTime()
-          );
+          return new Date(b.end_date).getTime() - new Date(a.end_date).getTime();
         } else if (sortQuery === "old") {
-          return (
-            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-          );
+          return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
         } else if (sortQuery === "bidders") {
           return b.num_bid - a.num_bid;
         } else if (sortQuery === "views") {
           return b.view_num - a.view_num;
         }
-
+        
         return 0; // Default: no sorting
       })
     : [];
@@ -117,8 +97,8 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
     <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
       {isLoading && <p>Loading...</p>}
       {error && <p>Failed to load products</p>}
-      {productList && productList.length > 0 ? (
-        productList.map((product: IProduct) => {
+      {sortedProducts && sortedProducts.length > 0 ? (
+        sortedProducts.map((product: IProduct) => {
           const remainingTime =
             new Date(product.end_date).getTime() - Date.now();
           const formattedTime = formatTimeDifference(remainingTime);
@@ -134,10 +114,7 @@ const ProductList = ({ searchParams }: { searchParams: any }) => {
                 <div className="relative w-full h-80">
                   <Image
                     src={`${imgUrl}/${product.product_id}/${
-                      hoveredProduct === product.product_id &&
-                      product.file_count > 1
-                        ? "2"
-                        : "1"
+                      hoveredProduct === product.product_id ? "2" : "1"
                     }.jpg`}
                     alt={product.product_name}
                     fill
