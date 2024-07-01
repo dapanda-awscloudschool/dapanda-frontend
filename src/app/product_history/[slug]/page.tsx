@@ -5,6 +5,7 @@ import ProductImages from "@/components/ProductImages";
 import { getProductHistoryDetail } from "./action";
 import { formatCurrency } from "@/components/formatCurrency";
 import useSWR from "swr";
+import Image from "next/image";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -64,8 +65,8 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16">
-      <div className="w-full lg:w-1/2 lg:sticky top-20 h-max">
-        <ProductImages product={product} />
+      <div className="w-full lg:w-1/2 lg:sticky top-20 h-max relative">
+        <ProductImages product={product} isSoldOut={true} />
       </div>
       <div className="w-full lg:w-1/2 flex flex-col gap-6">
         <h1 className="text-4xl font-medium">{product.product_name}</h1>

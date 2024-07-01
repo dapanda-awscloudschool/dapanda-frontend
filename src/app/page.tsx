@@ -10,9 +10,9 @@ const HomePage = async () => {
       <Slider />
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">주요 제품</h1>
+          <h1 className="text-2xl font-semibold font-gothic">주요 제품</h1>
           <Link href="/list">
-            <div className="text-xl text-black-500 font-bold mr-20">
+            <div className="text-sm text-gray-500 font-bold mr-16">
               더보기 &gt;
             </div>
           </Link>
@@ -23,9 +23,11 @@ const HomePage = async () => {
       </div>
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">최근 올라온 상품</h1>
+          <h1 className="text-2xl font-semibold font-gothic">
+            최근 올라온 상품
+          </h1>
           <Link href="/new">
-            <div className="text-xl text-black-500 font-bold mr-20">
+            <div className="text-sm text-gray-500 font-bold mr-16">
               더보기 &gt;
             </div>
           </Link>
@@ -39,12 +41,12 @@ const HomePage = async () => {
       </div>
       <div className="mt-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold flex items-center">
+          <h1 className="text-2xl font-semibold flex items-center font-gothic">
             <BsFire className="text-red-500 mr-2" />
             인기 상품
           </h1>
           <Link href="/popular">
-            <div className="text-xl text-black-500 font-bold mr-20">
+            <div className="text-sm text-gray-500 font-bold mr-16">
               더보기 &gt;
             </div>
           </Link>

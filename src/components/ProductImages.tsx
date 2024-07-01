@@ -9,7 +9,12 @@ interface Product {
   file_count: number;
 }
 
-const ProductImages = ({ product }: { product: Product }) => {
+interface ProductImagesProps {
+  product: Product;
+  isSoldOut?: boolean;
+}
+
+const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
   const [index, setIndex] = useState(0);
   const images = Array.from({ length: product.file_count }, (_, i) => ({
     id: i + 1,
@@ -32,6 +37,17 @@ const ProductImages = ({ product }: { product: Product }) => {
           sizes=""
           className="object-cover rounded-md"
         />
+        {isSoldOut && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <Image
+              src="/images/soldout.png" // "SOLD OUT" 이미지의 경로
+              alt="Sold Out"
+              width={500} // 필요한 크기로 조정
+              height={500} // 필요한 크기로 조정
+              className="object-contain"
+            />
+          </div>
+        )}
       </div>
       <div className="flex justify-between gap-4 mt-8">
         {images.slice(0, product.file_count).map((item, i) => (

@@ -2,84 +2,137 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createProduct } from "./action";
 import Swal from "sweetalert2";
 
+// Local storage에서 userId를 가져오는 함수
+const getUserId = () => {
+  const userData = localStorage.getItem("userData");
+  if (userData) {
+    const user = JSON.parse(userData);
+    return user.memberId;
+  }
+  return null;
+};
+
 const CartModal = () => {
   const cartItems = true;
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     category: "",
     product_name: "",
     term_price: 0,
     start_price: 0,
     product_info: "",
-    register_member: 1, // 현재 로그인된 사용자의 ID로 대체
+    register_member: getUserId(), // 현재 로그인된 사용자의 ID로 대체
   });
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-  const handleOpenPopup = () => {
-    setIsPopupOpen(true);
-  };
-
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 userId를 가져와서 formValues에 설정
+    const userId = getUserId();
     setFormValues((prevValues) => ({
       ...prevValues,
-      [name]: value,
+      register_member: userId,
     }));
-  };
+  }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files).slice(0, 10); // 최대 10개의 파일 선택
-      setImageFiles(files);
-    }
-  };
+  const handleOpenPopup = () => {
+    Swal.fire({
+      title: "물품 등록",
+      width: 600,
+      padding: "3em",
+      background: "#fff url(/images/trees.png)",
+      backdrop: `
+        rgba(0,0,0,0.4)
+        url("/images/gift.gif")
+        left bottom
+        no-repeat
+      `,
+      html: `
+        <form id="productForm">
+          <div class="mb-4">
+            <label for="category" class="block text-sm font-medium">카테고리</label>
+            <input type="text" id="category" name="category" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="product_name" class="block text-sm font-medium">제품명</label>
+            <input type="text" id="product_name" name="product_name" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="term_price" class="block text-sm font-medium">최소 입찰 단위</label>
+            <input type="number" id="term_price" name="term_price" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="start_price" class="block text-sm font-medium">시작 가격</label>
+            <input type="number" id="start_price" name="start_price" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="images" class="block text-sm font-medium">이미지 (최대 10개)</label>
+            <input type="file" id="images" name="images" accept=".png, .jpg, .jpeg" multiple class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="product_info" class="block text-sm font-medium">제품 정보</label>
+            <textarea id="product_info" name="product_info" class="mt-1 p-2 w-full border rounded"></textarea>
+          </div>
+        </form>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "등록하기",
+      preConfirm: () => {
+        const form = document.getElementById("productForm") as HTMLFormElement;
+        const formData = new FormData(form);
+        const formObject: any = {};
+        formData.forEach((value, key) => {
+          if (key === "images") {
+            if (!formObject[key]) {
+              formObject[key] = [];
+            }
+            formObject[key].push(value);
+          } else {
+            formObject[key] = value;
+          }
+        });
+        return formObject;
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("category", result.value.category);
+          formData.append("product_name", result.value.product_name);
+          formData.append("term_price", result.value.term_price);
+          formData.append("start_price", result.value.start_price);
+          formData.append("product_info", result.value.product_info);
+          formData.append(
+            "register_member",
+            String(formValues.register_member)
+          );
+          result.value.images.forEach((file: File, index: number) => {
+            formData.append(`images[${index}]`, file); // 이미지 배열로 추가
+          });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("category", formValues.category);
-      formData.append("product_name", formValues.product_name);
-      formData.append("term_price", String(formValues.term_price));
-      formData.append("start_price", String(formValues.start_price));
-      formData.append("product_info", formValues.product_info);
-      formData.append("register_member", String(formValues.register_member));
-      imageFiles.forEach((file, index) => {
-        formData.append(`images[${index}]`, file); // 이미지 배열로 추가
-      });
+          const productResult = await createProduct(formData);
+          console.log("Product registered:", productResult);
 
-      const result = await createProduct(formData); // Use the createProduct function from action.tsx
-      console.log("Product registered:", result);
-
-      // 등록 성공 메시지 표시
-      Swal.fire({
-        icon: "success",
-        title: "Product registered successfully",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener("mouseenter", Swal.stopTimer);
-          toast.addEventListener("mouseleave", Swal.resumeTimer);
-        },
-      });
-
-      handleClosePopup();
-    } catch (error) {
-      console.error("Failed to register product:", error);
-    }
+          Swal.fire({
+            icon: "success",
+            title: "Product registered successfully",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.addEventListener("mouseenter", Swal.stopTimer);
+              toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
+          });
+        } catch (error) {
+          console.error("Failed to register product:", error);
+        }
+      }
+    });
   };
 
   return (
@@ -161,121 +214,6 @@ const CartModal = () => {
           </>
         )}
       </div>
-
-      {isPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-4">물품 등록</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label htmlFor="category" className="block text-sm font-medium">
-                  카테고리
-                </label>
-                <input
-                  type="text"
-                  id="category"
-                  name="category"
-                  value={formValues.category}
-                  onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="product_name"
-                  className="block text-sm font-medium"
-                >
-                  제품명
-                </label>
-                <input
-                  type="text"
-                  id="product_name"
-                  name="product_name"
-                  value={formValues.product_name}
-                  onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="term_price"
-                  className="block text-sm font-medium"
-                >
-                  최소 입찰 단위
-                </label>
-                <input
-                  type="number"
-                  id="term_price"
-                  name="term_price"
-                  value={formValues.term_price}
-                  onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="start_price"
-                  className="block text-sm font-medium"
-                >
-                  시작 가격
-                </label>
-                <input
-                  type="number"
-                  id="start_price"
-                  name="start_price"
-                  value={formValues.start_price}
-                  onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="images" className="block text-sm font-medium">
-                  이미지 (최대 10개)
-                </label>
-                <input
-                  type="file"
-                  id="images"
-                  name="images"
-                  accept=".png, .jpg, .jpeg"
-                  multiple
-                  onChange={handleImageChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="product_info"
-                  className="block text-sm font-medium"
-                >
-                  제품 정보
-                </label>
-                <textarea
-                  id="product_info"
-                  name="product_info"
-                  value={formValues.product_info}
-                  onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleClosePopup}
-                  className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
-                >
-                  취소
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  등록하기
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
