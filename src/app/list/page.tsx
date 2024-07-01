@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ProductList from "@/components/ProductList";
 import { Suspense } from "react";
+import Filter from "@/components/Filter";
 
 const ListPage = async ({ searchParams }: { searchParams: any }) => {
   return (
@@ -21,7 +22,7 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
         </div>
       </div>
       {/* FILTER */}
-      {/* <Filter /> */}
+      <Filter />
       {/* PRODUCT */}
       <h1 className="mt-12 text-xl font-semibold">something</h1>
       <Suspense fallback={"Loading..."}>

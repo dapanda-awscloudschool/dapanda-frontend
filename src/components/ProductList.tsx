@@ -1,13 +1,11 @@
 "use client";
-
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getProductList, searchProducts } from "./action";
 import { Button } from "@nextui-org/react";
 import { formatCurrency } from "./formatCurrency";
 import useSWR from "swr";
-import { UserContext } from "@/context/userContext";
 import FavoriteButton from "./favoritelist/FavoriteButton";
 
 interface IProduct {
@@ -20,7 +18,7 @@ interface IProduct {
   end_date: string;
   term_price: number;
   start_price: number;
-  highest_price: number;
+  highest_price: number; // 이 필드는 숫자입니다.
   bid_member_name: null | string;
   immediate_purchase_price: number;
   immediate_purchase_status: number;
@@ -31,6 +29,7 @@ interface IProduct {
   bid_member: null | number;
   register_member_name: string;
   imageUrl: string;
+  view_num: number;
 }
 
 const formatTimeDifference = (ms: number) => {
@@ -48,18 +47,9 @@ const formatTimeDifference = (ms: number) => {
   return parts;
 };
 
-const ProductList = ({
-  searchParams,
-  maxItems,
-  sortCriteria,
-  sortOrder,
-}: {
-  searchParams: any;
-  maxItems?: number;
-  sortCriteria?: string;
-  sortOrder?: "asc" | "desc";
-}) => {
+const ProductList = ({ searchParams }: { searchParams: any }) => {
   const searchQuery = searchParams?.name || "";
+  const sortQuery = searchParams?.sort || "";
 
   const fetcher = searchQuery
     ? () => searchProducts(searchQuery)
@@ -73,8 +63,6 @@ const ProductList = ({
 
   const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
 
-  const { userData } = useContext(UserContext);
-  const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
 
   useEffect(() => {
@@ -98,12 +86,39 @@ const ProductList = ({
     }
   }
 
+  // Apply sorting logic based on sortQuery
+  const sortedProducts = productList
+    ? [...productList].sort((a, b) => {
+        if (sortQuery === "asc") {
+          // 높은 가격 순서로 정렬
+          return b.highest_price - a.highest_price;
+        } else if (sortQuery === "desc") {
+          // 낮은 가격 순서로 정렬
+          return a.highest_price - b.highest_price;
+        } else if (sortQuery === "recent") {
+          return (
+            new Date(b.end_date).getTime() - new Date(a.end_date).getTime()
+          );
+        } else if (sortQuery === "old") {
+          return (
+            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+          );
+        } else if (sortQuery === "bidders") {
+          return b.num_bid - a.num_bid;
+        } else if (sortQuery === "views") {
+          return b.view_num - a.view_num;
+        }
+
+        return 0; // Default: no sorting
+      })
+    : [];
+
   return (
     <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
       {isLoading && <p>Loading...</p>}
       {error && <p>Failed to load products</p>}
-      {sortedProductList && sortedProductList.length > 0 ? (
-        sortedProductList.map((product: IProduct) => {
+      {productList && productList.length > 0 ? (
+        productList.map((product: IProduct) => {
           const remainingTime =
             new Date(product.end_date).getTime() - Date.now();
           const formattedTime = formatTimeDifference(remainingTime);

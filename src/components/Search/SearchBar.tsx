@@ -42,7 +42,7 @@ const SearchBar = () => {
 
   const getRankingContent = () => {
     return (
-      <div className="px-1 py-2 w-[320px] flex flex-col gap-3">
+      <div className="px-1 py-2 w-[420px] flex flex-col gap-3">
         <p className="text-xl font-bold text-center">인기 검색어</p>
         {data.map((item: IScore, index: number) => (
           <div key={index} className="flex flex-row gap-2 px-5">
