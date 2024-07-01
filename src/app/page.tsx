@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import ProductList from "@/components/ProductList";
 import Slider from "@/components/Slider";
+import Filter from "@/components/Filter";
+
 
 const HomePage = async () => {
   return (
