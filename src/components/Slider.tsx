@@ -20,7 +20,7 @@ const slides = [
     description: "공기처럼 가벼운 가격에 경매중!",
     image:
       "https://images.pexels.com/photos/38568/apple-imac-ipad-workplace-38568.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    url: "/",
+    url: "/list",
     bg: "bg-gradient-to-r from-pink-50 to-blue-50",
   },
   {
