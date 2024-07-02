@@ -39,11 +39,6 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
 
   const productId = parseInt(params.slug, 10);
 
-  if (isNaN(productId)) {
-    console.error("Invalid product_id:", params.slug);
-    return <div>Invalid product_id</div>;
-  }
-
   const fetchProductHistoryDetail = async () => {
     try {
       const data = await getProductHistoryDetail(productId);
@@ -58,6 +53,11 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
     fetchProductHistoryDetail,
     { revalidateOnFocus: false }
   );
+
+  if (isNaN(productId)) {
+    console.error("Invalid product_id:", params.slug);
+    return <div>Invalid product_id</div>;
+  }
 
   if (error) {
     console.error("Failed to load product history:", error);
