@@ -117,7 +117,7 @@ const CartModal = () => {
 
           Swal.fire({
             icon: "success",
-            title: "Product registered successfully",
+            title: "상품이 경매에 등록되었습니다!",
             toast: true,
             position: "top-end",
             showConfirmButton: false,

@@ -44,9 +44,18 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
     return <div>Invalid product_id</div>;
   }
 
+  const fetchProductHistoryDetail = async () => {
+    try {
+      const data = await getProductHistoryDetail(productId);
+      return data;
+    } catch (error) {
+      throw new Error("Failed to load product history");
+    }
+  };
+
   const { data: productData, error } = useSWR(
     `/api/product_history/${productId}`,
-    () => getProductHistoryDetail(productId),
+    fetchProductHistoryDetail,
     { revalidateOnFocus: false }
   );
 
