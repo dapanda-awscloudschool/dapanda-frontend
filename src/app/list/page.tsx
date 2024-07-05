@@ -4,9 +4,12 @@ import { Suspense } from "react";
 
 const ListPage = async ({ searchParams }: { searchParams: any }) => {
   return (
-    <div className="px-4 md:px-8 lg:px-16 xl:32 2xl:px-64 relative">
+    <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative">
+      {/* NAVBAR MARGIN */}
+      <div className="mt-5"></div>
+
       {/* CAMPAIGN */}
-      <div className="hidden bg-pink-50 p-4 sm:flex justify-between h-64">
+      <div className="hidden bg-pink-50 p-4 sm:flex justify-between h-64 mb-12">
         <div className="w-2/3 flex flex-col items-center justify-center gap-8">
           <h1 className="text-4xl font-semibold leading-[48px] text-gray-700">
             경매를 통해 원하는 물품을
@@ -20,8 +23,10 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
           <Image src="/woman.png" alt="" fill className="object-contain" />
         </div>
       </div>
+
       {/* FILTER */}
       {/* <Filter /> */}
+
       {/* PRODUCT */}
       <h1 className="mt-12 text-xl font-semibold">something</h1>
       <Suspense fallback={"Loading..."}>

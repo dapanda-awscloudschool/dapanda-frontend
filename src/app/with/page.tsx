@@ -20,7 +20,12 @@ const WithPage = () => {
               />
               <div>
                 <h2 className="text-xl font-semibold">스포이드</h2>
-                <p className="mt-2 text-gray-600">컴퓨터 사이트 ...</p>
+                <p className="mt-2 text-gray-600">
+                  컴퓨터 견적의 최저가로 최적의 성능을 뽑아주는 Spoid 입니다.
+                  <br />
+                  여러 사이트의 가격 추세를 확인하고 알람을 통해 최저가로 견적
+                  생성을 손쉽게 하세요!
+                </p>
               </div>
             </div>
           </Link>

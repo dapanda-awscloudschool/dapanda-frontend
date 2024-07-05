@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 interface Product {
-  product_id: string;
+  product_id: number;
   product_name: string;
   file_count: number;
 }
@@ -23,19 +23,31 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
     }/${i + 1}.jpg`,
   }));
 
+  // 디폴트 이미지 설정
+  const defaultImage = {
+    id: 0,
+    url: "/images/soldout.png",
+  };
+
+  // 이미지 배열이 비어 있는 경우 디폴트 이미지 사용
+  const displayedImages = images.length > 0 ? images : [defaultImage];
+
   useEffect(() => {
-    console.log("Image URLs:", images);
-  }, [images]);
+    console.log("Image URLs:", displayedImages);
+  }, [displayedImages]);
 
   return (
     <div className="">
       <div className="h-[500px] relative">
         <Image
-          src={images[index].url}
+          src={displayedImages[index].url}
           alt={`${product.product_name} 이미지 ${index + 1}`}
           fill
-          sizes=""
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover rounded-md"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = "/images/soldout.png";
+          }}
         />
         {isSoldOut && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -50,7 +62,7 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
         )}
       </div>
       <div className="flex justify-between gap-4 mt-8">
-        {images.slice(0, product.file_count).map((item, i) => (
+        {displayedImages.map((item, i) => (
           <div
             className="w-1/3 h-32 relative cursor-pointer"
             key={item.id}
@@ -62,6 +74,10 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
               fill
               sizes="30vw"
               className="object-cover rounded-md"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src =
+                  "/images/soldout.png";
+              }}
             />
           </div>
         ))}

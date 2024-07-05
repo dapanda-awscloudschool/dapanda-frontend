@@ -3,109 +3,82 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <div className="py-24 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 bg-gray-100 text-sm mt-24">
+    <div className="py-8 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 bg-orange-500 text-sm mt-24">
       {/* TOP */}
-      <div className="flex flex-col md:flex-row justify-between gap-24">
-        {/* LEFT */}
-        <div className="w-full md:w-1/2 lg:w-1/4 flex flex-col gap-8">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 lg:gap-16">
+        {/* LEFT Column */}
+        <div className="w-full lg:w-1/3 flex flex-col items-center lg:items-start gap-2">
           <Link href="/">
-            <div className="text-2xl tracking-wide">DAPANDA</div>
+            <div className="text-xl font-semibold">
+              네고에 지친 당신, Welcome to
+            </div>
+            <div className="text-5xl text-white font-semibold">DAPANDA🐼</div>
           </Link>
+          <div className="text-center lg:text-left mt-2">
+            <p className="font-semibold mt-4">
+              상호명 및 호스팅 서비스 제공 : DAPANDA
+            </p>
+            <p>서울특별시 서초구 반포대로24길 17</p>
+            <p>Tel: 123-45-67890</p>
+            <p>운영시간: 09:00-18:00</p>
+            <p>Break Time: 12:30-14:00</p>
+          </div>
+        </div>
+
+        {/* CENTER Column */}
+        <div className="w-full lg:w-1/3 flex flex-col items-center lg:items-start gap-2">
+          <div className="font-semibold">365고객센터 | 다판다분쟁처리담당</div>
+          <div className="text-2xl font-bold">02-1234-5678</div>
           <p>서울특별시 서초구 반포대로24길 17</p>
-          <span className="font-semibold">awscloudschool4th@gmail.com</span>
-          <span className="font-semibold">+82 02-1234-5678</span>
-          <div className="flex gap-6">
-            <Image src="/facebook.png" alt="" width={16} height={16} />
-            <Image src="/instagram.png" alt="" width={16} height={16} />
-            <Image src="/youtube.png" alt="" width={16} height={16} />
-            <Image src="/pinterest.png" alt="" width={16} height={16} />
-            <Image src="/x.png" alt="" width={16} height={16} />
-          </div>
-        </div>
-        {/* CENTER */}
-        <div className="hidden lg:flex justify-between w-1/2">
-          <div className="flex flex-col justify-between">
-            <h1 className="font-medium text-lg">COMPANY</h1>
-            <div className="flex flex-col gap-6">
-              <Link href="">About Us</Link>
-              <Link href="">Careers</Link>
-              <Link href="">Affiliates</Link>
-              <Link href="">Blog</Link>
-              <Link href="">Contact Us</Link>
-            </div>
-          </div>
-          <div className="flex flex-col justify-between">
-            <h1 className="font-medium text-lg">SHOP</h1>
-            <div className="flex flex-col gap-6">
-              <Link href="">New Arrivals</Link>
-              <Link href="">Accessories</Link>
-              <Link href="">Men</Link>
-              <Link href="">Women</Link>
-              <Link href="">All Product</Link>
-            </div>
-          </div>
-          <div className="flex flex-col justify-between">
-            <h1 className="font-medium text-lg">HELP</h1>
-            <div className="flex flex-col gap-6">
-              <Link href="">Customer Service</Link>
-              <Link href="">My Account</Link>
-              <Link href="">Find a Store</Link>
-              <Link href="">Legal & Privacy</Link>
-              <Link href="">Gift Card</Link>
-            </div>
-          </div>
-        </div>
-        {/* RIGHT */}
-        <div className="w-full md:w-1/2 lg:w-1/4 flex flex-col gap-8">
-          <h1 className="font-semibold text-lg">구독</h1>
-          <p>
-            Be the first to get the latest news about trends, promotions, and
-            much more!
-          </p>
-          <div className="flex">
-            <input
-              type="text"
-              placeholder="Email address"
-              className="p-4 w-3/4"
+          <p>email: awscloudschool4th@gmail.com</p>
+          <div className="flex gap-4 mt-4">
+            <Image
+              src="/instagram.png"
+              alt="Instagram"
+              width={16}
+              height={16}
             />
-            <button className="w-1/3 bg-dapanda text-white">가입하기</button>
+            <Image src="/youtube.png" alt="YouTube" width={16} height={16} />
+            <Image
+              src="/pinterest.png"
+              alt="Pinterest"
+              width={16}
+              height={16}
+            />
+            <Image src="/x.png" alt="Twitter" width={16} height={16} />
           </div>
-          <span className="font-semibold">Secure Payment</span>
-          <div className="flex justify-between">
-            <Image src="/discover.png" alt="" width={35} height={20} />
-            <Image src="/skrill.png" alt="" width={35} height={20} />
-            <Image src="/paypal.png" alt="" width={35} height={20} />
-            <Image src="/mastercard.png" alt="" width={35} height={20} />
-            <Image src="/visa.png" alt="" width={35} height={20} />
-          </div>
+        </div>
+
+        {/* RIGHT Column */}
+        <div className="w-full lg:w-1/6 flex flex-col items-center lg:items-start gap-">
+          <Image
+            src="/cloud_school_logo.png"
+            alt="AWS Cloud School Logo"
+            width={120}
+            height={120}
+            className="mt-4"
+          />
+          <Link href="/with" className="text-medium text-black-500 underline">
+            협력사 리스트 바로가기
+          </Link>
         </div>
       </div>
+
       {/* BOTTOM */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-8 mt-16">
-        <div className="">@2024 DAPANDA AUCTION</div>
-        <div className="flex flex-col gap-8 md:flex-row">
-          <div className="">
-            <span className="text-gray-500 mr-4">Language</span>
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-8">
+        <div className="text-center lg:text-left">@2024 DAPANDA AUCTION</div>
+        <div className="flex flex-col lg:flex-row gap-8 items-center">
+          <div>
+            <span className="text-black font-bold mr-4">Language</span>
             <span className="font-medium">South Korea | Korean</span>
           </div>
-          <div className="">
-            <span className="text-gray-500 mr-4">Currency</span>
-            <span className="font-medium">₩ KRW</span>
+          <div>
+            <span className="text-black font-bold mr-4">Currency</span>
+            <span className="font-medium">
+              ₩ KRW_모든 거래는 원화로 진행됩니다.
+            </span>
           </div>
         </div>
-      </div>
-      <div className="flex items-center justify-center gap-4 mt-16">
-        <Link href="/with">
-          <div className="flex items-center gap-4">
-            <div className="text-lg">with</div>
-            <Image
-              src="/cloud school logo.png"
-              alt="With Image"
-              width={160}
-              height={160}
-            />
-          </div>
-        </Link>
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ const LoginPage = () => {
         title: "로그인 성공",
         text: "로그인에 성공했습니다!",
       }).then(() => {
-        router.push("/");
+        window.location.replace("/"); // 메인 페이지로 이동 후 새로고침
       });
     }
   };
