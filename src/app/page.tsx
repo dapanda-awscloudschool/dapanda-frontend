@@ -1,10 +1,12 @@
+"use client";
+
 import { Suspense } from "react";
 import ProductList from "@/components/ProductList";
 import Slider from "@/components/slider/Slider";
 import Link from "next/link";
 import Image from "next/image";
 
-const HomePage = async () => {
+const HomePage = () => {
   return (
     <div className="">
       <Slider />
@@ -34,7 +36,7 @@ const HomePage = async () => {
         </div>
         <ProductList
           searchParams={undefined}
-          maxItems={6}
+          maxItems={6} // 최근 올라온 상품 6개로 제한
           sortCriteria="register_date"
           sortOrder="desc"
         />
@@ -59,7 +61,7 @@ const HomePage = async () => {
         </div>
         <ProductList
           searchParams={undefined}
-          maxItems={3}
+          maxItems={3} // 인기 상품 3개로 제한
           sortCriteria="num_bid"
           sortOrder="desc"
         />

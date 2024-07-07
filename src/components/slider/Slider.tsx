@@ -48,7 +48,7 @@ const Slider = () => {
       description: "저렴하게 원하는 물건을 GET!",
       image: "/images/bid.gif",
       url: "/list",
-      bg: "/images/bidimage.png",
+      bg: "/images/onlinebid.",
       products: [],
     },
     {
@@ -179,7 +179,7 @@ const Slider = () => {
   return (
     <div className="container mx-auto py-8">
       <div
-        className="relative rounded-lg overflow-hidden border border-gray-300 bg-cover bg-center" // 기본 배경색 삭제
+        className="relative rounded-lg overflow-hidden ring-2 ring-orange-500 ring-offset-4 ring-offset-slate-50 dark:ring-offset-slate-900 bg-no-repeat bg-left bg-orange-500" // 기본 배경색 삭제
         style={{ backgroundImage: `url('/images/bidimage.png')` }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -198,15 +198,31 @@ const Slider = () => {
                   <>
                     <div className="flex justify-center items-center w-full">
                       <div className="text-center mb-4">
-                        <h2 className="text-xl lg:text-3xl">
-                          {slide.description}
+                        <h2 className="text-xl lg:text-3xl text-white">
+                          <span className="relative">
+                            <span
+                              className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="relative text-white">
+                              저렴하게 원하는 물건을 GET!
+                            </span>
+                          </span>
                         </h2>
-                        <h1 className="text-2xl lg:text-4xl font-semibold">
-                          {slide.title}
+                        <h1 className="text-2xl lg:text-4xl font-semibold text-white mt-2">
+                          <span className="relative">
+                            <span
+                              className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="relative text-white">
+                              당신이 주인공이 될 수도 있다.
+                            </span>
+                          </span>
                         </h1>
                         <Link href={slide.url}>
-                          <div className="inline-block mt-4 px-4 py-2 bg-black text-white rounded-md">
-                            경매하기
+                          <div className="inline-block mt-3 px-4 py-2 bg-black text-white rounded-md">
+                            참여하기
                           </div>
                         </Link>
                       </div>
@@ -225,12 +241,30 @@ const Slider = () => {
                 ) : (
                   <div className="flex flex-col md:flex-row justify-center items-center w-full">
                     <div className="text-center mb-4 md:mr-8">
-                      <h2 className="text-xl lg:text-3xl">{slide.title}</h2>
+                      <h2 className="text-xl lg:text-3xl text-white">
+                        <span className="relative">
+                          <span
+                            className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="relative text-white">
+                            {slide.title}
+                          </span>
+                        </span>
+                      </h2>
                       <h1
-                        className="text-2xl lg:text-4xl font-semibold"
+                        className="text-2xl lg:text-4xl font-semibold text-white mt-2"
                         style={{ whiteSpace: "pre-line" }}
                       >
-                        {slide.description}
+                        <span className="relative">
+                          <span
+                            className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="relative text-white">
+                            {slide.description}
+                          </span>
+                        </span>
                       </h1>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 relative">
@@ -273,22 +307,30 @@ const Slider = () => {
                                 alt={product.product_name}
                                 width={360}
                                 height={300}
-                                className="object-cover rounded-md h-[230px] w-[340px]" // 고정된 높이 설정
+                                className="object-cover border border-gray-500 rounded-md h-[230px] w-[340px]" // 고정된 높이 설정
                                 onError={(e) => {
                                   (e.currentTarget as HTMLImageElement).src =
                                     "/images/soldout.png";
                                 }}
                               />
                               <div className="mt-4">
-                                <h4 className="text-xl font-bold">
-                                  {product.product_name}
+                                <h4 className="text-xl font-bold text-black">
+                                  <span className="relative">
+                                    <span
+                                      className="block absolute -inset-1 -skew-y-3 bg-pink-500"
+                                      aria-hidden="true"
+                                    ></span>
+                                    <span className="relative text-white">
+                                      {product.product_name}
+                                    </span>
+                                  </span>
                                 </h4>
                                 {slide.id === 2 ? (
-                                  <p className="text-l font-semibold text-red-500">
+                                  <p className="text-l font-semibold text-red-500 mt-2">
                                     현재 입찰 횟수: {product.num_bid}
                                   </p>
                                 ) : slide.id === 3 ? (
-                                  <p className="text-l font-semibold text-red-500">
+                                  <p className="text-l font-semibold text-red-500 mt-2">
                                     남은 시간:{" "}
                                     {formatTimeDifference(
                                       new Date(product.end_date).getTime() -
@@ -296,7 +338,7 @@ const Slider = () => {
                                     )}
                                   </p>
                                 ) : slide.id === 4 ? (
-                                  <p className="text-l font-semibold text-red-500">
+                                  <p className="text-l font-semibold text-red-500 mt-2">
                                     현재 가격:{" "}
                                     {formatCurrency(product.highest_price)}
                                   </p>

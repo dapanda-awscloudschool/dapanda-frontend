@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getProductList, searchProducts } from "./action";
 import { Button } from "@nextui-org/react";
 import { formatCurrency } from "./formatCurrency";
 import useSWR from "swr";
-import { UserContext } from "@/context/userContext";
 import FavoriteButton from "./favoritelist/FavoriteButton";
 
 interface IProduct {
@@ -31,6 +30,7 @@ interface IProduct {
   bid_member: null | number;
   register_member_name: string;
   imageUrl: string;
+  view_num: number;
 }
 
 const formatTimeDifference = (ms: number) => {
@@ -60,6 +60,7 @@ const ProductList = ({
   sortOrder?: "asc" | "desc";
 }) => {
   const searchQuery = searchParams?.name || "";
+  const sortQuery = searchParams?.sort || "";
 
   const fetcher = searchQuery
     ? () => searchProducts(searchQuery)
@@ -73,7 +74,6 @@ const ProductList = ({
 
   const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
 
-  const { userData } = useContext(UserContext);
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
 
@@ -83,27 +83,41 @@ const ProductList = ({
     }
   }, [imgUrl]);
 
-  // Sort and limit the product list
-  let sortedProductList = productList;
-  if (productList) {
-    if (sortCriteria) {
-      sortedProductList = [...productList].sort((a, b) => {
-        const dateA = new Date(a[sortCriteria]).getTime();
-        const dateB = new Date(b[sortCriteria]).getTime();
-        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      });
-    }
-    if (maxItems) {
-      sortedProductList = sortedProductList.slice(0, maxItems);
-    }
-  }
+  // Apply sorting logic based on sortQuery
+  const sortedProducts = productList
+    ? [...productList].sort((a, b) => {
+        if (sortQuery === "asc") {
+          return b.highest_price - a.highest_price;
+        } else if (sortQuery === "desc") {
+          return a.highest_price - b.highest_price;
+        } else if (sortQuery === "recent") {
+          return (
+            new Date(b.end_date).getTime() - new Date(a.end_date).getTime()
+          );
+        } else if (sortQuery === "old") {
+          return (
+            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+          );
+        } else if (sortQuery === "bidders") {
+          return b.num_bid - a.num_bid;
+        } else if (sortQuery === "views") {
+          return b.view_num - a.view_num;
+        }
+        return 0; // Default: no sorting
+      })
+    : [];
+
+  // Apply maxItems limit
+  const limitedProducts = maxItems
+    ? sortedProducts.slice(0, maxItems)
+    : sortedProducts;
 
   return (
     <div className="mt-12 flex gap-x-10 gap-y-16 flex-wrap">
       {isLoading && <p>Loading...</p>}
       {error && <p>Failed to load products</p>}
-      {sortedProductList && sortedProductList.length > 0 ? (
-        sortedProductList.map((product: IProduct) => {
+      {limitedProducts && limitedProducts.length > 0 ? (
+        limitedProducts.map((product: IProduct) => {
           const remainingTime =
             new Date(product.end_date).getTime() - Date.now();
           const formattedTime = formatTimeDifference(remainingTime);
@@ -116,7 +130,7 @@ const ProductList = ({
               onMouseLeave={() => setHoveredProduct(null)}
             >
               <Link href={"/product/" + product.product_id}>
-                <div className="relative w-full h-80">
+                <div className="relative border border-black rounded-lg w-full h-80">
                   <Image
                     src={`${imgUrl}/${product.product_id}/${
                       hoveredProduct === product.product_id &&

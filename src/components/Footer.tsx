@@ -12,7 +12,16 @@ const Footer = () => {
             <div className="text-xl font-semibold">
               네고에 지친 당신, Welcome to
             </div>
-            <div className="text-5xl text-white font-semibold">DAPANDA🐼</div>
+            <div className="flex items-center text-5xl text-white font-semibold">
+              DAPANDA
+              <Image
+                src="/images/sleeping.gif"
+                alt="Sleeping"
+                width={50}
+                height={50}
+                className="ml-2 mb-2"
+              />
+            </div>
           </Link>
           <div className="text-center lg:text-left mt-2">
             <p className="font-semibold mt-4">
@@ -50,14 +59,16 @@ const Footer = () => {
         </div>
 
         {/* RIGHT Column */}
-        <div className="w-full lg:w-1/6 flex flex-col items-center lg:items-start gap-">
-          <Image
-            src="/cloud_school_logo.png"
-            alt="AWS Cloud School Logo"
-            width={120}
-            height={120}
-            className="mt-4"
-          />
+        <div className="w-full lg:w-1/6 flex flex-col items-center lg:items-center">
+          <Link href="/with">
+            <Image
+              src="/cloud_school_logo.png"
+              alt="AWS Cloud School Logo"
+              width={120}
+              height={120}
+              className="mt-4 cursor-pointer"
+            />
+          </Link>
           <Link href="/with" className="text-medium text-black-500 underline">
             협력사 리스트 바로가기
           </Link>

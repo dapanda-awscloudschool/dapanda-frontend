@@ -1,6 +1,8 @@
 import Image from "next/image";
 import ProductList from "@/components/ProductList";
 import { Suspense } from "react";
+import Filter from "@/components/Filter";
+import { Pagination, Button } from "@nextui-org/react";
 
 const ListPage = async ({ searchParams }: { searchParams: any }) => {
   return (
@@ -25,13 +27,30 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
       </div>
 
       {/* FILTER */}
-      {/* <Filter /> */}
+      <div className="flex items-center justify-between mt-4 mb-4">
+        <h1 className="text-2xl font-semibold">전체 상품</h1>
+        <div className="flex-grow items-center w-48">
+          <Filter />
+        </div>
+      </div>
 
       {/* PRODUCT */}
-      <h1 className="mt-12 text-xl font-semibold">something</h1>
       <Suspense fallback={"Loading..."}>
         <ProductList searchParams={searchParams} />
       </Suspense>
+
+      <div className="flex justify-center mt-8">
+        <Pagination
+          total={10}
+          initialPage={1}
+          classNames={{
+            wrapper: "gap-0 overflow-visible h-12 rounded  border-divider",
+            item: "w-10 h-10 text-medium rounded-none bg-transparent",
+            cursor:
+              "bg-gradient-to-b shadow-lg from-orange-500 to-orange-800 dark:from-default-300 dark:to-default-100 text-white font-bold",
+          }}
+        />
+      </div>
     </div>
   );
 };
