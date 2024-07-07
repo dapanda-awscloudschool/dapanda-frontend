@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@nextui-org/react": "^2.4.1",
+    "@stomp/stompjs": "^7.0.0",
     "@types/moment": "^2.13.0",
     "amqplib": "^0.10.4",
     "framer-motion": "^11.2.10",
