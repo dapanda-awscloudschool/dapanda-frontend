@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { Client, StompSubscription, IFrame } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 interface IResult {
   id: number;
@@ -12,7 +11,6 @@ interface IResult {
   bidMemberId: number;
   bidPrice: number;
   bidDate: string;
-  transactionId: string;
   isSuccess: number;
 }
 
@@ -31,7 +29,6 @@ const BidInput = ({
 }) => {
   const [user, setUser] = useState<number | null>(null);
   const [result, setResult] = useState<IResult | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
   const [client, setClient] = useState<Client | null>(null);
   const [connected, setConnected] = useState(false);
@@ -42,45 +39,37 @@ const BidInput = ({
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData.memberId);
 
-      // 웹소켓 클라이언트 설정
-      const socket = new SockJS(
-        "http://dpd-be-svc.dpd-be-ns.svc.cluster.local:8080/ws"
-      );
       const stompClient = new Client({
-        webSocketFactory: () => socket,
+        brokerURL: "ws://dpd-be-svc.dpd-be-ns.svc.cluster.local:8080/ws",
+        connectHeaders: {},
+        debug: function (str) {
+          console.log(str);
+        },
         reconnectDelay: 5000,
-        onConnect: (frame: IFrame) => {
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        onConnect: (frame) => {
           console.log("Connected: " + frame);
           setConnected(true);
-
-          // 사용자 구독
           stompClient.subscribe(
             `/queue/reply/${parsedUserData.memberId}`,
-            (message: any) => {
+            (message) => {
               console.log("Received message from /queue/reply:", message.body);
               const bidResult = JSON.parse(message.body);
               handleBidResult(bidResult);
             }
           );
-
-          // 제품 구독
-          stompClient.subscribe(
-            `/topic/auction/${productId}`,
-            (message: any) => {
-              console.log(
-                "Received message from /topic/auction:",
-                message.body
-              );
-              const productUpdate = JSON.parse(message.body);
-              handleProductUpdate(productUpdate);
-            }
-          );
+          stompClient.subscribe(`/topic/auction/${productId}`, (message) => {
+            console.log("Received message from /topic/auction:", message.body);
+            const productUpdate = JSON.parse(message.body);
+            handleProductUpdate(productUpdate);
+          });
         },
-        onStompError: (frame: IFrame) => {
+        onStompError: (frame) => {
           console.error("Broker reported error: " + frame.headers["message"]);
           console.error("Additional details: " + frame.body);
         },
-        onWebSocketError: (event: any) => {
+        onWebSocketError: (event) => {
           console.error("WebSocket error:", event);
         },
         onWebSocketClose: () => {
@@ -89,11 +78,13 @@ const BidInput = ({
         },
       });
 
+      console.log("Activating WebSocket client");
       stompClient.activate();
       setClient(stompClient);
 
       return () => {
         if (stompClient) {
+          console.log("Deactivating WebSocket client");
           stompClient.deactivate();
         }
       };
