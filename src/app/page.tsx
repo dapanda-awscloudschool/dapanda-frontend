@@ -1,5 +1,3 @@
-"use client";
-
 import { Suspense } from "react";
 import ProductList from "@/components/ProductList";
 import Slider from "@/components/slider/Slider";
@@ -37,8 +35,8 @@ const HomePage = () => {
         <ProductList
           searchParams={undefined}
           maxItems={6} // 최근 올라온 상품 6개로 제한
-          sortCriteria="register_date"
-          sortOrder="desc"
+          sortCriteria="start_date" // 정렬 기준을 start_date로 설정
+          sortOrder="desc" // 내림차순 정렬
         />
       </div>
       <div className="mt-12 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">

@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { BidRequest, CheckRequest } from "./action";
-import { Client, Stomp } from "@stomp/stompjs";
+import { Client, StompSubscription, IFrame } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 interface IResult {
@@ -30,7 +29,7 @@ const BidInput = ({
   productId: number;
   setBidPrice: (price: number) => void;
 }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<number | null>(null);
   const [result, setResult] = useState<IResult | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
@@ -42,33 +41,66 @@ const BidInput = ({
     if (userData) {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData.memberId);
+
+      // 웹소켓 클라이언트 설정
+      const socket = new SockJS(
+        "http://dpd-be-svc.dpd-be-ns.svc.cluster.local:8080/ws"
+      );
+      const stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        onConnect: (frame: IFrame) => {
+          console.log("Connected: " + frame);
+          setConnected(true);
+
+          // 사용자 구독
+          stompClient.subscribe(
+            `/queue/reply/${parsedUserData.memberId}`,
+            (message: any) => {
+              console.log("Received message from /queue/reply:", message.body);
+              const bidResult = JSON.parse(message.body);
+              handleBidResult(bidResult);
+            }
+          );
+
+          // 제품 구독
+          stompClient.subscribe(
+            `/topic/auction/${productId}`,
+            (message: any) => {
+              console.log(
+                "Received message from /topic/auction:",
+                message.body
+              );
+              const productUpdate = JSON.parse(message.body);
+              handleProductUpdate(productUpdate);
+            }
+          );
+        },
+        onStompError: (frame: IFrame) => {
+          console.error("Broker reported error: " + frame.headers["message"]);
+          console.error("Additional details: " + frame.body);
+        },
+        onWebSocketError: (event: any) => {
+          console.error("WebSocket error:", event);
+        },
+        onWebSocketClose: () => {
+          console.log("WebSocket connection closed");
+          setConnected(false);
+        },
+      });
+
+      stompClient.activate();
+      setClient(stompClient);
+
+      return () => {
+        if (stompClient) {
+          stompClient.deactivate();
+        }
+      };
+    } else {
+      console.error("User data not found in localStorage");
     }
-
-    const socket = new SockJS(
-      "http://dpd-be-svc.dpd-be-ns.svc.cluster.local/ws"
-    );
-    const stompClient = Stomp.over(socket);
-
-    stompClient.connect(
-      {},
-      (frame: any) => {
-        setConnected(true);
-        console.log("Connected to WebSocket:", frame);
-      },
-      (error: any) => {
-        console.error("WebSocket connection error:", error);
-      }
-    );
-
-    setClient(stompClient);
-
-    return () => {
-      if (client && connected) {
-        client.deactivate();
-        console.log("Disconnected from WebSocket");
-      }
-    };
-  }, [connected, client]);
+  }, [productId]);
 
   const handleInput = (e: any) => {
     const newValue = parseInt(e.target.value, 10);
@@ -91,57 +123,56 @@ const BidInput = ({
     }
   };
 
-  const handleBidSubmit = useCallback(async () => {
-    if (client && connected) {
-      const bidinfo = {
-        bidProductId: productId,
-        bidMemberId: user,
-        bidPrice: bidPrice,
-      };
-
-      client.publish({
-        destination: "/app/bid",
-        body: JSON.stringify(bidinfo),
-      });
-
-      console.log("Sending bid:", bidinfo);
-    } else {
+  const handleBidSubmit = useCallback(() => {
+    if (!client || !user || !connected) {
       console.error("Client not connected or user not set");
+      return;
     }
-  }, [bidPrice, productId, user, client, connected]);
 
-  useEffect(() => {
-    console.log("Result changed:", result);
-    if (result) {
-      if (result.isSuccess === 1) {
-        Swal.fire({
-          icon: "success",
-          title: "축하합니다.",
-          text: "입찰에 성공했습니다!",
-        }).then(() => {
-          router.push(`/product/${productId}`);
-        });
-      } else if (result.isSuccess === 0) {
-        Swal.fire({
-          icon: "error",
-          title: "입찰 실패",
-          text: "입찰에 실패했습니다.",
-        });
-      } else {
-        // isSuccess가 1이나 0이 아닌 경우 API를 다시 호출
-        if (retryCount < 10) {
-          setRetryCount(retryCount + 1);
-          handleBidSubmit(); // API 다시 호출
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "에러",
-            text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
-          });
-        }
-      }
+    const bidinfo = {
+      bidProductId: productId,
+      bidMemberId: user,
+      bidPrice: bidPrice,
+    };
+
+    console.log("Sending bid:", bidinfo);
+
+    client.publish({
+      destination: "/app/bid",
+      body: JSON.stringify(bidinfo),
+    });
+  }, [client, user, bidPrice, productId, connected]);
+
+  const handleBidResult = (bidResult: IResult) => {
+    console.log("Bid result:", bidResult);
+    setResult(bidResult);
+
+    if (bidResult.isSuccess === 1) {
+      Swal.fire({
+        icon: "success",
+        title: "축하합니다.",
+        text: "입찰에 성공했습니다!",
+      }).then(() => {
+        router.push(`/product/${productId}`);
+      });
+    } else if (bidResult.isSuccess === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "입찰 실패",
+        text: "입찰에 실패했습니다.",
+      });
     }
-  }, [result, router, productId, retryCount, handleBidSubmit]);
+  };
+
+  const handleProductUpdate = (productUpdate: any) => {
+    console.log("Product update:", productUpdate);
+    Swal.fire({
+      icon: "info",
+      title: "입찰 업데이트",
+      text: `새로운 입찰가: ${productUpdate.highestPrice}`,
+    });
+    setBidPrice(productUpdate.highestPrice);
+  };
 
   return (
     <>
