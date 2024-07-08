@@ -26,5 +26,5 @@ export async function searchProducts(query: string) {
 }
 
 export async function getImageURL() {
-  return process.env.API_URL_IMG;
+  return process.env.NEXT_PUBLIC_API_URL_IMG;
 }
