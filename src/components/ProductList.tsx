@@ -122,8 +122,10 @@ const ProductList = ({
             new Date(product.end_date).getTime() - Date.now();
           const formattedTime = formatTimeDifference(remainingTime);
 
-          // 이미지 URL 생성 로직
+          // 기본 이미지 URL
           const imageUrl = `${imgUrl}/${product.product_id}/1.jpg`;
+          // 마우스 오버 시 보여줄 이미지 URL
+          const hoverImageUrl = `${imgUrl}/${product.product_id}/2.jpg`;
 
           return (
             <div
@@ -135,7 +137,12 @@ const ProductList = ({
               <Link href={"/product/" + product.product_id}>
                 <div className="relative border border-black rounded-lg w-full h-80">
                   <Image
-                    src={imageUrl}
+                    src={
+                      product.file_count > 1 &&
+                      hoveredProduct === product.product_id
+                        ? hoverImageUrl
+                        : imageUrl
+                    }
                     alt={product.product_name}
                     fill
                     sizes="25vw"
