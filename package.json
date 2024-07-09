@@ -13,6 +13,7 @@
     "@stomp/stompjs": "^7.0.0",
     "@types/moment": "^2.13.0",
     "amqplib": "^0.10.4",
+    "aws-sdk": "^2.1656.0",
     "framer-motion": "^11.2.10",
     "ioredis": "^5.4.1",
     "moment": "^2.30.1",

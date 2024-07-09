@@ -165,7 +165,7 @@ const NavIcons = () => {
       <button className="cursor-pointer" onClick={handleOpenPopup}>
         물품 등록하기
       </button>
-      <div
+      {/* <div
         className="relative cursor-pointer"
         onClick={() => setIsCartOpen((prev) => !prev)}
       >
@@ -178,7 +178,7 @@ const NavIcons = () => {
         <div ref={cartRef}>
           <CartModal />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

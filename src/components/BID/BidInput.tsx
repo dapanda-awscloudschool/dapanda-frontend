@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { BidRequest, CheckRequest } from "./action";
 
 interface IResult {
   id: number;
@@ -9,6 +10,7 @@ interface IResult {
   bidMemberId: number;
   bidPrice: number;
   bidDate: string;
+  transactionId: string;
   isSuccess: number;
 }
 
@@ -27,6 +29,7 @@ const BidInput = ({
 }) => {
   const [user, setUser] = useState<number | null>(null);
   const [result, setResult] = useState<IResult | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,64 +37,10 @@ const BidInput = ({
     if (userData) {
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData.memberId);
-
-      const subscribeToRedis = async (channel: string) => {
-        try {
-          const response = await fetch("/api/redis-subscribe", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ channel }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to subscribe to Redis channel");
-          }
-
-          const data = await response.json();
-          console.log(`Subscribed to ${channel}:`, data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      // 각 채널에 대해 구독 설정
-      subscribeToRedis(`/queue/reply/${parsedUserData.memberId}`);
-      subscribeToRedis(`/topic/auction/${productId}`);
-    } else {
-      console.error("User data not found in localStorage");
     }
+  }, []);
 
-    const pollRedis = async () => {
-      try {
-        const response = await fetch("/api/redis-poll", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to poll Redis channel");
-        }
-
-        const data = await response.json();
-        console.log("Polled data from Redis:", data);
-        setResult(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const pollInterval = setInterval(pollRedis, 5000); // 5초마다 폴링
-
-    return () => {
-      clearInterval(pollInterval);
-    };
-  }, [productId]);
-
-  const handleInput = (e: any) => {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value, 10);
     if (newValue < highestPrice + termPrice) {
       Swal.fire({
@@ -112,23 +61,82 @@ const BidInput = ({
     }
   };
 
-  const handleBidSubmit = useCallback(() => {
-    if (!user) {
-      console.error("User not set");
-      return;
-    }
-
-    const bidinfo = {
+  const handleBidSubmit = async () => {
+    const bidinfo = JSON.stringify({
       bidProductId: productId,
       bidMemberId: user,
       bidPrice: bidPrice,
-    };
+    });
+    const blob = new Blob([bidinfo], { type: "application/json" });
+    const formData = new FormData();
+    formData.append("BidReqInfo", blob);
 
-    console.log("Sending bid:", bidinfo);
+    try {
+      const data = await BidRequest(formData);
+      console.log("BidRequest data:", data); // 데이터 로그 확인
+      let check;
+      if (data !== "error") {
+        check = await CheckRequest(data);
+        console.log("CheckRequest data:", check); // 체크 데이터 로그 확인
+        if (check !== "error") {
+          setResult(check);
+        } else {
+          console.error("CheckRequest failed, received error response");
+          Swal.fire({
+            icon: "error",
+            title: "에러",
+            text: "CheckRequest에서 오류가 발생했습니다.",
+          });
+        }
+      } else {
+        console.error("BidRequest failed, received error response");
+        Swal.fire({
+          icon: "error",
+          title: "에러",
+          text: "BidRequest에서 오류가 발생했습니다.",
+        });
+      }
+    } catch (error) {
+      console.error("Error during bid submission:", error);
+      Swal.fire({
+        icon: "error",
+        title: "에러",
+        text: "입찰 중 오류가 발생했습니다.",
+      });
+    }
+  };
 
-    // 입찰 정보를 백엔드로 전송하는 로직을 추가합니다.
-    // fetch 또는 axios 등을 사용해 백엔드 API로 전송하면 됩니다.
-  }, [user, bidPrice, productId]);
+  useEffect(() => {
+    console.log("Result changed:", result);
+    if (result) {
+      if (result.isSuccess === 1) {
+        Swal.fire({
+          icon: "success",
+          title: "축하합니다.",
+          text: "입찰에 성공했습니다!",
+        }).then(() => {
+          router.push(`/product/${productId}`);
+        });
+      } else if (result.isSuccess === 0) {
+        Swal.fire({
+          icon: "error",
+          title: "입찰 실패",
+          text: "입찰에 실패했습니다.",
+        });
+      } else {
+        if (retryCount < 10) {
+          setRetryCount(retryCount + 1);
+          handleBidSubmit();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "에러",
+            text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
+          });
+        }
+      }
+    }
+  }, [result, router, productId, retryCount]);
 
   return (
     <>
@@ -142,13 +150,13 @@ const BidInput = ({
           className="border rounded-md p-2"
           value={bidPrice}
           step={termPrice}
-          min={highestPrice}
+          min={highestPrice + termPrice}
           max={2000000000}
           onChange={handleInput}
         />
         <div className="px-2">원</div>
         <button
-          className="w-1/2 w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+          className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
           onClick={handleBidSubmit}
         >
           입찰 확인

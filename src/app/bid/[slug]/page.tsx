@@ -48,7 +48,6 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -69,6 +68,11 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
     };
 
     fetchProduct();
+    const intervalId = setInterval(fetchProduct, 500); // 0.5초마다 fetchProduct 호출
+
+    return () => {
+      clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 정리
+    };
   }, [params.slug]);
 
   if (loading) {
