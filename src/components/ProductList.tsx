@@ -123,9 +123,7 @@ const ProductList = ({
           const formattedTime = formatTimeDifference(remainingTime);
 
           // 이미지 URL 생성 로직
-          const imageUrl = product.imageUrl
-            ? product.imageUrl
-            : `${imgUrl}/${product.product_id}/1.jpg`;
+          const imageUrl = `${imgUrl}/${product.product_id}/1.jpg`;
 
           return (
             <div
