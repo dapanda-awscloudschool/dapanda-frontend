@@ -1,11 +1,9 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { getProductDetail } from "@/app/product/[slug]/action";
 import Image from "next/image";
 import { formatCurrency } from "@/components/formatCurrency";
 import BidInput from "@/components/BID/BidInput";
-import { useRouter } from "next/navigation";
 
 interface IProduct {
   product_id: number;
@@ -45,17 +43,20 @@ const formatDate = (dateString: string) => {
 const BidPage = ({ params }: { params: { slug: number } }) => {
   const [product, setProduct] = useState<IProduct | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
-  const router = useRouter(); // useRouter 훅 사용
 
   useEffect(() => {
     const fetchProduct = async () => {
       const product_id = params.slug;
+      console.log(`Fetching product details for product_id: ${product_id}`); // API 요청 URL 확인
       const productDetail = await getProductDetail(product_id);
+      console.log("Product details:", productDetail); // 응답 확인
       setProduct(productDetail);
       setBidPrice(productDetail.highest_price + productDetail.term_price);
     };
 
-    fetchProduct();
+    fetchProduct().catch((error) => {
+      console.error("Failed to fetch product details:", error); // 오류 로그
+    });
   }, [params.slug]);
 
   if (!product) {
