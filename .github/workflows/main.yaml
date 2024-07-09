@@ -61,4 +61,4 @@ jobs:
             git tag -a "v${{ env.NEW_VERSION }}" -m "Release version ${{ env.NEW_VERSION }}"
             git push origin "v${{ env.NEW_VERSION }}"
           fi
-          git push origin main
+          git push origin feature/search
