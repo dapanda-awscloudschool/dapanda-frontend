@@ -72,14 +72,14 @@ const ProductList = ({
     isLoading,
   } = useSWR(["getProductList", searchQuery], fetcher);
 
-  const imgUrl = process.env.NEXT_PUBLIC_API_URL_IMG;
+  const imgUrl = "https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com";
 
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
 
   useEffect(() => {
     if (!imgUrl) {
-      console.error("Image URL is not defined in the environment variables.");
+      console.error("Image URL is not defined.");
     }
   }, [imgUrl]);
 
