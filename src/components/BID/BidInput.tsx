@@ -57,8 +57,12 @@ const BidInput = ({
       };
 
       // 각 채널에 대해 구독 설정
-      subscribeToRedis(`/queue/reply/${parsedUserData.memberId}`);
-      subscribeToRedis(`/topic/auction/${productId}`);
+      Promise.all([
+        subscribeToRedis(`/queue/reply/${parsedUserData.memberId}`),
+        subscribeToRedis(`/topic/auction/${productId}`),
+      ]).catch((error) => {
+        console.error("Error during Redis subscription setup:", error);
+      });
     } else {
       console.error("User data not found in localStorage");
     }
