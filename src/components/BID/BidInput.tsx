@@ -136,7 +136,7 @@ const BidInput = ({
         }
       }
     }
-  }, [result, router, productId, retryCount]);
+  }, [result, retryCount]);
 
   return (
     <>
