@@ -122,6 +122,11 @@ const ProductList = ({
             new Date(product.end_date).getTime() - Date.now();
           const formattedTime = formatTimeDifference(remainingTime);
 
+          // 이미지 URL 생성 로직
+          const imageUrl = product.imageUrl
+            ? product.imageUrl
+            : `${imgUrl}/${product.product_id}/1.jpg`;
+
           return (
             <div
               className="relative w-full flex flex-col gap-4 sm:w-[45%] lg:w-[30%] border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
@@ -132,10 +137,7 @@ const ProductList = ({
               <Link href={"/product/" + product.product_id}>
                 <div className="relative border border-black rounded-lg w-full h-80">
                   <Image
-                    src={
-                      product.imageUrl ||
-                      `${imgUrl}/${product.product_id}/1.jpg`
-                    }
+                    src={imageUrl}
                     alt={product.product_name}
                     fill
                     sizes="25vw"
