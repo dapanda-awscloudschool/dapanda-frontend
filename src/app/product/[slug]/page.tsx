@@ -80,6 +80,14 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
           </h2>
         </div>
         <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">
+            마지막 입찰 시간:
+          </h3>
+          <h2 className="font-medium text-xl">
+            {formatDate(product.last_bid_date)}
+          </h2>
+        </div>
+        <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">남은 시간:</h3>
           <h2 className="font-medium text-xl text-red-600">
             {formatTimeDifference(remainingTime)}
@@ -90,6 +98,10 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
             총 입찰 횟수:
           </h3>
           <h2 className="font-medium text-xl">{product.num_bid}</h2>
+        </div>
+        <div className="flex items-center gap-4">
+          <h3 className="text-medium font-medium text-gray-700">조회수:</h3>
+          <h2 className="font-medium text-xl">{product.view_num}</h2>
         </div>
         <div className="flex items-center gap-4">
           <h3 className="text-medium font-medium text-gray-700">
