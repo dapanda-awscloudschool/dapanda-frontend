@@ -3,7 +3,7 @@ name: Update Manifest on Develop Change
 on:
   push:
     branches:
-      - main
+      - feature/search
 
 jobs:
   detect-and-deploy:
