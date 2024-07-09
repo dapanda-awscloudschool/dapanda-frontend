@@ -1,9 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { getProductDetail } from "@/app/product/[slug]/action";
 import Image from "next/image";
 import { formatCurrency } from "@/components/formatCurrency";
 import BidInput from "@/components/BID/BidInput";
+import { useRouter } from "next/navigation";
 
 interface IProduct {
   product_id: number;
@@ -43,6 +45,7 @@ const formatDate = (dateString: string) => {
 const BidPage = ({ params }: { params: { slug: number } }) => {
   const [product, setProduct] = useState<IProduct | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
+  const router = useRouter(); // useRouter 훅 사용
 
   useEffect(() => {
     const fetchProduct = async () => {
