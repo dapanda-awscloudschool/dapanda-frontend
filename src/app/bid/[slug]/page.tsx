@@ -1,4 +1,6 @@
 "use client";
+
+import { useRouter } from "next/navigation"; // next/navigation로 변경 필요
 import { useEffect, useState } from "react";
 import { getProductDetail } from "@/app/product/[slug]/action";
 import Image from "next/image";
@@ -25,12 +27,13 @@ interface IProduct {
   file_count: number;
   bid_member: null | number;
   register_member_name: string;
-  imageUrl: string; // 이미지 URL을 추가
+  imageUrl: string;
   last_bid_date: string;
 }
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
+
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -43,20 +46,17 @@ const formatDate = (dateString: string) => {
 const BidPage = ({ params }: { params: { slug: number } }) => {
   const [product, setProduct] = useState<IProduct | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
+  const router = useRouter(); // Next.js 라우터 사용
 
   useEffect(() => {
     const fetchProduct = async () => {
       const product_id = params.slug;
-      console.log(`Fetching product details for product_id: ${product_id}`); // API 요청 URL 확인
       const productDetail = await getProductDetail(product_id);
-      console.log("Product details:", productDetail); // 응답 확인
       setProduct(productDetail);
       setBidPrice(productDetail.highest_price + productDetail.term_price);
     };
 
-    fetchProduct().catch((error) => {
-      console.error("Failed to fetch product details:", error); // 오류 로그
-    });
+    fetchProduct();
   }, [params.slug]);
 
   if (!product) {
