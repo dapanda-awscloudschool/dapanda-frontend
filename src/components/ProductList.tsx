@@ -132,12 +132,10 @@ const ProductList = ({
               <Link href={"/product/" + product.product_id}>
                 <div className="relative border border-black rounded-lg w-full h-80">
                   <Image
-                    src={`${imgUrl}/${product.product_id}/${
-                      hoveredProduct === product.product_id &&
-                      product.file_count > 1
-                        ? "2"
-                        : "1"
-                    }.jpg`}
+                    src={
+                      product.imageUrl ||
+                      `${imgUrl}/${product.product_id}/1.jpg`
+                    }
                     alt={product.product_name}
                     fill
                     sizes="25vw"
@@ -146,6 +144,8 @@ const ProductList = ({
                       console.error(
                         `Failed to load image for product ${product.product_id}: ${e.currentTarget.src}`
                       );
+                      (e.currentTarget as HTMLImageElement).src =
+                        "/images/soldout.png";
                     }}
                   />
                 </div>
