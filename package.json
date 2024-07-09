@@ -24,8 +24,6 @@
     "react-sweetalert2": "^0.6.0",
     "sass": "^1.77.6",
     "sharp": "^0.33.4",
-    "sockjs-client": "^1.6.1",
-    "stompjs": "^2.3.3",
     "sweetalert2": "^11.12.0",
     "swr": "^2.2.5",
     "ws": "^8.17.1"
@@ -35,8 +33,6 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@types/sockjs-client": "^1.5.4",
-    "@types/stompjs": "^2.3.9",
     "@types/ws": "^8.5.10",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",

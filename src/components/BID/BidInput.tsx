@@ -1,9 +1,7 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
-import { Client } from "@stomp/stompjs";
 
 interface IResult {
   id: number;
@@ -30,8 +28,6 @@ const BidInput = ({
   const [user, setUser] = useState<number | null>(null);
   const [result, setResult] = useState<IResult | null>(null);
   const router = useRouter();
-  const [client, setClient] = useState<Client | null>(null);
-  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("userData");
@@ -39,58 +35,60 @@ const BidInput = ({
       const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData.memberId);
 
-      const stompClient = new Client({
-        brokerURL: "ws://dpd-be-svc.dpd-be-ns.svc.cluster.local:8080/ws",
-        connectHeaders: {},
-        debug: function (str) {
-          console.log(str);
-        },
-        reconnectDelay: 5000,
-        heartbeatIncoming: 4000,
-        heartbeatOutgoing: 4000,
-        onConnect: (frame) => {
-          console.log("Connected: " + frame);
-          setConnected(true);
-          stompClient.subscribe(
-            `/queue/reply/${parsedUserData.memberId}`,
-            (message) => {
-              console.log("Received message from /queue/reply:", message.body);
-              const bidResult = JSON.parse(message.body);
-              handleBidResult(bidResult);
-            }
-          );
-          stompClient.subscribe(`/topic/auction/${productId}`, (message) => {
-            console.log("Received message from /topic/auction:", message.body);
-            const productUpdate = JSON.parse(message.body);
-            handleProductUpdate(productUpdate);
+      const subscribeToRedis = async (channel: string) => {
+        try {
+          const response = await fetch("/api/redis-subscribe", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ channel }),
           });
-        },
-        onStompError: (frame) => {
-          console.error("Broker reported error: " + frame.headers["message"]);
-          console.error("Additional details: " + frame.body);
-        },
-        onWebSocketError: (event) => {
-          console.error("WebSocket error:", event);
-        },
-        onWebSocketClose: () => {
-          console.log("WebSocket connection closed");
-          setConnected(false);
-        },
-      });
 
-      console.log("Activating WebSocket client");
-      stompClient.activate();
-      setClient(stompClient);
+          if (!response.ok) {
+            throw new Error("Failed to subscribe to Redis channel");
+          }
 
-      return () => {
-        if (stompClient) {
-          console.log("Deactivating WebSocket client");
-          stompClient.deactivate();
+          const data = await response.json();
+          console.log(`Subscribed to ${channel}:`, data);
+        } catch (error) {
+          console.error(error);
         }
       };
+
+      // 각 채널에 대해 구독 설정
+      subscribeToRedis(`/queue/reply/${parsedUserData.memberId}`);
+      subscribeToRedis(`/topic/auction/${productId}`);
     } else {
       console.error("User data not found in localStorage");
     }
+
+    const pollRedis = async () => {
+      try {
+        const response = await fetch("/api/redis-poll", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to poll Redis channel");
+        }
+
+        const data = await response.json();
+        console.log("Polled data from Redis:", data);
+        setResult(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const pollInterval = setInterval(pollRedis, 5000); // 5초마다 폴링
+
+    return () => {
+      clearInterval(pollInterval);
+    };
   }, [productId]);
 
   const handleInput = (e: any) => {
@@ -115,8 +113,8 @@ const BidInput = ({
   };
 
   const handleBidSubmit = useCallback(() => {
-    if (!client || !user || !connected) {
-      console.error("Client not connected or user not set");
+    if (!user) {
+      console.error("User not set");
       return;
     }
 
@@ -128,42 +126,9 @@ const BidInput = ({
 
     console.log("Sending bid:", bidinfo);
 
-    client.publish({
-      destination: "/app/bid",
-      body: JSON.stringify(bidinfo),
-    });
-  }, [client, user, bidPrice, productId, connected]);
-
-  const handleBidResult = (bidResult: IResult) => {
-    console.log("Bid result:", bidResult);
-    setResult(bidResult);
-
-    if (bidResult.isSuccess === 1) {
-      Swal.fire({
-        icon: "success",
-        title: "축하합니다.",
-        text: "입찰에 성공했습니다!",
-      }).then(() => {
-        router.push(`/product/${productId}`);
-      });
-    } else if (bidResult.isSuccess === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "입찰 실패",
-        text: "입찰에 실패했습니다.",
-      });
-    }
-  };
-
-  const handleProductUpdate = (productUpdate: any) => {
-    console.log("Product update:", productUpdate);
-    Swal.fire({
-      icon: "info",
-      title: "입찰 업데이트",
-      text: `새로운 입찰가: ${productUpdate.highestPrice}`,
-    });
-    setBidPrice(productUpdate.highestPrice);
-  };
+    // 입찰 정보를 백엔드로 전송하는 로직을 추가합니다.
+    // fetch 또는 axios 등을 사용해 백엔드 API로 전송하면 됩니다.
+  }, [user, bidPrice, productId]);
 
   return (
     <>
