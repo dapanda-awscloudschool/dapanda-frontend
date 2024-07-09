@@ -45,22 +45,42 @@ const formatDate = (dateString: string) => {
 
 const BidPage = ({ params }: { params: { slug: number } }) => {
   const [product, setProduct] = useState<IProduct | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
-  const router = useRouter(); // Next.js 라우터 사용
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const product_id = params.slug;
-      const productDetail = await getProductDetail(product_id);
-      setProduct(productDetail);
-      setBidPrice(productDetail.highest_price + productDetail.term_price);
+      try {
+        const product_id = params.slug;
+        const productDetail = await getProductDetail(product_id);
+        if (productDetail) {
+          setProduct(productDetail);
+          setBidPrice(productDetail.highest_price + productDetail.term_price);
+        } else {
+          setError("데이터가 없습니다.");
+        }
+      } catch (error) {
+        setError("데이터를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchProduct();
   }, [params.slug]);
 
-  if (!product) {
+  if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!product) {
+    return <div>데이터가 없습니다.</div>;
   }
 
   return (
