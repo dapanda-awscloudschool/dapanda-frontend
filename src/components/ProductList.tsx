@@ -76,6 +76,15 @@ const ProductList = ({
 
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);
+  const [user, setUser] = useState<number | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("userData");
+    if (userData) {
+      const parsedUserData = JSON.parse(userData);
+      setUser(parsedUserData.memberId);
+    }
+  }, []);
 
   useEffect(() => {
     if (!imgUrl) {
@@ -183,7 +192,12 @@ const ProductList = ({
                     상세보기
                   </Button>
                 </Link>
-                <FavoriteButton productId={product.product_id} memberId={0} />
+                {user !== null && (
+                  <FavoriteButton
+                    productId={product.product_id}
+                    memberId={user}
+                  />
+                )}
               </div>
             </div>
           );

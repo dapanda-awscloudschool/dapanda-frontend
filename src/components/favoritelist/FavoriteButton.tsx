@@ -8,12 +8,16 @@ import { Button } from "@nextui-org/react";
 
 interface FavoriteButtonProps {
   productId: number;
+  memberId: number; // 새로운 memberId prop 추가
 }
 
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({
+  productId,
+  memberId,
+}) => {
   const [favorite, setFavorite] = useState(false);
   const [wishlist, setWishlist] = useState<number[]>([]);
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<number | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("userData");
@@ -43,7 +47,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
         return;
       }
 
-      const wishlistItem = { member_id: Number(user), product_id: productId };
+      const wishlistItem = { member_id: user, product_id: productId };
       if (favorite) {
         // Remove from wishlist
         console.log("Removing from wishlist, sending request:", wishlistItem);
