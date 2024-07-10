@@ -74,20 +74,8 @@ const BidInput = ({
     try {
       const data = await BidRequest(formData);
       console.log("BidRequest data:", data); // 데이터 로그 확인
-      let check;
       if (data !== "error") {
-        check = await CheckRequest(data);
-        console.log("CheckRequest data:", check); // 체크 데이터 로그 확인
-        if (check !== "error") {
-          setResult(check);
-        } else {
-          console.error("CheckRequest failed, received error response");
-          Swal.fire({
-            icon: "error",
-            title: "에러",
-            text: "CheckRequest에서 오류가 발생했습니다.",
-          });
-        }
+        await checkBidResult(data);
       } else {
         console.error("BidRequest failed, received error response");
         Swal.fire({
@@ -103,6 +91,40 @@ const BidInput = ({
         title: "에러",
         text: "입찰 중 오류가 발생했습니다.",
       });
+    }
+  };
+
+  const checkBidResult = async (data: any) => {
+    try {
+      const check = await CheckRequest(data);
+      console.log("CheckRequest data:", check); // 체크 데이터 로그 확인
+      if (check !== "error" && check !== null) {
+        setResult(check);
+      } else {
+        console.error("CheckRequest failed, received error response or null");
+        if (retryCount < 10) {
+          setRetryCount(retryCount + 1);
+          setTimeout(() => checkBidResult(data), 1000); // 1초 후 재시도
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "에러",
+            text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error during check request:", error);
+      if (retryCount < 10) {
+        setRetryCount(retryCount + 1);
+        setTimeout(() => checkBidResult(data), 1000); // 1초 후 재시도
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "에러",
+          text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
+        });
+      }
     }
   };
 
@@ -123,20 +145,9 @@ const BidInput = ({
           title: "입찰 실패",
           text: "입찰에 실패했습니다.",
         });
-      } else {
-        if (retryCount < 10) {
-          setRetryCount(retryCount + 1);
-          handleBidSubmit();
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "에러",
-            text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
-          });
-        }
       }
     }
-  }, [result, retryCount]);
+  }, [result, router, productId]);
 
   return (
     <>
