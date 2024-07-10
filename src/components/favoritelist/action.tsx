@@ -7,7 +7,7 @@ export async function AddToWishlistRequest(wishlist: {
   product_id: number;
 }) {
   try {
-    console.log("Sending request to server:", wishlist); // 요청 데이터 로그 추가
+    console.log("Sending request to server:", wishlist);
     const response = await fetch(`${API_URL}/api/django/wishlist/`, {
       method: "POST",
       headers: {
@@ -16,10 +16,10 @@ export async function AddToWishlistRequest(wishlist: {
       body: JSON.stringify(wishlist),
     });
 
-    console.log("Server response status:", response.status); // 응답 상태 로그 추가
+    console.log("Server response status:", response.status);
     if (response.status === 200 || response.status === 201) {
       const jsonResponse = await response.json();
-      console.log("Server response data:", jsonResponse); // 응답 데이터 로그 추가
+      console.log("Server response data:", jsonResponse);
       return jsonResponse;
     } else {
       const errorText = await response.json();
@@ -38,7 +38,7 @@ export async function RemoveFromWishlistRequest(wishlist: {
   product_id: number;
 }) {
   try {
-    console.log("Sending delete request to server:", wishlist); // 요청 데이터 로그 추가
+    console.log("Sending delete request to server:", wishlist);
     const response = await fetch(`${API_URL}/api/django/wishlist/`, {
       method: "DELETE",
       headers: {
@@ -47,9 +47,9 @@ export async function RemoveFromWishlistRequest(wishlist: {
       body: JSON.stringify(wishlist),
     });
 
-    console.log("Server response status:", response.status); // 응답 상태 로그 추가
+    console.log("Server response status:", response.status);
     if (response.status === 204) {
-      console.log("Server response: No Content"); // 응답 데이터 로그 추가
+      console.log("Server response: No Content");
       return { message: "Item successfully removed from wishlist." };
     } else {
       const errorText = await response.json();

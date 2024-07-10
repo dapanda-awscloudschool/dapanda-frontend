@@ -14,8 +14,8 @@ interface UserData {
 }
 
 interface UserContextType {
-  userData: UserData[];
-  setUserData: (data: UserData[]) => void;
+  userData: UserData | null;
+  setUserData: (data: UserData) => void;
   clearUserData: () => void;
   isUserDataEmpty: () => boolean;
   favorites: number[];
@@ -24,10 +24,10 @@ interface UserContextType {
 }
 
 export const UserContext = createContext<UserContextType>({
-  userData: [],
-  setUserData: () => [],
-  isUserDataEmpty: () => false,
-  clearUserData: () => [],
+  userData: null,
+  setUserData: () => {},
+  isUserDataEmpty: () => true,
+  clearUserData: () => {},
   favorites: [],
   addFavorite: async () => {},
   removeFavorite: async () => {},
@@ -38,12 +38,12 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [userData, setUserData] = useState<UserData[]>(() => {
+  const [userData, setUserData] = useState<UserData | null>(() => {
     if (typeof window !== "undefined") {
       const localData = localStorage.getItem("userData");
-      return localData ? JSON.parse(localData) : [];
+      return localData ? JSON.parse(localData) : null;
     }
-    return [];
+    return null;
   });
 
   const [favorites, setFavorites] = useState<number[]>(() => {
@@ -64,12 +64,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }, [userData, favorites]);
 
-  const isUserDataEmpty = useCallback(() => userData.length === 0, [userData]);
+  const isUserDataEmpty = useCallback(() => userData === null, [userData]);
 
   const clearUserData = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("userData");
-      setUserData([]);
+      setUserData(null);
     }
   };
 

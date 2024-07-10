@@ -46,7 +46,7 @@ const Slider = () => {
       id: 1,
       title: "당신이 주인공이 될 수도 있다.",
       description: "저렴하게 원하는 물건을 GET!",
-      image: "/images/bid.gif",
+      image: "/images/originbid.gif",
       url: "/list",
       bg: "/images/onlinebid.",
       products: [],
@@ -179,8 +179,8 @@ const Slider = () => {
   return (
     <div className="container mx-auto py-8">
       <div
-        className="relative rounded-lg overflow-hidden ring-2 ring-orange-500 ring-offset-4 ring-offset-slate-50 dark:ring-offset-slate-900 bg-no-repeat bg-left bg-orange-500" // 기본 배경색 삭제
-        style={{ backgroundImage: `url('/images/bidimage.png')` }}
+        className="relative rounded-lg overflow-hidden ring-2 ring-lime-800 ring-offset-4 ring-offset-slate-50 dark:ring-offset-slate-900 bg-no-repeat bg-left 	" // 기본 배경색 삭제
+        style={{ backgroundImage: `url('/images/bamboo.jpg')` }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -201,7 +201,7 @@ const Slider = () => {
                         <h2 className="text-xl lg:text-3xl text-white">
                           <span className="relative">
                             <span
-                              className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                              className="block absolute -inset-1 -skew-y-3 bg-lime-800"
                               aria-hidden="true"
                             ></span>
                             <span className="relative text-white">
@@ -212,7 +212,7 @@ const Slider = () => {
                         <h1 className="text-2xl lg:text-4xl font-semibold text-white mt-2">
                           <span className="relative">
                             <span
-                              className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                              className="block absolute -inset-1 -skew-y-3 bg-lime-800"
                               aria-hidden="true"
                             ></span>
                             <span className="relative text-white">
@@ -244,7 +244,7 @@ const Slider = () => {
                       <h2 className="text-xl lg:text-3xl text-white">
                         <span className="relative">
                           <span
-                            className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                            className="block absolute -inset-1 -skew-y-3 bg-lime-800"
                             aria-hidden="true"
                           ></span>
                           <span className="relative text-white">
@@ -258,7 +258,7 @@ const Slider = () => {
                       >
                         <span className="relative">
                           <span
-                            className="block absolute -inset-1 -skew-y-3 bg-yellow-500"
+                            className="block absolute -inset-1 -skew-y-3 bg-lime-800"
                             aria-hidden="true"
                           ></span>
                           <span className="relative text-white">

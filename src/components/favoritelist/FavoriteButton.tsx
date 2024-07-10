@@ -8,16 +8,12 @@ import { Button } from "@nextui-org/react";
 
 interface FavoriteButtonProps {
   productId: number;
-  memberId: number; // 새로운 memberId prop 추가
 }
 
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({
-  productId,
-  memberId,
-}) => {
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   const [favorite, setFavorite] = useState(false);
   const [wishlist, setWishlist] = useState<number[]>([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<string | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("userData");
@@ -37,34 +33,25 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
 
   const handleFavoriteClick = async () => {
     try {
+      if (!user) {
+        console.error("Member ID is missing");
+        Swal.fire({
+          icon: "error",
+          title: "오류 발생",
+          text: "회원 ID가 누락되었습니다.",
+        });
+        return;
+      }
+
+      const wishlistItem = { member_id: Number(user), product_id: productId };
       if (favorite) {
         // Remove from wishlist
-        if (!user) {
-          console.error("Member ID is missing");
-          Swal.fire({
-            icon: "error",
-            title: "오류 발생",
-            text: "회원 ID가 누락되었습니다.",
-          });
-          return;
-        }
-        const wishlistItem = { member_id: Number(user), product_id: productId };
-        console.log("Removing from wishlist, sending request:", wishlistItem); // 요청 데이터 로그 추가
+        console.log("Removing from wishlist, sending request:", wishlistItem);
         await RemoveFromWishlistRequest(wishlistItem);
         removeFavorite(productId);
       } else {
         // Add to wishlist
-        if (!user) {
-          console.error("Member ID is missing");
-          Swal.fire({
-            icon: "error",
-            title: "오류 발생",
-            text: "회원 ID가 누락되었습니다.",
-          });
-          return;
-        }
-        const wishlistItem = { member_id: Number(user), product_id: productId };
-        console.log("Adding to wishlist, sending request:", wishlistItem); // 요청 데이터 로그 추가
+        console.log("Adding to wishlist, sending request:", wishlistItem);
         await AddToWishlistRequest(wishlistItem);
         addFavorite(productId);
       }
@@ -87,13 +74,17 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   };
 
   return (
-    <Button key={productId} isIconOnly  aria-label="Like" onClick={handleFavoriteClick} className={`p-2 rounded-full ${
-      favorite ? "text-red-500" : "text-gray-500"
-    }`}>
-        <FaHeart size={24} />
-  </Button>  
-
-
+    <Button
+      key={productId}
+      isIconOnly
+      aria-label="Like"
+      onClick={handleFavoriteClick}
+      className={`p-2 rounded-full ${
+        favorite ? "text-red-500" : "text-gray-500"
+      }`}
+    >
+      <FaHeart size={24} />
+    </Button>
   );
 };
 

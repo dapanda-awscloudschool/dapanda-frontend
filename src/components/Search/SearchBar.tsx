@@ -18,7 +18,6 @@ const SearchBar = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    router.replace(`/list?name=${encodeURIComponent(value)}`);
   };
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,15 +37,24 @@ const SearchBar = () => {
   };
 
   useEffect(() => {
+    // Fetch initial data
     fetchRankingData();
+
+    // Set interval to fetch data every 30 seconds
+    const interval = setInterval(() => {
+      fetchRankingData();
+    }, 5000); // 30000 milliseconds = 30 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   const getRankingContent = () => {
     return (
-      <div className="px-1 py-2 w-[420px] flex flex-col gap-3">
+      <div className="px-1 py-2 w-[720px] flex flex-col gap-3">
         <p className="text-xl font-bold text-center">실시간 인기 검색어</p>
         {data.map((item: IScore, index: number) => (
-          <div key={index} className="flex flex-row gap-2 px-5">
+          <div key={index} className="flex flex-row gap-2 px-5 text-lg">
             <p>{index + 1}</p>
             <p>{item.keyword}</p>
           </div>
@@ -60,19 +68,21 @@ const SearchBar = () => {
       className="flex items-center justify-between gap-4 bg-gray-100 p-2 rounded-md flex-1"
       onSubmit={handleSearchSubmit}
     >
-      <Tooltip content={getRankingContent()}>
-        <Input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          name="name"
-          placeholder="Real-time Search"
-          className="flex-1 bg-transparent outline-none"
-        />
+      <Tooltip content={getRankingContent()} placement="bottom">
+        <div className="w-full">
+          <Input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            name="name"
+            placeholder="Search"
+            className="flex-1 bg-transparent outline-none w-full"
+          />
+        </div>
       </Tooltip>
       <button
         type="submit"
-        className="btn bg-blue-500 text-white px-4 py-2 rounded-md"
+        className="btn bg-lime-600 text-white px-4 py-2 rounded-md"
       >
         Search
       </button>

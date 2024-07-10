@@ -2,9 +2,9 @@
 const API_URL = process.env.API_URL_SPRING;
 const DJANGO = process.env.API_URL_DJANGO;
 
-export async function LoginAPI(username: string) {
+export async function LoginAPI(memberId: string) {
   const userinfo = JSON.stringify({
-    name: username,
+    memberId: memberId,
   });
 
   const blob = new Blob([userinfo], { type: "application/json" });
@@ -24,7 +24,8 @@ export async function LoginAPI(username: string) {
   }
 }
 
-export async function getWishlist(id: number) {
+export async function getWishlist(id: string) {
+  // id 타입을 string으로 변경
   const res = await fetch(`${DJANGO}/api/django/wishlist/${id}`, {
     method: "GET",
     headers: {
