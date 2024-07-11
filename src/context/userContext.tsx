@@ -7,33 +7,30 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-
 interface UserData {
-  memberId: string;
+  memberString: string;
   email: string;
   name: string;
   phoneNum: string;
   address: string;
+  memberId: number;
+  memStatus: number;
 }
 
 interface UserContextType {
-  userData: UserData | null;
-  setUserData: (data: UserData) => void;
+  userData: UserData[];
+  setUserData: (data: UserData[]) => void;
   clearUserData: () => void;
   isUserDataEmpty: () => boolean;
-  favorites: number[];
-  addFavorite: (memberId: string, productId: number) => Promise<void>;
-  removeFavorite: (memberId: string, productId: number) => Promise<void>;
+  updateUserData: (newData: Partial<UserData>) => void;
 }
 
 export const UserContext = createContext<UserContextType>({
-  userData: null,
-  setUserData: () => {},
-  isUserDataEmpty: () => true,
-  clearUserData: () => {},
-  favorites: [],
-  addFavorite: async () => {},
-  removeFavorite: async () => {},
+  userData: [],
+  setUserData: () => [],
+  isUserDataEmpty: () => false,
+  clearUserData: () => [],
+  updateUserData: () => [],
 });
 
 interface UserProviderProps {
@@ -41,83 +38,40 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [userData, setUserData] = useState<UserData | null>(() => {
+  // Initialize state from localStorage if available and only on the client-side
+  const [userData, setUserData] = useState<UserData[]>(() => {
     if (typeof window !== "undefined") {
       const localData = localStorage.getItem("userData");
-      return localData ? JSON.parse(localData) : null;
+      return localData ? JSON.parse(localData) : [];
     }
-    return null;
+    return []; // Return empty array if not running in the browser
   });
-
-  const [favorites, setFavorites] = useState<number[]>(() => {
-    if (typeof window !== "undefined") {
-      const localFavorites = localStorage.getItem("favorites");
-      return localFavorites ? JSON.parse(localFavorites) : [];
-    }
-    return [];
-  });
-
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Use useEffect to update localStorage when userData changes, but only on the client-side
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("userData", JSON.stringify(userData));
-      localStorage.setItem("favorites", JSON.stringify(favorites));
       setIsInitialized(true);
     }
-  }, [userData, favorites]);
+  }, [userData]);
 
-  const isUserDataEmpty = useCallback(() => userData === null, [userData]);
+  const isUserDataEmpty = useCallback(() => userData.length === 0, [userData]);
 
   const clearUserData = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("userData");
-      setUserData(null);
+      setUserData([]);
     }
   };
 
-  const addFavorite = async (memberId: string, productId: number) => {
-    const url = `${process.env.NEXT_PUBLIC_API_URL_DJANGO}/api/django/wishlist/${memberId}/${productId}/`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        member_id: memberId,
-        product_id: productId,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to add to wishlist");
+  const updateUserData = (newData: Partial<UserData>) => {
+    if (userData.length > 0) {
+      const updatedData = { ...userData[0], ...newData };
+      setUserData([updatedData]);
+    } else {
+      setUserData([{ ...newData } as UserData]);
     }
-
-    setFavorites((prevFavorites) => [...prevFavorites, productId]);
-  };
-
-  const removeFavorite = async (memberId: string, productId: number) => {
-    const url = `${process.env.NEXT_PUBLIC_API_URL_DJANGO}/api/django/wishlist/${memberId}/${productId}/`;
-
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        member_id: memberId,
-        product_id: productId,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to remove from wishlist");
-    }
-
-    setFavorites((prevFavorites) =>
-      prevFavorites.filter((id) => id !== productId)
-    );
   };
 
   return (
@@ -127,9 +81,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUserData,
         isUserDataEmpty,
         clearUserData,
-        favorites,
-        addFavorite,
-        removeFavorite,
+        updateUserData,
       }}
     >
       {isInitialized ? children : null}

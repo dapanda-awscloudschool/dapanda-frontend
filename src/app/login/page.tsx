@@ -1,49 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
-import { UserContext } from "@/context/userContext";
-import { LoginAPI, getWishlist } from "./action";
-import Swal from "sweetalert2"; // SweetAlert2 import
-
 const LoginPage = () => {
-  const router = useRouter();
-  const { userData, setUserData } = useContext(UserContext);
-
-  useEffect(() => {
-    if (userData) {
-      const handleLogin = async () => {
-        try {
-          const { memberId, email, name, phoneNum, address } = userData;
-          const data = await LoginAPI(memberId, email, name, phoneNum, address); // 모든 인자를 제공
-          if (data === null) {
-            router.push("/RegisterPage");
-          }
-          setUserData(data);
-          localStorage.setItem("userData", JSON.stringify(data));
-          const wishlist = await getWishlist(data.memberId);
-          localStorage.setItem("wishlist", JSON.stringify(wishlist));
-          Swal.fire({
-            icon: "success",
-            title: "로그인 성공",
-            text: "로그인에 성공했습니다!",
-          }).then(() => {
-            router.push("/"); // 메인 페이지로 이동
-          });
-        } catch (error) {
-          console.error("Error during login:", error);
-          Swal.fire({
-            icon: "error",
-            title: "로그인 실패",
-            text: "로그인에 실패했습니다. 다시 시도해주세요.",
-          });
-        }
-      };
-
-      handleLogin();
-    }
-  }, [userData, setUserData, router]);
-
   return (
     <div className="h-screen flex items-center justify-center ">
       <div className="w-full max-w-6xl bg-white shadow-md rounded-lg overflow-hidden">

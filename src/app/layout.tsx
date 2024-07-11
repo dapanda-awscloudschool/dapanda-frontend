@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { UIProvider } from "@/context/nextuiContext";
+import { UserProvider } from "@/context/userContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +22,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <UIProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <UserProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </UserProvider>
         </UIProvider>
       </body>
     </html>

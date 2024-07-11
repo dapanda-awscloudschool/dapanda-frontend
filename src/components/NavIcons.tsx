@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import CartModal from "./Cart/CartModal";
 import Swal from "sweetalert2";
 import { createProduct } from "@/components/Cart/action"; // createProduct 임포트
+import { UserContext } from "@/context/userContext";
 
 // Local storage에서 userId를 가져오는 함수
 const getUserId = () => {
@@ -19,6 +20,7 @@ const getUserId = () => {
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggined, setIsLoggined] = useState(false);
+  const { isUserDataEmpty } = useContext(UserContext);
   const cartRef = useRef<HTMLDivElement>(null);
 
   const [formValues, setFormValues] = useState({
@@ -37,17 +39,17 @@ const NavIcons = () => {
     window.location.reload(); // 페이지 새로고침
   };
 
-  const checkLoginStatus = () => {
-    if (localStorage.getItem("userData")) {
-      setIsLoggined(true);
-    } else {
-      setIsLoggined(false);
-    }
-  };
+  // const checkLoginStatus = () => {
+  //   if (localStorage.getItem("userData")) {
+  //     setIsLoggined(true);
+  //   } else {
+  //     setIsLoggined(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    checkLoginStatus(); // 컴포넌트 마운트 시 로그인 상태 확인
-  }, []);
+  // useEffect(() => {
+  //   checkLoginStatus(); // 컴포넌트 마운트 시 로그인 상태 확인
+  // }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -153,10 +155,10 @@ const NavIcons = () => {
   return (
     <div className="flex items-center gap-4 text-sm">
       <div className="cursor-pointer">
-        {isLoggined ? (
-          <div onClick={handleLogout}>로그아웃</div>
-        ) : (
+        {isUserDataEmpty() ? (
           <div onClick={handleLogin}>로그인</div>
+        ) : (
+          <div onClick={handleLogout}>로그아웃</div>
         )}
       </div>
       <Link href="/mypage">

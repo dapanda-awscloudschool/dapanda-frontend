@@ -58,7 +58,7 @@ const WithPage = () => {
           <Link href="https://awscloudschool.online">
             <div className="flex flex-row items-center gap-4">
               <Image
-                src="/dapanda.png" // 업로드한 이미지를 사용
+                src="/DAPANDA.png" // 업로드한 이미지를 사용
                 alt="DAPANDA"
                 width={200}
                 height={200}
@@ -124,7 +124,7 @@ const WithPage = () => {
           </Link>
         </div>
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://mylittle.recipes">
+          <Link href="https://book.mylittle.recipes">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/mlr.png" // 대체 이미지 경로 사용

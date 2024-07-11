@@ -60,16 +60,16 @@ export async function GET(request: NextRequest) {
     const email = decoded.email;
 
     const userData = {
-      memberId: userId,
+      memberString: userId,
       email: email,
     };
 
     // 사용자 정보를 localStorage에 저장하는 스크립트 생성
     const script = `
-      localStorage.setItem('userData', ${JSON.stringify(
+      localStorage.setItem('tempData', ${JSON.stringify(
         JSON.stringify(userData)
       )});
-      window.location.replace('/RegisterPage'); // 추가 정보 입력 페이지로 리디렉션
+      window.location.replace('/auth'); // 추가 정보 입력 페이지로 리디렉션
     `;
 
     // 응답으로 스크립트 반환

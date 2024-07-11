@@ -1,30 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaHeart } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { AddToWishlistRequest, RemoveFromWishlistRequest } from "./action";
 import { Button } from "@nextui-org/react";
+import { UserContext } from "@/context/userContext";
 
 interface FavoriteButtonProps {
   productId: number;
   memberId: number; // 새로운 memberId prop 추가
 }
 
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({
-  productId,
-  memberId,
-}) => {
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   const [favorite, setFavorite] = useState(false);
   const [wishlist, setWishlist] = useState<number[]>([]);
-  const [user, setUser] = useState<number | null>(null);
+  const { userData } = useContext(UserContext);
 
   useEffect(() => {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      const parsedUserData = JSON.parse(userData);
-      setUser(parsedUserData.memberId);
-    }
     const data = localStorage.getItem("wishlist");
     if (data) {
       const wish = JSON.parse(data) as number[];
@@ -37,7 +30,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
 
   const handleFavoriteClick = async () => {
     try {
-      if (!user) {
+      if (!userData[0].memberId) {
         console.error("Member ID is missing");
         Swal.fire({
           icon: "error",
@@ -46,8 +39,10 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
         });
         return;
       }
-
-      const wishlistItem = { member_id: user, product_id: productId };
+      const wishlistItem = {
+        member_id: userData[0].memberId,
+        product_id: productId,
+      };
       if (favorite) {
         // Remove from wishlist
         console.log("Removing from wishlist, sending request:", wishlistItem);
@@ -59,11 +54,9 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
         await AddToWishlistRequest(wishlistItem);
         addFavorite(productId);
       }
-
       const updatedWishlist = favorite
         ? wishlist.filter((id) => id !== productId)
         : [...wishlist, productId];
-
       setWishlist(updatedWishlist);
       localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
       setFavorite(!favorite);

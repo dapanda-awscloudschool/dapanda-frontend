@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { UserContext } from "@/context/userContext";
 import { LoginAPI } from "../login/action";
 import Swal from "sweetalert2"; // SweetAlert2 import
 
 const RegisterPage = () => {
   const router = useRouter();
-  const { setUserData } = useContext(UserContext);
+  const { userData } = useContext(UserContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,38 +16,20 @@ const RegisterPage = () => {
   const [phoneNum, setPhoneNum] = useState("");
   const [address, setAddress] = useState("");
   const [userId, setUserId] = useState("");
-  const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      const parsedUserData = JSON.parse(userData);
-      setUserId(parsedUserData.memberId);
-      setEmail(parsedUserData.email);
-    } else {
-      router.push("/"); // 사용자가 로그인되지 않았으면 홈 페이지로 리디렉션
-    }
-  }, [router]);
 
   const handleRegister = async () => {
     setIsLoading(true);
     try {
       // LoginAPI 호출 시 모든 인자를 제공
-      const data = await LoginAPI(userId, email, name, phoneNum, address);
-      if (data.length > 1) {
-        setUserData(data);
-      }
-
-      localStorage.setItem(
-        "userData",
-        JSON.stringify({
-          memberId: userId,
-          email: email,
-          name: name,
-          phoneNum: phoneNum,
-          address: address,
-        })
+      const data = await LoginAPI(
+        userData[0].memberString,
+        userData[0].email,
+        name,
+        phoneNum,
+        address
       );
+      console.log("register page", data);
+
       Swal.fire({
         icon: "success",
         title: "등록 성공",
@@ -74,14 +56,14 @@ const RegisterPage = () => {
         <input
           type="text"
           placeholder="User ID"
-          value={userId}
+          value={userData[0].memberString}
           disabled
           className="mb-4 p-2 w-full border border-gray-300 rounded bg-gray-200"
         />
         <input
           type="email"
           placeholder="Email"
-          value={email}
+          value={userData[0].email}
           disabled
           className="mb-4 p-2 w-full border border-gray-300 rounded bg-gray-200"
         />
