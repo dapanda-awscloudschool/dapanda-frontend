@@ -10,7 +10,10 @@ import React, {
 
 interface UserData {
   memberId: string;
+  email: string;
   name: string;
+  phoneNum: string;
+  address: string;
 }
 
 interface UserContextType {

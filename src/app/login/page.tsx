@@ -14,7 +14,11 @@ const LoginPage = () => {
     if (userData) {
       const handleLogin = async () => {
         try {
-          const data = await LoginAPI(userData.memberId);
+          const { memberId, email, name, phoneNum, address } = userData;
+          const data = await LoginAPI(memberId, email, name, phoneNum, address); // 모든 인자를 제공
+          if (data === null) {
+            router.push("/RegisterPage");
+          }
           setUserData(data);
           localStorage.setItem("userData", JSON.stringify(data));
           const wishlist = await getWishlist(data.memberId);
@@ -41,10 +45,10 @@ const LoginPage = () => {
   }, [userData, setUserData, router]);
 
   return (
-    <div className="h-screen flex items-center justify-center bg-lime-50">
+    <div className="h-screen flex items-center justify-center ">
       <div className="w-full max-w-6xl bg-white shadow-md rounded-lg overflow-hidden">
         <div className="flex flex-col md:flex-row">
-          <div className="bg-lime-100 flex-grow flex items-center justify-center">
+          <div className="bg-lime-100 flex-grow flex items-center justify-center border">
             <img
               className="w-full h-full object-cover"
               src="/images/limepanda.gif"
@@ -52,7 +56,7 @@ const LoginPage = () => {
               style={{ objectFit: "cover", width: "100%", height: "100%" }}
             />
           </div>
-          <div className="p-8 w-full md:w-1/2 flex items-center justify-center flex-col">
+          <div className="p-8 w-full md:w-1/2 flex items-center justify-center flex-col border">
             <div className="uppercase tracking-wide text-3xl text-indigo-500 font-semibold text-2xl">
               DAPANDA
             </div>

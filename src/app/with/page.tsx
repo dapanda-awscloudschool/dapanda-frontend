@@ -9,7 +9,7 @@ const WithPage = () => {
       <h1 className="text-3xl font-bold mb-12">AWS Cloud School 4th WITH</h1>
       <div className="flex flex-col gap-8 w-full max-w-4xl">
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://spoid.com">
+          <Link href="https://www.spoid.shop">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/spoid.png" // 대체 이미지 경로 사용
@@ -31,7 +31,7 @@ const WithPage = () => {
           </Link>
         </div>
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://interviewmaster.com">
+          <Link href="https://www.interviewmaster.store">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/interviewmaster.png" // 대체 이미지 경로 사용
@@ -55,7 +55,7 @@ const WithPage = () => {
           </Link>
         </div>
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://dapanda.com">
+          <Link href="https://awscloudschool.online">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/dapanda.png" // 업로드한 이미지를 사용
@@ -78,7 +78,7 @@ const WithPage = () => {
           </Link>
         </div>
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://quickcatch.com">
+          <Link href="https://quickcatch.store">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/quickcatch.png" // 대체 이미지 경로 사용
@@ -100,7 +100,7 @@ const WithPage = () => {
           </Link>
         </div>
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://placeholder.com">
+          <Link href="https://placeholder-web.shop">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/placeholder.png" // 대체 이미지 경로 사용
@@ -124,7 +124,7 @@ const WithPage = () => {
           </Link>
         </div>
         <div className="flex flex-row items-center gap-4 bg-white p-4 rounded shadow border">
-          <Link href="https://recipebook.com">
+          <Link href="https://mylittle.recipes">
             <div className="flex flex-row items-center gap-4">
               <Image
                 src="/mlr.png" // 대체 이미지 경로 사용
