@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+
+// 동적 렌더링을 강제합니다.
+export const dynamic = "force-dynamic";
 
 const {
   COGNITO_DOMAIN,
@@ -8,7 +11,7 @@ const {
   REDIRECT_URI,
 } = process.env;
 
-interface DecodedToken {
+interface DecodedToken extends JwtPayload {
   identities: Array<{
     userId: string;
     providerName: string;
@@ -38,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     const requestBody = new URLSearchParams({
       grant_type: "authorization_code",
-      client_id: COGNITO_APP_CLIENT_ID as string,
+      client_id: COGNITO_APP_CLIENT_ID || "",
       code: code,
       redirect_uri: REDIRECT_URI || "",
     });
@@ -66,7 +69,7 @@ export async function GET(request: NextRequest) {
     console.log("Token Data:", data); // 디버깅 메시지
 
     const idToken = data.id_token;
-    const decoded: DecodedToken = jwtDecode(idToken);
+    const decoded = jwtDecode<DecodedToken>(idToken);
 
     const userId = decoded.identities[0].userId;
     const email = decoded.email;
@@ -91,8 +94,10 @@ export async function GET(request: NextRequest) {
         },
       }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error:", error); // 디버깅 메시지
-    return NextResponse.json({ error: error.message || error });
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 }
