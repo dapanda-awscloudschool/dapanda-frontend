@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, Tab, Chip } from "@nextui-org/react";
 import {
@@ -16,15 +16,7 @@ import Image from "next/image";
 import { GalleryIcon } from "./GalleryIcon";
 import { MusicIcon } from "./MusicIcon";
 import { VideoIcon } from "./videoIcon";
-
-const getUserId = () => {
-  const userData = localStorage.getItem("userData");
-  if (userData) {
-    const user = JSON.parse(userData);
-    return user.memberId;
-  }
-  return null;
-};
+import { UserContext } from "@/context/userContext";
 
 interface IMember {
   name: string;
@@ -63,6 +55,9 @@ interface Historyproduct {
 
 const MyPage = () => {
   const router = useRouter();
+  const { userData } = useContext(UserContext);
+  const memberId = userData[0]?.memberId;
+
   const [profile, setProfile] = useState<IMember>({
     name: "이름",
     phone_num: 0,
@@ -80,11 +75,10 @@ const MyPage = () => {
   useEffect(() => {
     async function fetchMemberInfo() {
       try {
-        const userId = getUserId();
-        if (!userId) {
+        if (!memberId) {
           throw new Error("User ID not found");
         }
-        const data = await member(parseInt(userId));
+        const data = await member(memberId);
         setProfile(data);
         setFormValues(data);
       } catch (error) {
@@ -94,11 +88,10 @@ const MyPage = () => {
 
     async function fetchWishlist() {
       try {
-        const userId = getUserId();
-        if (!userId) {
+        if (!memberId) {
           throw new Error("User ID not found");
         }
-        const data = await pWishList(parseInt(userId));
+        const data = await pWishList(memberId);
         if (data && Array.isArray(data)) {
           setWishList(
             data.map((item) => ({
@@ -119,11 +112,10 @@ const MyPage = () => {
 
     async function fetchHistory() {
       try {
-        const userId = getUserId();
-        if (!userId) {
+        if (!memberId) {
           throw new Error("User ID not found");
         }
-        const data = await saleHistory(parseInt(userId));
+        const data = await saleHistory(memberId);
         if (data && Array.isArray(data)) {
           setHistory(
             data.map((item) => ({
@@ -141,11 +133,10 @@ const MyPage = () => {
 
     async function fetchBuyHistory() {
       try {
-        const userId = getUserId();
-        if (!userId) {
+        if (!memberId) {
           throw new Error("User ID not found");
         }
-        const data = await buyHistory(parseInt(userId));
+        const data = await buyHistory(memberId);
         if (data && Array.isArray(data)) {
           setBHistory(
             data.map((item) => ({
@@ -163,11 +154,10 @@ const MyPage = () => {
 
     async function fetchSaleBid() {
       try {
-        const userId = getUserId();
-        if (!userId) {
+        if (!memberId) {
           throw new Error("User ID not found");
         }
-        const data = await salebid(parseInt(userId));
+        const data = await salebid(memberId);
         if (data && Array.isArray(data)) {
           setSaleBid(
             data.map((item) => ({
@@ -185,11 +175,10 @@ const MyPage = () => {
 
     async function fetchMyBid() {
       try {
-        const userId = getUserId();
-        if (!userId) {
+        if (!memberId) {
           throw new Error("User ID not found");
         }
-        const data = await mybid(parseInt(userId));
+        const data = await mybid(memberId);
         if (data && Array.isArray(data)) {
           setMyBid(
             data.map((item) => ({
@@ -211,7 +200,7 @@ const MyPage = () => {
     fetchBuyHistory();
     fetchSaleBid();
     fetchMyBid();
-  }, []);
+  }, [memberId]);
 
   const handleEditClick = () => {
     setIsPopupOpen(true);
@@ -232,12 +221,11 @@ const MyPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const userId = getUserId();
-      if (!userId) {
+      if (!memberId) {
         throw new Error("User ID not found");
       }
 
-      const updatedProfile = await updateMember(parseInt(userId), formValues);
+      const updatedProfile = await updateMember(memberId, formValues);
       setProfile(updatedProfile);
       handleClosePopup();
     } catch (error) {

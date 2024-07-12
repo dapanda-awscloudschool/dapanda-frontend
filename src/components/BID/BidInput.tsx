@@ -1,8 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { BidRequest, CheckRequest } from "./action";
+import { UserContext } from "@/context/userContext";
 
 interface IResult {
   id: number;
@@ -27,18 +28,12 @@ const BidInput = ({
   productId: number;
   setBidPrice: (price: number) => void;
 }) => {
-  const [user, setUser] = useState<number | null>(null);
+  const { userData } = useContext(UserContext);
+  const memberId = userData[0]?.memberId;
+
   const [result, setResult] = useState<IResult | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
-
-  useEffect(() => {
-    const userData = localStorage.getItem("userData");
-    if (userData) {
-      const parsedUserData = JSON.parse(userData);
-      setUser(parsedUserData.memberId);
-    }
-  }, []);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value, 10);
@@ -62,9 +57,18 @@ const BidInput = ({
   };
 
   const handleBidSubmit = async () => {
+    if (!memberId) {
+      Swal.fire({
+        icon: "error",
+        title: "오류 발생",
+        text: "회원 ID가 누락되었습니다. 로그인 후 다시 시도해주세요.",
+      });
+      return;
+    }
+
     const bidinfo = JSON.stringify({
       bidProductId: productId,
-      bidMemberId: user,
+      bidMemberId: memberId,
       bidPrice: bidPrice,
     });
     const blob = new Blob([bidinfo], { type: "application/json" });
