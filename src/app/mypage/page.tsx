@@ -245,7 +245,7 @@ const MyPage = () => {
       <div className="border p-4 rounded-lg shadow-lg mb-8">
         <div className="flex items-center mb-4">
           <Image
-            src="/path/to/profile-image.jpg"
+            src="/images/DAPANDA.png"
             alt="Profile Image"
             width={80}
             height={80}

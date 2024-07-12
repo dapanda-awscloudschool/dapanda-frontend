@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation"; // next/navigation로 변경 필요
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getProductDetail } from "@/app/product/[slug]/action";
 import Image from "next/image";
 import { formatCurrency } from "@/components/formatCurrency";
@@ -48,6 +48,8 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [bidPrice, setBidPrice] = useState<number>(0);
+  const [userIsTyping, setUserIsTyping] = useState<boolean>(false); // 사용자 입력 상태를 관리
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 타이핑 타임아웃을 관리
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -56,7 +58,10 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
         const productDetail = await getProductDetail(product_id);
         if (productDetail) {
           setProduct(productDetail);
-          setBidPrice(productDetail.highest_price + productDetail.term_price);
+          if (!userIsTyping) {
+            // 사용자가 타이핑 중이 아닐 때만 값을 업데이트
+            setBidPrice(productDetail.highest_price + productDetail.term_price);
+          }
         } else {
           setError("데이터가 없습니다.");
         }
@@ -68,12 +73,12 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
     };
 
     fetchProduct();
-    const intervalId = setInterval(fetchProduct, 500); // 0.5초마다 fetchProduct 호출
+    const intervalId = setInterval(fetchProduct, 1000); // 1초마다 fetchProduct 호출
 
     return () => {
       clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 정리
     };
-  }, [params.slug]);
+  }, [params.slug, userIsTyping]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -115,7 +120,16 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
           highestPrice={product.highest_price}
           termPrice={product.term_price}
           bidPrice={bidPrice}
-          setBidPrice={setBidPrice}
+          setBidPrice={(price) => {
+            setBidPrice(price);
+            setUserIsTyping(true);
+            if (typingTimeoutRef.current) {
+              clearTimeout(typingTimeoutRef.current);
+            }
+            typingTimeoutRef.current = setTimeout(() => {
+              setUserIsTyping(false);
+            }, 1000); // 1초 동안 입력이 없으면 타이핑 상태를 false로 변경
+          }}
           productId={product.product_id}
         />
       </div>
