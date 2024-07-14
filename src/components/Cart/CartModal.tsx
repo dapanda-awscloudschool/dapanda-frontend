@@ -2,40 +2,36 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { createProduct } from "./action";
 import Swal from "sweetalert2";
-
-// Local storage에서 userId를 가져오는 함수
-const getUserId = () => {
-  const userData = localStorage.getItem("userData");
-  if (userData) {
-    const user = JSON.parse(userData);
-    return user.memberId;
-  }
-  return null;
-};
+import { UserContext } from "@/context/userContext";
 
 const CartModal = () => {
   const cartItems = true;
+  const { userData } = useContext(UserContext); // UserContext 사용
+  const memberId = userData[0]?.memberId;
+
   const [formValues, setFormValues] = useState({
     category: "",
     product_name: "",
+    start_date: "",
+    end_date: "",
     term_price: 0,
     start_price: 0,
+    highest_price: 0,
     product_info: "",
-    register_member: getUserId(), // 현재 로그인된 사용자의 ID로 대체
+    register_member: memberId || 0, // UserContext에서 가져온 memberId 사용
   });
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 userId를 가져와서 formValues에 설정
-    const userId = getUserId();
     setFormValues((prevValues) => ({
       ...prevValues,
-      register_member: userId,
+      register_member: memberId || 0,
     }));
-  }, []);
+  }, [memberId]);
 
   const handleOpenPopup = () => {
     Swal.fire({
@@ -60,12 +56,24 @@ const CartModal = () => {
             <input type="text" id="product_name" name="product_name" class="mt-1 p-2 w-full border rounded" />
           </div>
           <div class="mb-4">
+            <label for="start_date" class="block text-sm font-medium">시작 날짜</label>
+            <input type="datetime-local" id="start_date" name="start_date" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="end_date" class="block text-sm font-medium">종료 날짜</label>
+            <input type="datetime-local" id="end_date" name="end_date" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
             <label for="term_price" class="block text-sm font-medium">최소 입찰 단위</label>
             <input type="number" id="term_price" name="term_price" class="mt-1 p-2 w-full border rounded" />
           </div>
           <div class="mb-4">
             <label for="start_price" class="block text-sm font-medium">시작 가격</label>
             <input type="number" id="start_price" name="start_price" class="mt-1 p-2 w-full border rounded" />
+          </div>
+          <div class="mb-4">
+            <label for="highest_price" class="block text-sm font-medium">최고 가격</label>
+            <input type="number" id="highest_price" name="highest_price" class="mt-1 p-2 w-full border rounded" />
           </div>
           <div class="mb-4">
             <label for="images" class="block text-sm font-medium">이미지 (최대 10개)</label>
@@ -101,13 +109,16 @@ const CartModal = () => {
           const formData = new FormData();
           formData.append("category", result.value.category);
           formData.append("product_name", result.value.product_name);
+          formData.append("start_date", result.value.start_date);
+          formData.append("end_date", result.value.end_date);
           formData.append("term_price", result.value.term_price);
           formData.append("start_price", result.value.start_price);
+          formData.append("highest_price", result.value.highest_price);
           formData.append("product_info", result.value.product_info);
           formData.append(
             "register_member",
-            String(formValues.register_member)
-          );
+            formValues.register_member.toString()
+          ); // 숫자를 문자열로 변환
           result.value.images.forEach((file: File, index: number) => {
             formData.append(`images[${index}]`, file); // 이미지 배열로 추가
           });

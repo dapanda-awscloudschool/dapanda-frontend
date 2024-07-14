@@ -7,21 +7,13 @@ import Swal from "sweetalert2";
 import { createProduct } from "@/components/Cart/action"; // createProduct 임포트
 import { UserContext } from "@/context/userContext";
 
-// Local storage에서 userId를 가져오는 함수
-const getUserId = () => {
-  const userData = localStorage.getItem("userData");
-  if (userData) {
-    const user = JSON.parse(userData);
-    return user.memberId;
-  }
-  return null;
-};
-
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggined, setIsLoggined] = useState(false);
-  const { isUserDataEmpty } = useContext(UserContext);
+  const { isUserDataEmpty, userData } = useContext(UserContext);
   const cartRef = useRef<HTMLDivElement>(null);
+
+  const memberId = userData[0]?.memberId || 0;
 
   const [formValues, setFormValues] = useState({
     category: "",
@@ -29,7 +21,7 @@ const NavIcons = () => {
     term_price: 0,
     start_price: 0,
     product_info: "",
-    register_member: getUserId(), // 현재 로그인된 사용자의 ID로 대체
+    register_member: memberId, // UserContext에서 가져온 memberId로 대체
   });
 
   const handleLogout = async () => {
@@ -38,18 +30,6 @@ const NavIcons = () => {
     setIsLoggined(false); // 로그아웃 시 로그인 상태를 false로 변경
     window.location.reload(); // 페이지 새로고침
   };
-
-  // const checkLoginStatus = () => {
-  //   if (localStorage.getItem("userData")) {
-  //     setIsLoggined(true);
-  //   } else {
-  //     setIsLoggined(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   checkLoginStatus(); // 컴포넌트 마운트 시 로그인 상태 확인
-  // }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -122,7 +102,7 @@ const NavIcons = () => {
           const formData = result.value;
           formData.append(
             "register_member",
-            String(formValues.register_member)
+            formValues.register_member.toString() // String으로 변환하여 추가
           );
 
           const productResult = await createProduct(formData);
