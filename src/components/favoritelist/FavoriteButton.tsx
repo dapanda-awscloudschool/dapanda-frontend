@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { AddToWishlistRequest, RemoveFromWishlistRequest } from "./action";
 import { Button } from "@nextui-org/react";
 import { UserContext } from "@/context/userContext";
+import { useRouter } from "next/navigation";
 
 interface FavoriteButtonProps {
   productId: number;
@@ -16,6 +17,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   const [favorite, setFavorite] = useState(false);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const { userData } = useContext(UserContext);
+  const router = useRouter();
 
   useEffect(() => {
     const data = localStorage.getItem("wishlist");
@@ -30,12 +32,17 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
 
   const handleFavoriteClick = async () => {
     try {
-      if (!userData[0].memberId) {
+      if (!userData || !userData[0]?.memberId) {
         console.error("Member ID is missing");
         Swal.fire({
           icon: "error",
-          title: "오류 발생",
-          text: "회원 ID가 누락되었습니다.",
+          title: "로그인이 필요합니다",
+          text: "로그인 페이지로 이동합니다.",
+          confirmButtonText: "확인",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push("/login");
+          }
         });
         return;
       }
@@ -57,6 +64,7 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
       const updatedWishlist = favorite
         ? wishlist.filter((id) => id !== productId)
         : [...wishlist, productId];
+      updatedWishlist.sort((a, b) => a - b); // 정렬 추가
       setWishlist(updatedWishlist);
       localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
       setFavorite(!favorite);

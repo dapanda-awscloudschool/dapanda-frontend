@@ -1,17 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useContext } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Swal from "sweetalert2";
+import { UserContext } from "@/context/userContext";
 
 interface IAdd {
   id: number;
 }
+
 const Add = ({ id }: IAdd) => {
   const router = useRouter();
+  const { isUserDataEmpty } = useContext(UserContext);
 
   const handleBidClick = () => {
+    if (isUserDataEmpty()) {
+      Swal.fire({
+        icon: "error",
+        title: "로그인이 필요한 기능입니다.",
+        text: "로그인 페이지로 이동합니다.",
+        confirmButtonText: "확인",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/login");
+        }
+      });
+      return;
+    }
     router.push(`/bid/${id}`); // 입찰 페이지로 이동
+  };
+
+  const handleWishlistClick = () => {
+    if (isUserDataEmpty()) {
+      router.push("/login"); // 로그인 페이지로 이동
+      return;
+    }
+    // 찜하기 로직 추가 필요
+    console.log("찜하기 클릭");
   };
 
   return (
@@ -22,7 +47,10 @@ const Add = ({ id }: IAdd) => {
       >
         입찰 하기
       </button>
-      <button className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none">
+      <button
+        className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+        onClick={handleWishlistClick}
+      >
         찜하기
       </button>
     </div>

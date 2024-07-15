@@ -6,12 +6,14 @@ import CartModal from "./Cart/CartModal";
 import Swal from "sweetalert2";
 import { createProduct } from "@/components/Cart/action"; // createProduct 임포트
 import { UserContext } from "@/context/userContext";
+import { useRouter } from "next/navigation";
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggined, setIsLoggined] = useState(false);
   const { isUserDataEmpty, userData } = useContext(UserContext);
   const cartRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const memberId = userData[0]?.memberId || 0;
 
@@ -50,11 +52,16 @@ const NavIcons = () => {
   }, [isCartOpen]);
 
   const handleOpenPopup = () => {
+    if (isUserDataEmpty()) {
+      router.push("/login");
+      return;
+    }
+
     Swal.fire({
       title: "물품 등록",
       width: 600,
       padding: "3em",
-      background: "#fff url(/images/trees.png)",
+      background: "#fff",
       backdrop: `
         rgba(0,0,0,0.4)
         url("/images/gift.gif")
@@ -141,9 +148,18 @@ const NavIcons = () => {
           <div onClick={handleLogout}>로그아웃</div>
         )}
       </div>
-      <Link href="/mypage">
-        <div className="cursor-pointer">마이페이지</div>
-      </Link>
+      <div
+        className="cursor-pointer"
+        onClick={() => {
+          if (isUserDataEmpty()) {
+            router.push("/login");
+            return;
+          }
+          router.push("/mypage");
+        }}
+      >
+        마이페이지
+      </div>
       <button className="cursor-pointer" onClick={handleOpenPopup}>
         물품 등록하기
       </button>
