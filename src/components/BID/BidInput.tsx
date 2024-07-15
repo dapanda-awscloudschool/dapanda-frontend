@@ -13,6 +13,7 @@ interface IResult {
   bidDate: string;
   transactionId: string;
   isSuccess: number;
+  bidResult: string;
 }
 
 const BidInput = ({
@@ -31,29 +32,13 @@ const BidInput = ({
   const { userData } = useContext(UserContext);
   const memberId = userData[0]?.memberId;
 
+  const [inputValue, setInputValue] = useState(bidPrice);
   const [result, setResult] = useState<IResult | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const router = useRouter();
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value, 10);
-    if (newValue < highestPrice + termPrice) {
-      Swal.fire({
-        icon: "error",
-        title: "입찰 오류",
-        text: "현재가보다 낮거나 같게 입력할 수 없습니다.",
-      });
-      setBidPrice(highestPrice + termPrice);
-    } else if (newValue > 2000000000) {
-      Swal.fire({
-        icon: "error",
-        title: "입찰 오류",
-        text: "최대 2,000,000,000까지 입력가능",
-      });
-      setBidPrice(2000000000);
-    } else {
-      setBidPrice(newValue);
-    }
+    setInputValue(parseInt(e.target.value, 10));
   };
 
   const handleBidSubmit = async () => {
@@ -66,10 +51,12 @@ const BidInput = ({
       return;
     }
 
+    setBidPrice(inputValue);
+
     const bidinfo = JSON.stringify({
       bidProductId: productId,
       bidMemberId: memberId,
-      bidPrice: bidPrice,
+      bidPrice: inputValue,
     });
     const blob = new Blob([bidinfo], { type: "application/json" });
     const formData = new FormData();
@@ -147,7 +134,7 @@ const BidInput = ({
         Swal.fire({
           icon: "error",
           title: "입찰 실패",
-          text: "입찰에 실패했습니다.",
+          text: `${result.bidResult}`,
         });
       }
     }
@@ -163,7 +150,7 @@ const BidInput = ({
           type="number"
           id="bidPrice"
           className="border rounded-md p-2"
-          value={bidPrice}
+          value={inputValue}
           step={termPrice}
           min={highestPrice + termPrice}
           max={2000000000}
