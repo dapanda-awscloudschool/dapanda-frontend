@@ -201,7 +201,7 @@ const Slider = () => {
                         <h2 className="text-xl lg:text-3xl text-white">
                           <span className="relative">
                             <span
-                              className="block absolute -inset-1 -skew-y-3 bg-lime-800"
+                              className="block absolute -inset-1 -skew-y-3 bg-green-900"
                               aria-hidden="true"
                             ></span>
                             <span className="relative text-white">
@@ -212,7 +212,7 @@ const Slider = () => {
                         <h1 className="text-2xl lg:text-4xl font-semibold text-white mt-2">
                           <span className="relative">
                             <span
-                              className="block absolute -inset-1 -skew-y-3 bg-lime-800"
+                              className="block absolute -inset-1 -skew-y-3 bg-green-900"
                               aria-hidden="true"
                             ></span>
                             <span className="relative text-white">
@@ -244,7 +244,7 @@ const Slider = () => {
                       <h2 className="text-xl lg:text-3xl text-white">
                         <span className="relative">
                           <span
-                            className="block absolute -inset-1 -skew-y-3 bg-lime-800"
+                            className="block absolute -inset-1 -skew-y-3 bg-green-900"
                             aria-hidden="true"
                           ></span>
                           <span className="relative text-white">
@@ -258,7 +258,7 @@ const Slider = () => {
                       >
                         <span className="relative">
                           <span
-                            className="block absolute -inset-1 -skew-y-3 bg-lime-800"
+                            className="block absolute -inset-1 -skew-y-3 bg-green-900"
                             aria-hidden="true"
                           ></span>
                           <span className="relative text-white">

@@ -49,18 +49,19 @@ const formatTimeDifference = (ms: number) => {
 };
 
 const ProductList = ({
-  searchParams,
+  searchParams = {},
   maxItems,
   sortCriteria,
   sortOrder,
 }: {
-  searchParams: any;
+  searchParams?: any;
   maxItems?: number;
   sortCriteria?: string;
   sortOrder?: "asc" | "desc";
 }) => {
-  const searchQuery = searchParams?.name || "";
-  const sortQuery = searchParams?.sort || "";
+  const searchQuery = searchParams.name || "";
+  const sortQuery = searchParams.sort || sortCriteria;
+  const order = sortOrder || "desc";
 
   const fetcher = searchQuery
     ? () => searchProducts(searchQuery)
@@ -95,24 +96,32 @@ const ProductList = ({
   // Apply sorting logic based on sortQuery
   const sortedProducts = productList
     ? [...productList].sort((a, b) => {
-        if (sortQuery === "asc") {
-          return b.highest_price - a.highest_price;
-        } else if (sortQuery === "desc") {
-          return a.highest_price - b.highest_price;
-        } else if (sortQuery === "recent") {
-          return (
-            new Date(b.end_date).getTime() - new Date(a.end_date).getTime()
-          );
-        } else if (sortQuery === "old") {
-          return (
-            new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-          );
-        } else if (sortQuery === "bidders") {
-          return b.num_bid - a.num_bid;
-        } else if (sortQuery === "views") {
-          return b.view_num - a.view_num;
+        switch (sortQuery) {
+          case "asc":
+            return b.highest_price - a.highest_price;
+          case "desc":
+            return a.highest_price - b.highest_price;
+          case "recent":
+            return (
+              new Date(b.start_date).getTime() -
+              new Date(a.start_date).getTime()
+            );
+          case "old":
+            return (
+              new Date(a.start_date).getTime() -
+              new Date(b.start_date).getTime()
+            );
+          case "bidders":
+            return order === "asc"
+              ? a.num_bid - b.num_bid
+              : b.num_bid - a.num_bid;
+          case "views":
+            return order === "asc"
+              ? a.view_num - b.view_num
+              : b.view_num - a.view_num;
+          default:
+            return 0; // Default: no sorting
         }
-        return 0; // Default: no sorting
       })
     : [];
 
