@@ -32,7 +32,7 @@ const Add = ({ id }: IAdd) => {
 
   const handleWishlistClick = () => {
     if (isUserDataEmpty()) {
-      router.push("/login"); // 로그인 페이지로 이동
+      router.push("/login");
       return;
     }
     // 찜하기 로직 추가 필요
