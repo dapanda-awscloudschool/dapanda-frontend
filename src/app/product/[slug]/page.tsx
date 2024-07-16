@@ -48,10 +48,7 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
       <div className="w-full lg:w-1/2 lg:sticky top-20 h-max">
         <ProductImages product={product} />
       </div>
-      {/* TEXTS */}
       <div className="w-full lg:w-1/2 flex flex-col gap-6 mt-8">
-        {" "}
-        {/* 여기에 mt-8을 추가하여 여백을 줍니다 */}
         <h1 className="text-4xl font-medium">{product.product_name}</h1>
         <p className="text-gray-500">{product.product_info}</p>
         <div className="h-[2px] bg-gray-100" />

@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import { createProduct } from "@/components/Cart/action"; // createProduct 임포트
 import { UserContext } from "@/context/userContext";
 import { useRouter } from "next/navigation";
+import { FaRegQuestionCircle } from "react-icons/fa"; // 아이콘 임포트
+import { Modal, Box, Typography, Button } from "@mui/material"; // Material-UI 컴포넌트 임포트
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -14,6 +16,8 @@ const NavIcons = () => {
   const { isUserDataEmpty, userData } = useContext(UserContext);
   const cartRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false); // 도움말 모달 상태
 
   const memberId = userData[0]?.memberId || 0;
 
@@ -139,8 +143,16 @@ const NavIcons = () => {
     window.location.href = "/login";
   };
 
+  const handleHelpModalOpen = () => {
+    setIsHelpModalOpen(true);
+  };
+
+  const handleHelpModalClose = () => {
+    setIsHelpModalOpen(false);
+  };
+
   return (
-    <div className="flex items-center gap-4 text-sm">
+    <div className="flex items-center gap-5 text-sm">
       <div className="cursor-pointer">
         {isUserDataEmpty() ? (
           <div onClick={handleLogin}>로그인</div>
@@ -163,20 +175,41 @@ const NavIcons = () => {
       <button className="cursor-pointer" onClick={handleOpenPopup}>
         물품 등록하기
       </button>
-      {/* <div
-        className="relative cursor-pointer"
-        onClick={() => setIsCartOpen((prev) => !prev)}
+      <FaRegQuestionCircle
+        className="text-xl cursor-pointer"
+        onClick={handleHelpModalOpen}
+      />{" "}
+      {/* 도움말 모달 열기 */}
+      <Modal
+        open={isHelpModalOpen}
+        onClose={handleHelpModalClose}
+        aria-labelledby="help-modal-title"
+        aria-describedby="help-modal-description"
       >
-        <img src="/cart.png" alt="장바구니" width={22} height={22} />
-        <div className="absolute -top-4 -right-4 w-6 h-6 bg-dapanda rounded-full text-white text-sm flex items-center justify-center">
-          0
-        </div>
-      </div>
-      {isCartOpen && (
-        <div ref={cartRef}>
-          <CartModal />
-        </div>
-      )} */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="help-modal-title" variant="h6" component="h2">
+            서비스 사용 설명
+          </Typography>
+          <Typography id="help-modal-description" sx={{ mt: 2 }}>
+            여기에 서비스 사용에 대한 자세한 설명을 입력하세요.
+          </Typography>
+          <Button onClick={handleHelpModalClose} sx={{ mt: 2 }}>
+            닫기
+          </Button>
+        </Box>
+      </Modal>
     </div>
   );
 };

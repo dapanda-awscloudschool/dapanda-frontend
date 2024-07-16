@@ -17,6 +17,7 @@ import { GalleryIcon } from "./GalleryIcon";
 import { MusicIcon } from "./MusicIcon";
 import { VideoIcon } from "./videoIcon";
 import { UserContext } from "@/context/userContext";
+import { formatCurrency } from "@/components/formatCurrency";
 
 interface IMember {
   name: string;
@@ -244,24 +245,26 @@ const MyPage = () => {
       <h1 className="text-2xl font-bold mb-4">마이페이지</h1>
       <div className="border p-4 rounded-lg shadow-lg mb-8">
         <div className="flex items-center mb-4">
-          <Image
-            src="/images/DAPANDA.png"
-            alt="Profile Image"
-            width={80}
-            height={80}
-            className="rounded-full"
-          />
+          <div className="relative w-20 h-20 rounded-full overflow-hidden">
+            <Image
+              src="/pandaprofile.png"
+              alt="Profile Image"
+              layout="fill"
+              objectFit="cover"
+              className="rounded-full"
+            />
+          </div>
           <div className="ml-4">
             <p className="text-xl font-semibold">{profile.name}</p>
             <p>{profile.phone_num}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 mb-4">
-          <p>Email: {profile.email}</p>
-          <p>Delivery Address: {profile.address}</p>
+          <p>이메일: {profile.email}</p>
+          <p>배송지: {profile.address}</p>
         </div>
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-lime-600 text-white px-4 py-2 rounded"
           onClick={handleEditClick}
         >
           수정
@@ -308,8 +311,10 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>현재 입찰가: ${item.price}</p>
-                  {item.my_bid !== null && <p>내 입찰가: ${item.my_bid}</p>}
+                  <p>현재 입찰가: {formatCurrency(item.price)}</p>
+                  {item.my_bid !== null && (
+                    <p>내 입찰가: {formatCurrency(item.my_bid)}</p>
+                  )}
                 </div>
               </div>
             ))}
@@ -345,7 +350,7 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: ${item.end_price}</p>
+                  <p>종료가: {formatCurrency(item.end_price)}</p>
                   <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}
@@ -390,7 +395,7 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: ${item.end_price}</p>
+                  <p>종료가: {formatCurrency(item.end_price)}</p>
                   <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}
@@ -433,7 +438,7 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: ${item.end_price}</p>
+                  <p>현재가: {formatCurrency(item.end_price)}</p>
                   <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}
@@ -476,7 +481,7 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: ${item.end_price}</p>
+                  <p>종료가: {formatCurrency(item.end_price)}</p>
                   <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}

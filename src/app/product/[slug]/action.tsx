@@ -25,3 +25,22 @@ export async function getProductDetail(id: number) {
   //console.log(productDetail);
   return productDetail;
 }
+
+export async function getProductNoView(id: number) {
+  const res = await fetch(`${API_URL}/api/django/product_noview/${id}`, {
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+
+  const ProductNoView = await res.json();
+  //console.log(productDetail);
+  return ProductNoView;
+}
