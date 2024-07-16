@@ -121,7 +121,7 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
           <h3 className="text-medium font-medium text-gray-700">
             현재 입찰자:
           </h3>
-          <h2 className="font-medium text-xl">{product.award_member_id}</h2>
+          <h2 className="font-medium text-xl">{product.bid_member_name}</h2>
         </div>
         <div className="h-[2px] bg-gray-100" />
         <Add id={product.product_id} />

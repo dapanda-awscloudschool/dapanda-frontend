@@ -13,11 +13,20 @@ import {
   updateMember,
 } from "./action";
 import Image from "next/image";
+import Link from "next/link";
 import { GalleryIcon } from "./GalleryIcon";
 import { MusicIcon } from "./MusicIcon";
 import { VideoIcon } from "./videoIcon";
 import { UserContext } from "@/context/userContext";
 import { formatCurrency } from "@/components/formatCurrency";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Typography from "@mui/material/Typography";
+import "./style.css"; // CSS 파일을 불러오기
+import { getProductList } from "@/components/action";
 
 interface IMember {
   name: string;
@@ -54,6 +63,38 @@ interface Historyproduct {
   imageUrl: string;
 }
 
+interface IProduct {
+  product_id: number;
+  register_member: number;
+  category: string;
+  product_name: string;
+  register_date: string;
+  start_date: string;
+  end_date: string;
+  term_price: number;
+  start_price: number;
+  highest_price: number;
+  bid_member_name: null | string;
+  immediate_purchase_price: number;
+  immediate_purchase_status: number;
+  num_bid: number;
+  auction_status: number;
+  product_info: string;
+  file_count: number;
+  bid_member: null | number;
+  register_member_name: string;
+  imageUrl: string;
+  view_num: number;
+}
+
+const shuffleArray = (array: any[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 const MyPage = () => {
   const router = useRouter();
   const { userData } = useContext(UserContext);
@@ -68,10 +109,17 @@ const MyPage = () => {
   const [wishList, setWishList] = useState<IWishlist[]>([]);
   const [history, setHistory] = useState<Historyproduct[]>([]);
   const [bHistory, setBHistory] = useState<Historyproduct[]>([]);
-  const [saleBid, setSaleBid] = useState<Historyproduct[]>([]);
-  const [myBid, setMyBid] = useState<Historyproduct[]>([]);
+  const [saleBid, setSaleBid] = useState<IProduct[]>([]);
+  const [myBid, setMyBid] = useState<IProduct[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formValues, setFormValues] = useState(profile);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Historyproduct | null>(
+    null
+  );
+  const [recommendedProducts, setRecommendedProducts] = useState<IProduct[]>(
+    []
+  );
 
   useEffect(() => {
     async function fetchMemberInfo() {
@@ -195,12 +243,32 @@ const MyPage = () => {
       }
     }
 
+    async function fetchRecommendedProducts() {
+      try {
+        const data = await getProductList();
+        if (data && Array.isArray(data)) {
+          const shuffled = shuffleArray(
+            data.map((item) => ({
+              ...item,
+              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
+            }))
+          );
+          setRecommendedProducts(shuffled.slice(0, 2));
+        } else {
+          console.error("Invalid data structure:", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch recommended products:", error);
+      }
+    }
+
     fetchMemberInfo();
     fetchWishlist();
     fetchHistory();
     fetchBuyHistory();
     fetchSaleBid();
     fetchMyBid();
+    fetchRecommendedProducts(); // 추가된 부분
   }, [memberId]);
 
   const handleEditClick = () => {
@@ -238,6 +306,20 @@ const MyPage = () => {
     const now = new Date();
     const end = new Date(endDate);
     return now > end;
+  };
+
+  const handlePaymentClick = (
+    event: React.MouseEvent,
+    product: Historyproduct
+  ) => {
+    event.stopPropagation(); // 이벤트 전파를 막음
+    setSelectedProduct(product);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedProduct(null);
   };
 
   return (
@@ -348,18 +430,20 @@ const MyPage = () => {
                   height={80}
                   className="rounded-lg"
                 />
-                <div className="ml-4">
-                  <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: {formatCurrency(item.end_price)}</p>
-                  <p>입찰 횟수: {item.num_bid}</p>
-                  <p>
-                    상태:{" "}
-                    {isExpired(item.end_date)
-                      ? "판매 종료"
-                      : item.auction_status === 1
-                      ? "완료"
-                      : "진행 중"}
-                  </p>
+                <div className="ml-4 flex justify-between w-full items-center">
+                  <div>
+                    <p className="font-semibold">{item.product_name}</p>
+                    <p>종료가: {formatCurrency(item.end_price)}</p>
+                    <p>입찰 횟수: {item.num_bid}</p>
+                    <p>
+                      상태:{" "}
+                      {isExpired(item.end_date)
+                        ? "판매 종료"
+                        : item.auction_status === 1
+                        ? "완료"
+                        : "진행 중"}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -393,18 +477,28 @@ const MyPage = () => {
                   height={80}
                   className="rounded-lg"
                 />
-                <div className="ml-4">
-                  <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: {formatCurrency(item.end_price)}</p>
-                  <p>입찰 횟수: {item.num_bid}</p>
-                  <p>
-                    상태:{" "}
-                    {isExpired(item.end_date)
-                      ? "판매 종료"
-                      : item.auction_status === 1
-                      ? "완료"
-                      : "진행 중"}
-                  </p>
+                <div className="ml-4 flex justify-between w-full items-center">
+                  <div>
+                    <p className="font-semibold">{item.product_name}</p>
+                    <p>최종 입찰가: {formatCurrency(item.end_price)}</p>
+                    <p>입찰 횟수: {item.num_bid}</p>
+                    <p>
+                      상태:{" "}
+                      {isExpired(item.end_date)
+                        ? "판매 종료"
+                        : item.auction_status === 1
+                        ? "완료"
+                        : "진행 중"}
+                    </p>
+                  </div>
+                  {isExpired(item.end_date) && (
+                    <button
+                      className="bg-lime-600 text-white px-2 py-1 text-sm rounded"
+                      onClick={(e) => handlePaymentClick(e, item)}
+                    >
+                      결제하기
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -438,7 +532,7 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>현재가: {formatCurrency(item.end_price)}</p>
+                  <p>현재 입찰가: {formatCurrency(item.highest_price)}</p>
                   <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}
@@ -481,7 +575,7 @@ const MyPage = () => {
                 />
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
-                  <p>종료가: {formatCurrency(item.end_price)}</p>
+                  <p>현재 입찰가: {formatCurrency(item.highest_price)}</p>
                   <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}
@@ -577,6 +671,109 @@ const MyPage = () => {
           </div>
         </div>
       )}
+
+      <Dialog
+        open={isDialogOpen}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        classes={{ paper: "dialog-container" }}
+      >
+        <DialogTitle id="alert-dialog-title" className="dialog-title">
+          {"결제하기"}
+        </DialogTitle>
+        <DialogContent className="dialog-content">
+          <div className="dialog-left">
+            {selectedProduct && (
+              <div className="payment-dialog-content">
+                <Image
+                  src={selectedProduct.imageUrl}
+                  alt={selectedProduct.product_name}
+                  width={150}
+                  height={150}
+                  className="product-image"
+                />
+                <Typography variant="h6" style={{ marginBottom: "10px" }}>
+                  {selectedProduct.product_name}
+                </Typography>
+                <div className="price-summary">
+                  <div className="price-row">
+                    <span className="price-label">상품금액:</span>
+                    <span className="price-value">
+                      {formatCurrency(selectedProduct.end_price)}
+                    </span>
+                  </div>
+                  <div className="price-row">
+                    <span className="price-label">배송비:</span>
+                    <span className="price-value">{formatCurrency(2500)}</span>
+                  </div>
+                  <div className="price-row bold">
+                    <span className="price-label">최종 결제 금액:</span>
+                    <span className="price-value">
+                      {formatCurrency(selectedProduct.end_price + 2500)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="dialog-right">
+            <Typography variant="h6" style={{ marginBottom: "10px" }}>
+              배송 정보
+            </Typography>
+            <Typography variant="body2" style={{ marginBottom: "10px" }}>
+              예상 배송일: {new Date().toLocaleDateString()} ~{" "}
+              {new Date(
+                Date.now() + 7 * 24 * 60 * 60 * 1000
+              ).toLocaleDateString()}
+            </Typography>
+            <Typography variant="body2" style={{ marginBottom: "20px" }}>
+              배송 상태: 준비 중
+            </Typography>
+            <Typography variant="h6" style={{ marginBottom: "10px" }}>
+              추천 상품
+            </Typography>
+            <div className="recommended-products">
+              {recommendedProducts.map((product) => (
+                <Link
+                  key={product.product_id}
+                  href={`/product/${product.product_id}`}
+                >
+                  <div className="recommended-product">
+                    <Image
+                      src={product.imageUrl}
+                      alt={product.product_name}
+                      width={100}
+                      height={100}
+                      className="rounded-lg"
+                    />
+                    <div>
+                      <Typography variant="body2">
+                        {product.product_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        {formatCurrency(product.highest_price)}
+                      </Typography>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions className="dialog-actions">
+          <Button onClick={handleCloseDialog} className="secondary-button">
+            취소
+          </Button>
+          <Button
+            onClick={() => console.log("결제 처리 로직")}
+            className="primary-button"
+            autoFocus
+          >
+            결제하기
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

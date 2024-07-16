@@ -1,0 +1,148 @@
+.dialog-container {
+  max-width: 1200px;
+  width: 90%;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.dialog-left {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.dialog-right {
+  flex: 1;
+  padding-left: 20px;
+  border-left: 1px solid #e0e0e0;
+}
+
+.dialog-title {
+  text-align: center;
+  font-weight: bold;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 20px;
+  text-align: left;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
+.product-image {
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.price-summary {
+  width: 100%;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 20px;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.price-row.bold {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #d32f2f;
+}
+
+.price-label {
+  font-size: 1em;
+}
+
+.price-value {
+  font-size: 1em;
+}
+
+.button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.primary-button {
+  background-color: #1e88e5;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-color: #1565c0;
+}
+
+.secondary-button {
+  background-color: #e0e0e0;
+  color: black;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background-color: #bdbdbd;
+}
+
+.form-control {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.form-control label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-control input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-control textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+}
+
+.recommended-products {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.recommended-product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
