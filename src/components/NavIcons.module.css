@@ -1,0 +1,23 @@
+/* NavIcons.module.css */
+.navigationButtons {
+  display: flex;
+  justify-content: space-between; /* 좌우로 나눠서 정렬 */
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.leftButton {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.rightButton {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.navButton {
+  margin: 0 10px;
+}

@@ -1,17 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState, useEffect, useRef, useContext } from "react";
-import CartModal from "./Cart/CartModal";
-import Swal from "sweetalert2";
-import { createProduct } from "@/components/Cart/action";
-import { UserContext } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import { FaRegQuestionCircle } from "react-icons/fa";
-import { Modal, Box, Typography, Button } from "@mui/material";
+import { Modal, Box, Typography, Button, IconButton } from "@mui/material";
 import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { UserContext } from "@/context/userContext";
+import Swal from "sweetalert2";
+import { createProduct } from "@/components/Cart/action";
+import styles from "./NavIcons.module.css"; // 스타일 모듈을 사용합니다
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -21,6 +20,7 @@ const NavIcons = () => {
   const router = useRouter();
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
 
   const memberId = userData[0]?.memberId || 0;
 
@@ -158,13 +158,58 @@ const NavIcons = () => {
     setIsHelpModalOpen(false);
   };
 
+  const nextSlide = () => {
+    setSlideIndex((prevIndex) => (prevIndex + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setSlideIndex(
+      (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
+    );
+  };
+
+  const slides = [
+    {
+      title: "DAPANDA 이용 방법",
+      subtitle: "물품 등록하는 법",
+      images: [
+        "/useOurService/1.png",
+        "/useOurService/2.png",
+        "/useOurService/3.png",
+        "/useOurService/4.png",
+        "/useOurService/5.png",
+        "/useOurService/6.png",
+      ],
+    },
+    {
+      title: "DAPANDA 이용 방법",
+      subtitle: "입찰하는 법",
+      images: [
+        "/Bid/1.png",
+        "/Bid/2.png",
+        "/Bid/3.png",
+        "/Bid/4.png",
+        "/Bid/5.png",
+        "/Bid/6.png",
+        "/Bid/7.png",
+        "/Bid/8.png",
+        "/Bid/9.png",
+        // 필요한 만큼 추가
+      ],
+    },
+  ];
+
   return (
     <div className="flex items-center gap-5 text-sm justify-center">
       <div className="cursor-pointer">
         {isUserDataEmpty() ? (
-          <div onClick={handleLogin}>로그인</div>
+          <div onClick={handleLogin} style={{ margin: "0 10px" }}>
+            로그인
+          </div>
         ) : (
-          <div onClick={handleLogout}>로그아웃</div>
+          <div onClick={handleLogout} style={{ margin: "0 10px" }}>
+            로그아웃
+          </div>
         )}
       </div>
       <div
@@ -176,15 +221,21 @@ const NavIcons = () => {
           }
           router.push("/mypage");
         }}
+        style={{ margin: "0 10px" }}
       >
         마이페이지
       </div>
-      <button className="cursor-pointer" onClick={handleOpenPopup}>
+      <button
+        className="cursor-pointer"
+        onClick={handleOpenPopup}
+        style={{ margin: "0 10px" }}
+      >
         물품 등록하기
       </button>
       <FaRegQuestionCircle
         className="text-xl cursor-pointer"
         onClick={handleHelpModalOpen}
+        style={{ margin: "0 10px" }}
       />
       {/* 도움말 모달 열기 */}
       <Modal
@@ -199,14 +250,15 @@ const NavIcons = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "80%", // 넓은 모달
+            width: "80%",
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,
             p: 4,
-            maxHeight: "90vh", // 세로 스크롤 가능하도록
+            maxHeight: "90vh",
+            overflowX: "hidden",
             overflowY: "auto",
-            textAlign: "center", // 중앙 정렬
+            textAlign: "center",
           }}
         >
           <Typography
@@ -217,110 +269,86 @@ const NavIcons = () => {
               fontWeight: "bold",
               mb: 2,
               fontFamily: "Arial, sans-serif",
-              color: "#4CAF50",
-            }} // 제목 폰트 스타일 변경
+              color: "#000000",
+            }}
+            data-aos="fade-up"
           >
-            DAPANDA 이용 방법
+            {slides[slideIndex].title}
           </Typography>
           <Typography
             id="help-modal-description"
             variant="h5"
-            sx={{ mt: 2, fontFamily: "Arial, sans-serif", color: "#FF5722" }} // 중간 제목 폰트 스타일 변경
-            data-aos="fade-up" // AOS 애니메이션 속성 추가
+            sx={{
+              mt: 2,
+              fontWeight: "bold",
+              fontFamily: "Arial, sans-serif",
+              color: "#000000",
+              marginBottom: "20px", // Add marginBottom here
+            }}
+            data-aos="fade-up"
           >
-            물품 등록하기
+            {slides[slideIndex].subtitle}
           </Typography>
           <div
             style={{
               display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "20px",
             }}
+            data-aos="fade-up"
           >
-            <Image
-              src="/useOurService/1.png"
-              alt="사용 설명 1"
-              width={1000}
-              height={600}
-              data-aos="fade-up"
-            />
+            {slides[slideIndex].images.map((src, index) => (
+              <div
+                key={index}
+                style={{
+                  width: "100%",
+                  maxWidth: "1000px",
+                  position: "relative",
+                  aspectRatio: "16/9",
+                  marginBottom: "20px", // 각 이미지 사이의 간격 추가
+                  border: "2px solid #4CAF50", // 이미지 테두리 추가
+                  marginTop: index === 0 ? "20px" : "0", // Add marginTop to the first image
+                }}
+              >
+                <Image
+                  src={src}
+                  alt={`사용 설명 ${index + 1}`}
+                  fill
+                  sizes="(max-width: 1000px) 100vw, 1000px"
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
+            ))}
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
+          <div className={styles.navigationButtons}>
+            <div className={styles.leftButton}>
+              {slideIndex > 0 && (
+                <Button
+                  onClick={prevSlide}
+                  className={styles.navButton}
+                  sx={{ backgroundColor: "#4CAF50", color: "#fff" }}
+                >
+                  이전
+                </Button>
+              )}
+            </div>
+            <div className={styles.rightButton}>
+              {slideIndex < slides.length - 1 && (
+                <Button
+                  onClick={nextSlide}
+                  className={styles.navButton}
+                  sx={{ backgroundColor: "#4CAF50", color: "#fff" }}
+                >
+                  다음
+                </Button>
+              )}
+            </div>
+          </div>
+          <Button
+            onClick={handleHelpModalClose}
+            sx={{ backgroundColor: "#4CAF50", color: "#fff", mt: 2 }}
           >
-            <Image
-              src="/useOurService/2.png"
-              alt="사용 설명 2"
-              width={1000}
-              height={600}
-              data-aos="fade-up"
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
-          >
-            <Image
-              src="/useOurService/3.png"
-              alt="사용 설명 3"
-              width={1000}
-              height={600}
-              data-aos="fade-up"
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
-          >
-            <Image
-              src="/useOurService/4.png"
-              alt="사용 설명 4"
-              width={1000}
-              height={600}
-              data-aos="fade-up"
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
-          >
-            <Image
-              src="/useOurService/5.png"
-              alt="사용 설명 5"
-              width={1000}
-              height={600}
-              data-aos="fade-up"
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
-          >
-            <Image
-              src="/useOurService/6.png"
-              alt="사용 설명 6"
-              width={1000}
-              height={600}
-              data-aos="fade-up"
-            />
-          </div>
-          <Button onClick={handleHelpModalClose} sx={{ mt: 2 }}>
             닫기
           </Button>
         </Box>
