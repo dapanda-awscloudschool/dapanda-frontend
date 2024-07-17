@@ -47,7 +47,7 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
             wrapper: "gap-0 overflow-visible h-12 rounded  border-divider",
             item: "w-10 h-10 text-medium rounded-none bg-transparent",
             cursor:
-              "bg-gradient-to-b shadow-lg from-orange-500 to-orange-800 dark:from-default-300 dark:to-default-100 text-white font-bold",
+              "bg-gradient-to-b shadow-lg from-lime-200 to-lime-600 dark:from-default-300 dark:to-default-50 text-white font-bold",
           }}
         />
       </div>

@@ -16,6 +16,7 @@
     "@stomp/stompjs": "^7.0.0",
     "@types/moment": "^2.13.0",
     "amqplib": "^0.10.4",
+    "aos": "^2.3.4",
     "aws-cdk-lib": "^2.148.0",
     "aws-sdk": "^2.1656.0",
     "framer-motion": "^11.2.10",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.5",
+    "@types/aos": "^3.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

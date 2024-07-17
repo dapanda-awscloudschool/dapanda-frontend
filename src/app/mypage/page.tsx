@@ -330,6 +330,23 @@ const MyPage = () => {
       try {
         await payStatusCreate(selectedProduct.product_id, 1);
         setIsPaymentCompleted(true); // 결제 완료 상태 설정
+
+        // 결제 상태를 업데이트합니다.
+        setHistory((prevHistory) =>
+          prevHistory.map((item) =>
+            item.product_id === selectedProduct.product_id
+              ? { ...item, pay_status: 1 }
+              : item
+          )
+        );
+
+        setBHistory((prevBHistory) =>
+          prevBHistory.map((item) =>
+            item.product_id === selectedProduct.product_id
+              ? { ...item, pay_status: 1 }
+              : item
+          )
+        );
       } catch (error) {
         console.error("Failed to update pay status:", error);
       } finally {
@@ -376,9 +393,9 @@ const MyPage = () => {
         classNames={{
           tabList:
             "gap-6 w-full relative rounded-none p-0 border-b border-divider",
-          cursor: "w-full bg-[#22d3ee]",
+          cursor: "w-full bg-lime-600",
           tab: "max-w-fit px-0 h-12",
-          tabContent: "group-data-[selected=true]:text-[#06b6d4]",
+          tabContent: "group-data-[selected=true]:text-lime-600",
         }}
       >
         <Tab
@@ -661,7 +678,7 @@ const MyPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium">
+                <label htmlFor="email" className="block text.sm font-medium">
                   이메일
                 </label>
                 <input
@@ -670,7 +687,7 @@ const MyPage = () => {
                   name="email"
                   value={formValues.email}
                   onChange={handleChange}
-                  className="mt-1 p-2 w-full border rounded"
+                  className="mt-1 p-2 w.full border rounded"
                 />
               </div>
               <div className="flex justify-end">
@@ -799,15 +816,38 @@ const MyPage = () => {
 
       {isPaymentCompleted && ( // 결제 완료 모달
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-2xl font-bold mb-4">결제 완료</h2>
-            <p>결제가 성공적으로 완료되었습니다!</p>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-              onClick={() => setIsPaymentCompleted(false)}
-            >
-              확인
-            </button>
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full relative">
+            <div className="absolute inset-0 z-0">
+              <img
+                src="/images/firework.gif" // 업로드된 GIF 파일 경로로 변경 필요
+                alt="불꽃놀이"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="relative z-10 text-center">
+              <h2 className="text-2xl font-bold mb-4">축하합니다!</h2>
+              <p className="font-bold mb-4">
+                결제가 성공적으로 완료되었습니다.
+              </p>
+              <div className="flex justify-center mb-4">
+                <Image
+                  src="/DAPANDA.png"
+                  alt="결제 완료"
+                  width={300}
+                  height={300}
+                  className="rounded-lg"
+                />
+              </div>
+              <button
+                className="bg-lime-600 text-white px-4 py-2 rounded mt-4"
+                onClick={() => {
+                  setIsPaymentCompleted(false);
+                  setSelectedProduct(null);
+                }}
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
       )}

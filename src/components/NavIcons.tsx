@@ -4,11 +4,14 @@ import Link from "next/link";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import CartModal from "./Cart/CartModal";
 import Swal from "sweetalert2";
-import { createProduct } from "@/components/Cart/action"; // createProduct 임포트
+import { createProduct } from "@/components/Cart/action";
 import { UserContext } from "@/context/userContext";
 import { useRouter } from "next/navigation";
-import { FaRegQuestionCircle } from "react-icons/fa"; // 아이콘 임포트
-import { Modal, Box, Typography, Button } from "@mui/material"; // Material-UI 컴포넌트 임포트
+import { FaRegQuestionCircle } from "react-icons/fa";
+import { Modal, Box, Typography, Button } from "@mui/material";
+import Image from "next/image";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -17,7 +20,7 @@ const NavIcons = () => {
   const cartRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false); // 도움말 모달 상태
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
   const memberId = userData[0]?.memberId || 0;
 
@@ -27,14 +30,18 @@ const NavIcons = () => {
     term_price: 0,
     start_price: 0,
     product_info: "",
-    register_member: memberId, // UserContext에서 가져온 memberId로 대체
+    register_member: memberId,
   });
+
+  useEffect(() => {
+    AOS.init({ duration: 1200 });
+  }, []);
 
   const handleLogout = async () => {
     localStorage.removeItem("userData");
     localStorage.removeItem("wishlist");
-    setIsLoggined(false); // 로그아웃 시 로그인 상태를 false로 변경
-    window.location.reload(); // 페이지 새로고침
+    setIsLoggined(false);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -113,7 +120,7 @@ const NavIcons = () => {
           const formData = result.value;
           formData.append(
             "register_member",
-            formValues.register_member.toString() // String으로 변환하여 추가
+            formValues.register_member.toString()
           );
 
           const productResult = await createProduct(formData);
@@ -152,7 +159,7 @@ const NavIcons = () => {
   };
 
   return (
-    <div className="flex items-center gap-5 text-sm">
+    <div className="flex items-center gap-5 text-sm justify-center">
       <div className="cursor-pointer">
         {isUserDataEmpty() ? (
           <div onClick={handleLogin}>로그인</div>
@@ -178,7 +185,7 @@ const NavIcons = () => {
       <FaRegQuestionCircle
         className="text-xl cursor-pointer"
         onClick={handleHelpModalOpen}
-      />{" "}
+      />
       {/* 도움말 모달 열기 */}
       <Modal
         open={isHelpModalOpen}
@@ -192,19 +199,127 @@ const NavIcons = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: "80%", // 넓은 모달
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,
             p: 4,
+            maxHeight: "90vh", // 세로 스크롤 가능하도록
+            overflowY: "auto",
+            textAlign: "center", // 중앙 정렬
           }}
         >
-          <Typography id="help-modal-title" variant="h6" component="h2">
-            서비스 사용 설명
+          <Typography
+            id="help-modal-title"
+            variant="h3"
+            component="h2"
+            sx={{
+              fontWeight: "bold",
+              mb: 2,
+              fontFamily: "Arial, sans-serif",
+              color: "#4CAF50",
+            }} // 제목 폰트 스타일 변경
+          >
+            DAPANDA 이용 방법
           </Typography>
-          <Typography id="help-modal-description" sx={{ mt: 2 }}>
-            여기에 서비스 사용에 대한 자세한 설명을 입력하세요.
+          <Typography
+            id="help-modal-description"
+            variant="h5"
+            sx={{ mt: 2, fontFamily: "Arial, sans-serif", color: "#FF5722" }} // 중간 제목 폰트 스타일 변경
+            data-aos="fade-up" // AOS 애니메이션 속성 추가
+          >
+            물품 등록하기
           </Typography>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Image
+              src="/useOurService/1.png"
+              alt="사용 설명 1"
+              width={1000}
+              height={600}
+              data-aos="fade-up"
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Image
+              src="/useOurService/2.png"
+              alt="사용 설명 2"
+              width={1000}
+              height={600}
+              data-aos="fade-up"
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Image
+              src="/useOurService/3.png"
+              alt="사용 설명 3"
+              width={1000}
+              height={600}
+              data-aos="fade-up"
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Image
+              src="/useOurService/4.png"
+              alt="사용 설명 4"
+              width={1000}
+              height={600}
+              data-aos="fade-up"
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Image
+              src="/useOurService/5.png"
+              alt="사용 설명 5"
+              width={1000}
+              height={600}
+              data-aos="fade-up"
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
+          >
+            <Image
+              src="/useOurService/6.png"
+              alt="사용 설명 6"
+              width={1000}
+              height={600}
+              data-aos="fade-up"
+            />
+          </div>
           <Button onClick={handleHelpModalClose} sx={{ mt: 2 }}>
             닫기
           </Button>
