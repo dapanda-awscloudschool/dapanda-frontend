@@ -11,6 +11,7 @@ import {
   salebid,
   mybid,
   updateMember,
+  payStatusCreate,
 } from "./action";
 import Image from "next/image";
 import Link from "next/link";
@@ -61,6 +62,7 @@ interface Historyproduct {
   register_member_id: number;
   award_member_id: number;
   imageUrl: string;
+  pay_status: number; // pay_status 추가
 }
 
 interface IProduct {
@@ -120,6 +122,7 @@ const MyPage = () => {
   const [recommendedProducts, setRecommendedProducts] = useState<IProduct[]>(
     []
   );
+  const [isPaymentCompleted, setIsPaymentCompleted] = useState(false); // 결제 완료 상태 추가
 
   useEffect(() => {
     async function fetchMemberInfo() {
@@ -322,6 +325,19 @@ const MyPage = () => {
     setSelectedProduct(null);
   };
 
+  const handlePaymentConfirm = async () => {
+    if (selectedProduct) {
+      try {
+        await payStatusCreate(selectedProduct.product_id, 1);
+        setIsPaymentCompleted(true); // 결제 완료 상태 설정
+      } catch (error) {
+        console.error("Failed to update pay status:", error);
+      } finally {
+        setIsDialogOpen(false);
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">마이페이지</h1>
@@ -493,10 +509,15 @@ const MyPage = () => {
                   </div>
                   {isExpired(item.end_date) && (
                     <button
-                      className="bg-lime-600 text-white px-2 py-1 text-sm rounded"
+                      className={`${
+                        item.pay_status === 1
+                          ? "bg-lime-200 cursor-not-allowed"
+                          : "bg-lime-600"
+                      } text-white px-2 py-1 text-sm rounded`}
                       onClick={(e) => handlePaymentClick(e, item)}
+                      disabled={item.pay_status === 1} // 결제 상태에 따른 버튼 비활성화
                     >
-                      결제하기
+                      {item.pay_status === 1 ? "결제 완료" : "결제하기"}
                     </button>
                   )}
                 </div>
@@ -766,14 +787,30 @@ const MyPage = () => {
             취소
           </Button>
           <Button
-            onClick={() => console.log("결제 처리 로직")}
+            onClick={handlePaymentConfirm}
             className="primary-button"
             autoFocus
+            disabled={selectedProduct?.pay_status === 1} // 결제 상태에 따른 버튼 비활성화
           >
-            결제하기
+            {selectedProduct?.pay_status === 1 ? "결제 완료" : "결제하기"}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {isPaymentCompleted && ( // 결제 완료 모달
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">결제 완료</h2>
+            <p>결제가 성공적으로 완료되었습니다!</p>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+              onClick={() => setIsPaymentCompleted(false)}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

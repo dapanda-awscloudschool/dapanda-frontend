@@ -135,3 +135,21 @@ export async function updateMember(id: number, data: any) {
   console.log(updateMember);
   return updatedMember;
 }
+
+// 새로운 payStatusCreate 함수 추가
+export async function payStatusCreate(productId: number, payStatus: number) {
+  const res = await fetch(`${DJANGO}/api/django/pay_status/${productId}/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ product_id: productId, pay_status: payStatus }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update pay status");
+  }
+
+  const updatedStatus = await res.json();
+  return updatedStatus;
+}
