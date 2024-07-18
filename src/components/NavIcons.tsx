@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { Modal, Box, Typography, Button } from "@mui/material";
 import Image from "next/image";
@@ -18,6 +18,7 @@ const NavIcons = () => {
   const { isUserDataEmpty, userData } = useContext(UserContext);
   const cartRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -37,12 +38,14 @@ const NavIcons = () => {
     AOS.init({ duration: 1200 });
 
     // Check if the user is new and open the help modal if true
-    const isNewUser = localStorage.getItem("isNewUser");
-    if (isNewUser === "true") {
-      setIsHelpModalOpen(true);
-      localStorage.removeItem("isNewUser");
+    if (pathname === "/") {
+      const isNewUser = localStorage.getItem("isNewUser");
+      if (isNewUser === "true") {
+        setIsHelpModalOpen(true);
+        localStorage.removeItem("isNewUser");
+      }
     }
-  }, []);
+  }, [pathname]);
 
   const handleLogout = async () => {
     localStorage.removeItem("userData");
