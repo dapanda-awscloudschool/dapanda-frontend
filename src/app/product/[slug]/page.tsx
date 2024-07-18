@@ -19,16 +19,17 @@ const formatDate = (dateString: string) => {
 };
 
 const formatTimeDifference = (ms: number) => {
-  const totalMinutes = Math.floor(ms / 1000 / 60);
+  const totalSeconds = Math.ceil(ms / 1000);
+  const totalMinutes = Math.ceil(totalSeconds / 60);
   const minutes = totalMinutes % 60;
-  const totalHours = Math.floor(totalMinutes / 60);
+  const totalHours = Math.ceil(totalMinutes / 60);
   const hours = totalHours % 24;
   const days = Math.floor(totalHours / 24);
 
   const parts = [];
   if (days > 0) parts.push(`${days}일`);
   if (hours > 0) parts.push(`${hours}시간`);
-  if (minutes > 0) parts.push(`${minutes}분`);
+  if (minutes > 0 || (days === 0 && hours === 0)) parts.push(`${minutes}분`);
 
   return parts.join(" ");
 };

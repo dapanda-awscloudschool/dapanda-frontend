@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="text-xl font-semibold">
               네고에 지친 당신, Welcome to
             </div>
-            <div className="flex items-center text-5xl text-white font-semibold">
+            <div className="flex items-center text-5xl text-teal-800 font-semibold">
               DAPANDA
               <Image
                 src="/images/sleeping.gif"
