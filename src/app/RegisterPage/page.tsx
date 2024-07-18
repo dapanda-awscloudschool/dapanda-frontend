@@ -21,7 +21,6 @@ const RegisterPage = () => {
   const handleRegister = async () => {
     setIsLoading(true);
     try {
-      // LoginAPI 호출 시 모든 인자를 제공
       const data = await LoginAPI(
         userData[0].memberString,
         userData[0].email,
@@ -29,14 +28,12 @@ const RegisterPage = () => {
         phoneNum,
         address
       );
-      console.log("register page", data);
-
-      // 회원 등록 성공 후 사용자 정보 다시 가져오기
       const updatedUserData = await checkUser(userData[0].memberString);
       if (updatedUserData !== "null") {
         const parsedUserData = JSON.parse(updatedUserData);
         setUserData([parsedUserData]);
         localStorage.setItem("userData", JSON.stringify(parsedUserData));
+        localStorage.setItem("isNewUser", "true"); // New user flag 추가
 
         const wishListString = await getWishlist(parsedUserData.memberId);
         localStorage.setItem("wishlist", JSON.stringify(wishListString));
@@ -47,7 +44,7 @@ const RegisterPage = () => {
         title: "등록 성공",
         text: "회원 정보가 성공적으로 등록되었습니다!",
       }).then(() => {
-        router.push("/"); // 메인 페이지로 이동
+        router.push("/");
       });
     } catch (error) {
       console.error("Error during registration:", error);

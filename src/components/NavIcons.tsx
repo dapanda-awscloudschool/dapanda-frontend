@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { FaRegQuestionCircle } from "react-icons/fa";
-import { Modal, Box, Typography, Button, IconButton } from "@mui/material";
+import { Modal, Box, Typography, Button } from "@mui/material";
 import Image from "next/image";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { UserContext } from "@/context/userContext";
 import Swal from "sweetalert2";
 import { createProduct } from "@/components/Cart/action";
-import styles from "./NavIcons.module.css"; // 스타일 모듈을 사용합니다
+import styles from "./NavIcons.module.css";
 
 const NavIcons = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -35,6 +35,13 @@ const NavIcons = () => {
 
   useEffect(() => {
     AOS.init({ duration: 1200 });
+
+    // Check if the user is new and open the help modal if true
+    const isNewUser = localStorage.getItem("isNewUser");
+    if (isNewUser === "true") {
+      setIsHelpModalOpen(true);
+      localStorage.removeItem("isNewUser");
+    }
   }, []);
 
   const handleLogout = async () => {
