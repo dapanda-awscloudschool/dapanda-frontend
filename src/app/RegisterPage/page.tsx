@@ -3,19 +3,20 @@
 import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import { UserContext } from "@/context/userContext";
-import { LoginAPI } from "../login/action";
+import { LoginAPI } from "../login/action"; // checkUser 및 getWishlist 가져오기
+import { checkUser } from "../auth/action";
+import { getWishlist } from "../auth/action";
 import Swal from "sweetalert2"; // SweetAlert2 import
 
 const RegisterPage = () => {
   const router = useRouter();
-  const { userData } = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
   const [address, setAddress] = useState("");
-  const [userId, setUserId] = useState("");
 
   const handleRegister = async () => {
     setIsLoading(true);
@@ -29,6 +30,17 @@ const RegisterPage = () => {
         address
       );
       console.log("register page", data);
+
+      // 회원 등록 성공 후 사용자 정보 다시 가져오기
+      const updatedUserData = await checkUser(userData[0].memberString);
+      if (updatedUserData !== "null") {
+        const parsedUserData = JSON.parse(updatedUserData);
+        setUserData([parsedUserData]);
+        localStorage.setItem("userData", JSON.stringify(parsedUserData));
+
+        const wishListString = await getWishlist(parsedUserData.memberId);
+        localStorage.setItem("wishlist", JSON.stringify(wishListString));
+      }
 
       Swal.fire({
         icon: "success",
