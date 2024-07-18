@@ -4,8 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useContext } from "react";
 import { UserContext } from "@/context/userContext";
 import { LoginAPI } from "../login/action"; // checkUser 및 getWishlist 가져오기
-import { checkUser } from "../auth/action";
-import { getWishlist } from "../auth/action";
+import { checkUser, getWishlist } from "../auth/action";
 import Swal from "sweetalert2"; // SweetAlert2 import
 
 const RegisterPage = () => {
@@ -33,7 +32,7 @@ const RegisterPage = () => {
         const parsedUserData = JSON.parse(updatedUserData);
         setUserData([parsedUserData]);
         localStorage.setItem("userData", JSON.stringify(parsedUserData));
-        localStorage.setItem("isNewUser", "true"); // New user flag 추가
+        localStorage.setItem("isNewUser", "true"); // New user flag 설정
 
         const wishListString = await getWishlist(parsedUserData.memberId);
         localStorage.setItem("wishlist", JSON.stringify(wishListString));

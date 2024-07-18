@@ -201,7 +201,6 @@ const NavIcons = () => {
         "/Bid/7.png",
         "/Bid/8.png",
         "/Bid/9.png",
-        // 필요한 만큼 추가
       ],
     },
   ];
