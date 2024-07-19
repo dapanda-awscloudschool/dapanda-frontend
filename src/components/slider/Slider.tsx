@@ -310,7 +310,7 @@ const Slider = () => {
                                 className="object-cover border border-gray-500 rounded-md h-[230px] w-[340px]" // 고정된 높이 설정
                                 onError={(e) => {
                                   (e.currentTarget as HTMLImageElement).src =
-                                    "/images/soldout.png";
+                                    "/images/expired.png";
                                 }}
                               />
                               <div className="mt-4">

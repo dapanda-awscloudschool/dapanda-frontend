@@ -26,7 +26,7 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
   // 디폴트 이미지 설정
   const defaultImage = {
     id: 0,
-    url: "/images/soldout.png",
+    url: "/images/expired.png",
   };
 
   // 이미지 배열이 비어 있는 경우 디폴트 이미지 사용
@@ -46,13 +46,13 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover rounded-md"
           onError={(e) => {
-            (e.currentTarget as HTMLImageElement).src = "/images/soldout.png";
+            (e.currentTarget as HTMLImageElement).src = "/images/expired.png";
           }}
         />
         {isSoldOut && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <Image
-              src="/images/soldout.png" // "SOLD OUT" 이미지의 경로
+              src="/images/expired.png" // "SOLD OUT" 이미지의 경로
               alt="Sold Out"
               width={500} // 필요한 크기로 조정
               height={500} // 필요한 크기로 조정
@@ -76,7 +76,7 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
               className="object-cover rounded-md"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src =
-                  "/images/soldout.png";
+                  "/images/expired.png";
               }}
             />
           </div>

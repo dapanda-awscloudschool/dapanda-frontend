@@ -170,7 +170,7 @@ const ProductList = ({
                         `Failed to load image for product ${product.product_id}: ${e.currentTarget.src}`
                       );
                       (e.currentTarget as HTMLImageElement).src =
-                        "/images/soldout.png";
+                        "/images/expired.png";
                     }}
                   />
                 </div>

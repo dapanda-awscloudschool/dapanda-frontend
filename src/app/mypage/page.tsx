@@ -15,9 +15,11 @@ import {
 } from "./action";
 import Image from "next/image";
 import Link from "next/link";
-import { GalleryIcon } from "./GalleryIcon";
-import { MusicIcon } from "./MusicIcon";
-import { VideoIcon } from "./videoIcon";
+import { Heart } from "./Heart";
+import { HourglassExpired } from "./HourglassExpired";
+import { Check } from "./Check";
+import { Auction } from "./Auction";
+import { HourglassActive } from "./HourglassActive";
 import { UserContext } from "@/context/userContext";
 import { formatCurrency } from "@/components/formatCurrency";
 import Button from "@mui/material/Button";
@@ -402,7 +404,7 @@ const MyPage = () => {
           key="wishlist"
           title={
             <div className="flex items-center space-x-2">
-              <GalleryIcon />
+              <Heart />
               <span>찜 목록</span>
               <Chip size="sm" variant="faded">
                 {wishList.length}
@@ -436,25 +438,23 @@ const MyPage = () => {
           </div>
         </Tab>
         <Tab
-          key="sales"
+          key="mybid"
           title={
             <div className="flex items-center space-x-2">
-              <MusicIcon />
-              <span>나의 과거 판매 목록</span>
+              <Auction />
+              <span>입찰 목록</span>
               <Chip size="sm" variant="faded">
-                {history.length}
+                {myBid.length}
               </Chip>
             </div>
           }
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            {history.map((item) => (
+            {myBid.map((item) => (
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() =>
-                  router.push(`/product_history/${item.product_id}`)
-                }
+                onClick={() => router.push(`/product/${item.product_id}`)}
               >
                 <Image
                   src={item.imageUrl}
@@ -463,20 +463,18 @@ const MyPage = () => {
                   height={80}
                   className="rounded-lg"
                 />
-                <div className="ml-4 flex justify-between w-full items-center">
-                  <div>
-                    <p className="font-semibold">{item.product_name}</p>
-                    <p>종료가: {formatCurrency(item.end_price)}</p>
-                    <p>입찰 횟수: {item.num_bid}</p>
-                    <p>
-                      상태:{" "}
-                      {isExpired(item.end_date)
-                        ? "판매 종료"
-                        : item.auction_status === 1
-                        ? "완료"
-                        : "진행 중"}
-                    </p>
-                  </div>
+                <div className="ml-4">
+                  <p className="font-semibold">{item.product_name}</p>
+                  <p>현재 입찰가: {formatCurrency(item.highest_price)}</p>
+                  <p>입찰 횟수: {item.num_bid}</p>
+                  <p>
+                    상태:{" "}
+                    {isExpired(item.end_date)
+                      ? "판매 종료"
+                      : item.auction_status === 1
+                      ? "완료"
+                      : "진행 중"}
+                  </p>
                 </div>
               </div>
             ))}
@@ -486,8 +484,8 @@ const MyPage = () => {
           key="purchases"
           title={
             <div className="flex items-center space-x-2">
-              <VideoIcon />
-              <span>나의 과거 구매 목록</span>
+              <Check />
+              <span>낙찰 목록</span>
               <Chip size="sm" variant="faded">
                 {bHistory.length}
               </Chip>
@@ -546,8 +544,8 @@ const MyPage = () => {
           key="salebid"
           title={
             <div className="flex items-center space-x-2">
-              <VideoIcon />
-              <span>현재 진행중인 나의 경매 목록</span>
+              <HourglassActive />
+              <span>진행중인 경매 목록</span>
               <Chip size="sm" variant="faded">
                 {saleBid.length}
               </Chip>
@@ -586,23 +584,25 @@ const MyPage = () => {
           </div>
         </Tab>
         <Tab
-          key="mybid"
+          key="sales"
           title={
             <div className="flex items-center space-x-2">
-              <VideoIcon />
-              <span>현재 진행중인 나의 입찰 목록</span>
+              <HourglassExpired />
+              <span>종료된 경매 목록</span>
               <Chip size="sm" variant="faded">
-                {myBid.length}
+                {history.length}
               </Chip>
             </div>
           }
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            {myBid.map((item) => (
+            {history.map((item) => (
               <div
                 key={item.product_id}
                 className="border p-4 rounded-lg shadow-lg flex cursor-pointer"
-                onClick={() => router.push(`/product/${item.product_id}`)}
+                onClick={() =>
+                  router.push(`/product_history/${item.product_id}`)
+                }
               >
                 <Image
                   src={item.imageUrl}
@@ -611,18 +611,20 @@ const MyPage = () => {
                   height={80}
                   className="rounded-lg"
                 />
-                <div className="ml-4">
-                  <p className="font-semibold">{item.product_name}</p>
-                  <p>현재 입찰가: {formatCurrency(item.highest_price)}</p>
-                  <p>입찰 횟수: {item.num_bid}</p>
-                  <p>
-                    상태:{" "}
-                    {isExpired(item.end_date)
-                      ? "판매 종료"
-                      : item.auction_status === 1
-                      ? "완료"
-                      : "진행 중"}
-                  </p>
+                <div className="ml-4 flex justify-between w-full items-center">
+                  <div>
+                    <p className="font-semibold">{item.product_name}</p>
+                    <p>종료가: {formatCurrency(item.end_price)}</p>
+                    <p>입찰 횟수: {item.num_bid}</p>
+                    <p>
+                      상태:{" "}
+                      {isExpired(item.end_date)
+                        ? "판매 종료"
+                        : item.auction_status === 1
+                        ? "완료"
+                        : "진행 중"}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "@/context/userContext";
 import { LoginAPI } from "../login/action"; // checkUser 및 getWishlist 가져오기
 import { checkUser, getWishlist } from "../auth/action";
@@ -16,6 +16,11 @@ const RegisterPage = () => {
   const [name, setName] = useState("");
   const [phoneNum, setPhoneNum] = useState("");
   const [address, setAddress] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    setIsFormValid(name !== "" && phoneNum !== "" && address !== "");
+  }, [name, phoneNum, address]);
 
   const handleRegister = async () => {
     setIsLoading(true);
@@ -58,16 +63,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg">
+    <div className="h-[70vh] flex items-center justify-center">
+      <div className="w-full max-w-md p-6 bg-white shadow-md border rounded-lg">
         <h1 className="text-2xl font-semibold text-center mb-6">회원 등록</h1>
-        <input
-          type="text"
-          placeholder="User ID"
-          value={userData[0].memberString}
-          disabled
-          className="mb-4 p-2 w-full border border-gray-300 rounded bg-gray-200"
-        />
         <input
           type="email"
           placeholder="Email"
@@ -77,33 +75,33 @@ const RegisterPage = () => {
         />
         <input
           type="text"
-          placeholder="Name"
+          placeholder="예) 박세웅"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="mb-4 p-2 w-full border border-gray-300 rounded"
         />
         <input
           type="text"
-          placeholder="Phone Number"
+          placeholder="예) 01012345678(번호만 입력해주세요)"
           value={phoneNum}
           onChange={(e) => setPhoneNum(e.target.value)}
           className="mb-4 p-2 w-full border border-gray-300 rounded"
         />
         <input
           type="text"
-          placeholder="Address"
+          placeholder="예) 서울 서초구 반포대로24길 17"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           className="mb-4 p-2 w-full border border-gray-300 rounded"
         />
         <button
-          className="bg-dapanda text-white p-2 rounded-md disabled:bg-pink-200 disabled:cursor-not-allowed w-full mt-6"
-          disabled={isLoading}
+          className="bg-lime-600 text-white p-2 rounded-md disabled:bg-lime-600 disabled:cursor-not-allowed w-full mt-6"
+          disabled={isLoading || !isFormValid}
           onClick={handleRegister}
         >
-          {isLoading ? "Loading..." : "Register"}
+          {isLoading ? "Loading..." : "등록하기"}
         </button>
-        {error && <div className="text-red-600 mt-4">{error}</div>}
+        {error && <div className="text-lime-600 mt-4">{error}</div>}
       </div>
     </div>
   );
