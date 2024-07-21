@@ -38,7 +38,6 @@ const RegisterPage = () => {
         setUserData([parsedUserData]);
         localStorage.setItem("userData", JSON.stringify(parsedUserData));
         localStorage.setItem("isNewUser", "true"); // New user flag 설정
-
         const wishListString = await getWishlist(parsedUserData.memberId);
         localStorage.setItem("wishlist", JSON.stringify(wishListString));
       }

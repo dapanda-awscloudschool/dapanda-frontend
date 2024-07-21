@@ -81,7 +81,7 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
             마지막 입찰 시간:
           </h3>
           <h2 className="font-medium text-xl">
-            {formatDate(product.last_bid_date)}
+            {product.last_bid_date ? formatDate(product.last_bid_date) : ""}
           </h2>
         </div>
         <div className="flex items-center gap-4">

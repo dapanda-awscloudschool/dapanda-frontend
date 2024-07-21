@@ -170,12 +170,20 @@ const NavIcons = () => {
 
   const nextSlide = () => {
     setSlideIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    const modalContent = document.querySelector(".MuiBox-root");
+    if (modalContent) {
+      modalContent.scrollTop = 0; // Scroll to top
+    }
   };
 
   const prevSlide = () => {
     setSlideIndex(
       (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
     );
+    const modalContent = document.querySelector(".MuiBox-root");
+    if (modalContent) {
+      modalContent.scrollTop = 0; // Scroll to top
+    }
   };
 
   const slides = [
@@ -336,7 +344,13 @@ const NavIcons = () => {
                 <Button
                   onClick={prevSlide}
                   className={styles.navButton}
-                  sx={{ backgroundColor: "#4CAF50", color: "#fff" }}
+                  sx={{
+                    backgroundColor: "#4CAF50",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#C7FC20", // 변경된 색상
+                    },
+                  }}
                 >
                   이전
                 </Button>
@@ -347,7 +361,13 @@ const NavIcons = () => {
                 <Button
                   onClick={nextSlide}
                   className={styles.navButton}
-                  sx={{ backgroundColor: "#4CAF50", color: "#fff" }}
+                  sx={{
+                    backgroundColor: "#4CAF50",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#C7FC20", // 변경된 색상
+                    },
+                  }}
                 >
                   다음
                 </Button>
@@ -356,7 +376,14 @@ const NavIcons = () => {
           </div>
           <Button
             onClick={handleHelpModalClose}
-            sx={{ backgroundColor: "#4CAF50", color: "#fff", mt: 2 }}
+            sx={{
+              backgroundColor: "#4CAF50",
+              color: "#fff",
+              mt: 2,
+              "&:hover": {
+                backgroundColor: "#C7FC20", // 변경된 색상
+              },
+            }}
           >
             닫기
           </Button>

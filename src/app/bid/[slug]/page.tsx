@@ -28,10 +28,12 @@ interface IProduct {
   bid_member: null | number;
   register_member_name: string;
   imageUrl: string;
-  last_bid_date: string;
+  last_bid_date: string | null; // last_bid_date can be null
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string | null) => {
+  if (!dateString) return ""; // return an empty string if dateString is null or undefined
+
   const date = new Date(dateString);
 
   const year = date.getFullYear();
@@ -111,7 +113,8 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
           최소 입찰 단가: {formatCurrency(product.term_price)}
         </p>
         <p className="text-lg mb-2">
-          마지막 입찰 시간: {formatDate(product.last_bid_date)}
+          마지막 입찰 시간:{" "}
+          {product.last_bid_date ? formatDate(product.last_bid_date) : ""}
         </p>
         <p className="text-lg mb-2">현재 입찰 횟수: {product.num_bid} 번</p>
         <p className="text-lg mb-2">현재 입찰자 명: {product.bid_member}</p>

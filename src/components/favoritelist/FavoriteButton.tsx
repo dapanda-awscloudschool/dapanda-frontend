@@ -22,10 +22,14 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   useEffect(() => {
     const data = localStorage.getItem("wishlist");
     if (data) {
-      const wish = JSON.parse(data) as number[];
-      setWishlist(wish);
-      if (wish.includes(productId)) {
-        setFavorite(true);
+      try {
+        const wish = JSON.parse(data) as number[];
+        setWishlist(wish);
+        if (wish.includes(productId)) {
+          setFavorite(true);
+        }
+      } catch (error) {
+        console.error("Failed to parse wishlist:", error);
       }
     }
   }, [productId]);
