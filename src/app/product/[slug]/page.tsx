@@ -19,20 +19,27 @@ const formatDate = (dateString: string) => {
 };
 
 const formatTimeDifference = (ms: number) => {
-  const totalMinutes = Math.floor(ms / 1000 / 60);
-  const minutes = totalMinutes % 60;
+  const totalSeconds = Math.ceil(ms / 1000);
+  const totalMinutes = Math.ceil(totalSeconds / 60);
   const totalHours = Math.floor(totalMinutes / 60);
-  const hours = totalHours % 24;
   const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  const minutes = totalMinutes % 60;
 
   const parts = [];
   if (days > 0) parts.push(`${days}일`);
-  if (hours > 0) parts.push(`${hours}시간`);
-  if (minutes > 0) parts.push(`${minutes}분`);
+  if (hours > 0) {
+    const displayHours = minutes >= 59 ? hours + 1 : hours;
+    if (displayHours > 0) parts.push(`${displayHours}시간`);
+  }
+  if (minutes > 0 || (hours > 0 && minutes < 59) || days > 0)
+    parts.push(`${minutes}분`);
+  if (parts.length === 0) parts.push("1분");
 
   return parts.join(" ");
 };
 
+// Usage example
 const SinglePage = ({ params }: { params: { slug: number } }) => {
   const { data: product, error } = useSWR(`/api/product/${params.slug}`, () =>
     getProductDetail(params.slug)

@@ -575,8 +575,8 @@ const MyPage = () => {
                     {isExpired(item.end_date)
                       ? "판매 종료"
                       : item.auction_status === 1
-                      ? "완료"
-                      : "진행 중"}
+                      ? "진행 중"
+                      : "완료"}
                   </p>
                 </div>
               </div>

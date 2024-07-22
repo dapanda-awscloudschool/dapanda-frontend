@@ -44,7 +44,7 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
           alt={`${product.product_name} 이미지 ${index + 1}`}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover rounded-md"
+          className="object-contain rounded-md border border-gray-500"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = "/images/expired.png";
           }}
@@ -73,7 +73,7 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
               alt={`${product.product_name} 썸네일 ${i + 1}`}
               fill
               sizes="30vw"
-              className="object-cover rounded-md"
+              className="object-cover rounded-md border border-gray-500"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src =
                   "/images/expired.png";

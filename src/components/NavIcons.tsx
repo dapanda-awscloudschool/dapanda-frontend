@@ -23,7 +23,7 @@ const NavIcons = () => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
 
-  const memberId = userData[0]?.memberId || 0;
+  const memberId = userData[0]?.memberId;
 
   const [formValues, setFormValues] = useState({
     category: "",
@@ -46,6 +46,14 @@ const NavIcons = () => {
       }
     }
   }, [pathname]);
+
+  useEffect(() => {
+    // Update register_member when userData changes
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      register_member: userData[0]?.memberId || 0,
+    }));
+  }, [userData]);
 
   const handleLogout = async () => {
     localStorage.removeItem("userData");
@@ -122,16 +130,16 @@ const NavIcons = () => {
       preConfirm: () => {
         const form = document.getElementById("productForm") as HTMLFormElement;
         const formData = new FormData(form);
+        formData.append(
+          "register_member",
+          formValues.register_member.toString()
+        );
         return formData;
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const formData = result.value;
-          formData.append(
-            "register_member",
-            formValues.register_member.toString()
-          );
 
           const productResult = await createProduct(formData);
           console.log("Product registered:", productResult);

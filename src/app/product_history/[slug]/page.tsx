@@ -73,7 +73,7 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
   const remainingTime = new Date(product.end_date).getTime() - Date.now();
 
   return (
-    <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16">
+    <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16 mt-5">
       <div className="w-full lg:w-1/2 lg:sticky top-20 h-max relative">
         <ProductImages product={product} isSoldOut={true} />
       </div>
@@ -103,12 +103,6 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
           <h3 className="text-medium font-medium text-gray-700">종료 시간:</h3>
           <h2 className="font-medium text-xl">
             {formatDate(product.end_date)}
-          </h2>
-        </div>
-        <div className="flex items-center gap-4">
-          <h3 className="text-medium font-medium text-gray-700">남은 시간:</h3>
-          <h2 className="font-medium text-xl text-red-600">
-            {formatTimeDifference(remainingTime)}
           </h2>
         </div>
         <div className="flex items-center gap-4">

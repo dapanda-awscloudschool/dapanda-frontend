@@ -69,7 +69,7 @@ const Footer = () => {
               className="mt-4 cursor-pointer"
             />
           </Link>
-          <Link href="/with" className="text-medium text-black-500 underline">
+          <Link href="/with" className="text-s text-black-500 underline">
             협력사 리스트 바로가기
           </Link>
         </div>

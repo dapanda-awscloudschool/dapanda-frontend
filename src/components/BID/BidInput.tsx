@@ -143,13 +143,13 @@ const BidInput = ({
   return (
     <>
       <div className="flex items-center mb-4">
-        <label htmlFor="bidPrice" className="mr-2">
+        <label htmlFor="bidPrice" className="mr-2 w-1/2 items-center">
           입찰:
         </label>
         <input
           type="number"
           id="bidPrice"
-          className="border rounded-md p-2"
+          className="border rounded-md p-2 w-full"
           value={inputValue}
           step={termPrice}
           min={highestPrice + termPrice}
@@ -158,10 +158,10 @@ const BidInput = ({
         />
         <div className="px-2">원</div>
         <button
-          className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+          className="w-full text-sm rounded-3xl ring-1 ring-lime-600 text-lime-600 py-2 px-4 hover:bg-lime-600 hover:text-white disabled:cursor-not-allowed disabled:bg-lime-200 disabled:text-white disabled:ring-none"
           onClick={handleBidSubmit}
         >
-          입찰 확인
+          입찰
         </button>
       </div>
     </>

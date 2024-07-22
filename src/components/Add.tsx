@@ -42,13 +42,13 @@ const Add = ({ id }: IAdd) => {
   return (
     <div className="flex flex-col gap-4">
       <button
-        className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+        className="w-full text-sm rounded-3xl ring-1 ring-lime-600 text-lime-600 py-2 px-4 hover:bg-lime-600 hover:text-white disabled:cursor-not-allowed disabled:bg-lime-200 disabled:text-white disabled:ring-none"
         onClick={handleBidClick}
       >
-        입찰 하기
+        입찰하기
       </button>
       <button
-        className="w-full text-sm rounded-3xl ring-1 ring-dapanda text-dapanda py-2 px-4 hover:bg-dapanda hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-white disabled:ring-none"
+        className="w-full text-sm rounded-3xl ring-1 ring-lime-600 text-lime-600 py-2 px-4 hover:bg-lime-600 hover:text-white disabled:cursor-not-allowed disabled:bg-lime-200 disabled:text-white disabled:ring-none"
         onClick={handleWishlistClick}
       >
         찜하기
