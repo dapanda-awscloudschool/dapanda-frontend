@@ -1,9 +1,9 @@
-"use client";
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { BidRequest, CheckRequest } from "./action";
 import { UserContext } from "@/context/userContext";
+import { Spinner } from "@nextui-org/react";
 
 interface IResult {
   id: number;
@@ -35,6 +35,7 @@ const BidInput = ({
   const [inputValue, setInputValue] = useState(bidPrice);
   const [result, setResult] = useState<IResult | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +53,7 @@ const BidInput = ({
     }
 
     setBidPrice(inputValue);
+    setIsLoading(true);
 
     const bidinfo = JSON.stringify({
       bidProductId: productId,
@@ -66,7 +68,7 @@ const BidInput = ({
       const data = await BidRequest(formData);
       console.log("BidRequest data:", data); // 데이터 로그 확인
       if (data !== "error") {
-        await checkBidResult(data);
+        setTimeout(() => checkBidResult(data), 1000); // 1초 지연
       } else {
         console.error("BidRequest failed, received error response");
         Swal.fire({
@@ -74,6 +76,7 @@ const BidInput = ({
           title: "에러",
           text: "BidRequest에서 오류가 발생했습니다.",
         });
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error during bid submission:", error);
@@ -82,6 +85,7 @@ const BidInput = ({
         title: "에러",
         text: "입찰 중 오류가 발생했습니다.",
       });
+      setIsLoading(false);
     }
   };
 
@@ -93,28 +97,30 @@ const BidInput = ({
         setResult(check);
       } else {
         console.error("CheckRequest failed, received error response or null");
-        if (retryCount < 10) {
+        if (retryCount < 20) {
           setRetryCount(retryCount + 1);
-          setTimeout(() => checkBidResult(data), 1000); // 1초 후 재시도
+          setTimeout(() => checkBidResult(data), 500); // 0.5초 후 재시도
         } else {
           Swal.fire({
             icon: "error",
             title: "에러",
             text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
           });
+          setIsLoading(false);
         }
       }
     } catch (error) {
       console.error("Error during check request:", error);
-      if (retryCount < 10) {
+      if (retryCount < 20) {
         setRetryCount(retryCount + 1);
-        setTimeout(() => checkBidResult(data), 1000); // 1초 후 재시도
+        setTimeout(() => checkBidResult(data), 500); // 0.5초 후 재시도
       } else {
         Swal.fire({
           icon: "error",
           title: "에러",
           text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
         });
+        setIsLoading(false);
       }
     }
   };
@@ -122,6 +128,7 @@ const BidInput = ({
   useEffect(() => {
     console.log("Result changed:", result);
     if (result) {
+      setIsLoading(false);
       if (result.isSuccess === 1) {
         Swal.fire({
           icon: "success",
@@ -142,7 +149,16 @@ const BidInput = ({
 
   return (
     <>
-      <div className="flex items-center mb-4">
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <Spinner />
+        </div>
+      )}
+      <div
+        className={`flex items-center mb-4 ${
+          isLoading ? "pointer-events-none" : ""
+        }`}
+      >
         <label htmlFor="bidPrice" className="mr-2 w-1/2 items-center">
           입찰:
         </label>
@@ -155,11 +171,13 @@ const BidInput = ({
           min={highestPrice + termPrice}
           max={2000000000}
           onChange={handleInput}
+          disabled={isLoading}
         />
         <div className="px-2">원</div>
         <button
           className="w-full text-sm rounded-3xl ring-1 ring-lime-600 text-lime-600 py-2 px-4 hover:bg-lime-600 hover:text-white disabled:cursor-not-allowed disabled:bg-lime-200 disabled:text-white disabled:ring-none"
           onClick={handleBidSubmit}
+          disabled={isLoading}
         >
           입찰
         </button>
