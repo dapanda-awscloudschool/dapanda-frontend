@@ -61,6 +61,10 @@ const RegisterPage = () => {
     }
   };
 
+  if (!userData || userData.length === 0) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="h-[70vh] flex items-center justify-center">
       <div className="w-full max-w-md p-6 bg-white shadow-md border rounded-lg">
@@ -68,7 +72,7 @@ const RegisterPage = () => {
         <input
           type="email"
           placeholder="Email"
-          value={userData[0].email}
+          value={userData[0].email || ""}
           disabled
           className="mb-4 p-2 w-full border border-gray-300 rounded bg-gray-200"
         />
