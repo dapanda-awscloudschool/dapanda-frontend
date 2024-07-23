@@ -75,7 +75,7 @@ const SearchBar = () => {
             value={searchQuery}
             onChange={handleSearchChange}
             name="name"
-            placeholder="Search"
+            placeholder="검색..."
             className="flex-1 bg-transparent outline-none w-full"
           />
         </div>
@@ -84,7 +84,7 @@ const SearchBar = () => {
         type="submit"
         className="btn bg-lime-600 text-white px-4 py-2 rounded-md"
       >
-        Search
+        search
       </button>
     </form>
   );

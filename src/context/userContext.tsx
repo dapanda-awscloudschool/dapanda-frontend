@@ -7,6 +7,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+
 interface UserData {
   memberString: string;
   email: string;
@@ -38,7 +39,6 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  // Initialize state from localStorage if available and only on the client-side
   const [userData, setUserData] = useState<UserData[]>(() => {
     if (typeof window !== "undefined") {
       const localData = localStorage.getItem("userData");
@@ -48,7 +48,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   });
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Use useEffect to update localStorage when userData changes, but only on the client-side
+  // Load userData from localStorage when the component mounts
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("userData", JSON.stringify(userData));
@@ -56,22 +56,27 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }, [userData]);
 
+  // Update localStorage when userData changes
+  useEffect(() => {
+    console.log("userData check", userData);
+  }, [userData]);
+
   const isUserDataEmpty = useCallback(() => userData.length === 0, [userData]);
 
   const clearUserData = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("userData");
-      setUserData([]);
-    }
+    localStorage.removeItem("userData");
+    setUserData([]);
   };
 
   const updateUserData = (newData: Partial<UserData>) => {
-    if (userData.length > 0) {
-      const updatedData = { ...userData[0], ...newData };
-      setUserData([updatedData]);
-    } else {
-      setUserData([{ ...newData } as UserData]);
-    }
+    setUserData((prevUserData) => {
+      if (prevUserData.length > 0) {
+        const updatedData = { ...prevUserData[0], ...newData };
+        return [updatedData];
+      } else {
+        return [{ ...newData } as UserData];
+      }
+    });
   };
 
   return (
@@ -84,7 +89,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         updateUserData,
       }}
     >
-      {isInitialized ? children : null}
+      {children}
     </UserContext.Provider>
   );
 };

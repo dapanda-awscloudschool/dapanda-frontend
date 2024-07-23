@@ -27,6 +27,8 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
         setWishlist(wish);
         if (wish.includes(productId)) {
           setFavorite(true);
+        } else {
+          setFavorite(false);
         }
       } catch (error) {
         console.error("Failed to parse wishlist:", error);

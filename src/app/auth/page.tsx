@@ -29,7 +29,7 @@ const AuthPage = () => {
           setUserData([user_data]);
           const wishListString = await getWishlist(user_data.memberId);
           localStorage.setItem("wishlist", JSON.stringify(wishListString));
-          localStorage.setItem("userData", JSON.stringify(user_data));
+          //localStorage.setItem("userData", JSON.stringify(user_data));
           router.push("/");
         }
       }
