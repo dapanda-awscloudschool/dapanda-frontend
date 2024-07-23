@@ -79,7 +79,7 @@ const ProductList = ({
     isLoading,
   } = useSWR(["getProductList", searchQuery], fetcher);
 
-  const imgUrl = "https://d20w4v9oboz2ei.cloudfront.net";
+  const imgUrl = "https://d37s44h8v1f2oo.cloudfront.net";
 
   const [favorites, setFavorites] = useState<{ [key: number]: boolean }>({});
   const [hoveredProduct, setHoveredProduct] = useState<number | null>(null);

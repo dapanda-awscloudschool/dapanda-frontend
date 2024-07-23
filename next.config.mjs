@@ -25,7 +25,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "d20w4v9oboz2ei.cloudfront.net",
+        hostname: "d37s44h8v1f2oo.cloudfront.net",
       },
     ],
   },

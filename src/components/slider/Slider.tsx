@@ -80,7 +80,7 @@ const Slider = () => {
     },
   ]);
 
-  const imgUrl = "https://d20w4v9oboz2ei.cloudfront.net"; // 이미지 URL 설정
+  const imgUrl = "https://d37s44h8v1f2oo.cloudfront.net"; // 이미지 URL 설정
 
   useEffect(() => {
     const fetchProductList = async () => {
