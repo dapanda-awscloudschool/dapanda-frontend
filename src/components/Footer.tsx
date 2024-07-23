@@ -28,7 +28,7 @@ const Footer = () => {
               상호명 및 호스팅 서비스 제공 : DAPANDA
             </p>
             <p>서울특별시 서초구 반포대로24길 17</p>
-            <p>Tel: 123-45-67890</p>
+            <p>Tel: 02-317-6000</p>
             <p>운영시간: 09:00-18:00</p>
             <p>Break Time: 12:30-14:00</p>
           </div>
@@ -37,25 +37,9 @@ const Footer = () => {
         {/* CENTER Column */}
         <div className="w-full lg:w-1/3 flex flex-col items-center lg:items-start gap-2">
           <div className="font-semibold">365고객센터 | 다판다분쟁처리담당</div>
-          <div className="text-2xl font-bold">02-1234-5678</div>
+          <div className="text-2xl font-bold">02-317-6000</div>
           <p>서울특별시 서초구 반포대로24길 17</p>
-          <p>email: awscloudschool4th@gmail.com</p>
-          <div className="flex gap-4 mt-4">
-            <Image
-              src="/instagram.png"
-              alt="Instagram"
-              width={16}
-              height={16}
-            />
-            <Image src="/youtube.png" alt="YouTube" width={16} height={16} />
-            <Image
-              src="/pinterest.png"
-              alt="Pinterest"
-              width={16}
-              height={16}
-            />
-            <Image src="/x.png" alt="Twitter" width={16} height={16} />
-          </div>
+          <p>이메일: dapanda@awscloudschool.online</p>
         </div>
 
         {/* RIGHT Column */}
@@ -86,7 +70,7 @@ const Footer = () => {
           <div>
             <span className="text-black font-bold mr-4">Currency</span>
             <span className="font-medium">
-              ₩ KRW_모든 거래는 원화로 진행됩니다.
+              ₩ KRW 모든 거래는 원화로 진행됩니다.
             </span>
           </div>
         </div>

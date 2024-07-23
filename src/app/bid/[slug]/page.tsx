@@ -97,7 +97,7 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-20 mt-5">
       <div className="w-full lg:w-1/3 lg:sticky top-20 h-max">
         <Image
-          src={`https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${product.product_id}/1.jpg`}
+          src={`https://d20w4v9oboz2ei.cloudfront.net/${product.product_id}/1.jpg`}
           alt={product.product_name}
           className="object-cover w-full h-auto rounded-md"
           width={200}
