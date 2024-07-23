@@ -18,7 +18,7 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
   const [index, setIndex] = useState(0);
   const images = Array.from({ length: product.file_count }, (_, i) => ({
     id: i + 1,
-    url: `https://d37s44h8v1f2oo.cloudfront.net/${product.product_id}/${
+    url: `https://d3jzg5ylljnsnd.cloudfront.net/${product.product_id}/${
       i + 1
     }.jpg`,
   }));
