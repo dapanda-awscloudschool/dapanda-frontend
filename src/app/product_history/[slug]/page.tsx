@@ -5,7 +5,6 @@ import ProductImages from "@/components/ProductImages";
 import { getProductHistoryDetail } from "./action";
 import { formatCurrency } from "@/components/formatCurrency";
 import useSWR from "swr";
-import Image from "next/image";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -118,7 +117,8 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
           <h2 className="font-medium text-xl">{product.bid_member_name}</h2>
         </div>
         <div className="h-[2px] bg-gray-100" />
-        <Add id={product.product_id} />
+        <Add id={product.product_id} disableActions={true} />{" "}
+        {/* disableActions prop 추가 */}
         <div className="h-[2px] bg-gray-100" />
       </div>
     </div>

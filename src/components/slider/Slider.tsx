@@ -346,7 +346,7 @@ const Slider = () => {
                                 ) : slide.id === 4 ? (
                                   <p className="text-l font-semibold text-red-500 mt-2">
                                     현재 가격:{" "}
-                                    {formatCurrency(product.highest_price)}
+                                    {formatCurrency(product.highest_price)}원
                                   </p>
                                 ) : null}
                               </div>

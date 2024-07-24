@@ -15,26 +15,18 @@ interface FavoriteButtonProps {
 
 const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
   const [favorite, setFavorite] = useState(false);
-  const [wishlist, setWishlist] = useState<number[]>([]);
-  const { userData } = useContext(UserContext);
+  // const [wishlist, setWishlist] = useState<number[]>([]);
+  const { userData, wishlist, setWishlist, removeWishlist, addWishlist } =
+    useContext(UserContext);
   const router = useRouter();
 
   useEffect(() => {
-    const data = localStorage.getItem("wishlist");
-    if (data) {
-      try {
-        const wish = JSON.parse(data) as number[];
-        setWishlist(wish);
-        if (wish.includes(productId)) {
-          setFavorite(true);
-        } else {
-          setFavorite(false);
-        }
-      } catch (error) {
-        console.error("Failed to parse wishlist:", error);
-      }
+    if (wishlist.includes(productId)) {
+      setFavorite(true);
+    } else {
+      setFavorite(false);
     }
-  }, [productId]);
+  }, [productId, wishlist]);
 
   const handleFavoriteClick = async () => {
     try {
@@ -60,12 +52,12 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({ productId }) => {
         // Remove from wishlist
         console.log("Removing from wishlist, sending request:", wishlistItem);
         await RemoveFromWishlistRequest(wishlistItem);
-        removeFavorite(productId);
+        removeWishlist(productId);
       } else {
         // Add to wishlist
         console.log("Adding to wishlist, sending request:", wishlistItem);
         await AddToWishlistRequest(wishlistItem);
-        addFavorite(productId);
+        addWishlist(productId);
       }
       const updatedWishlist = favorite
         ? wishlist.filter((id) => id !== productId)
