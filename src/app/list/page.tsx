@@ -40,7 +40,7 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
       </Suspense>
 
       <div className="flex justify-center mt-8">
-        <Pagination
+        {/*  <Pagination
           total={10}
           initialPage={1}
           classNames={{
@@ -49,7 +49,7 @@ const ListPage = async ({ searchParams }: { searchParams: any }) => {
             cursor:
               "bg-gradient-to-b shadow-lg from-lime-200 to-lime-600 dark:from-default-300 dark:to-default-50 text-white font-bold",
           }}
-        />
+        /> */}
       </div>
     </div>
   );

@@ -116,7 +116,7 @@ const NavIcons = () => {
             <input type="number" id="start_price" name="start_price" class="mt-1 p-2 w-full border rounded" />
           </div>
           <div class="mb-4">
-            <label for="images" class="block text-sm font-medium">이미지 (최대 10개)</label>
+            <label for="images" class="block text-sm font-medium">이미지 (최대 6개)</label>
             <input type="file" id="images" name="images" accept=".png, .jpg, .jpeg" multiple class="mt-1 p-2 w-full border rounded" />
           </div>
           <div class="mb-4">
