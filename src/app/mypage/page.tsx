@@ -388,9 +388,9 @@ const MyPage = () => {
         </button>
       </div>
 
-      <p className="blinking text-center mb-8">
-        경매 종료 이후 결과를 반영하는데 시간이 걸리는 경우가 있습니다.
-        최신 정보를 확인하기 위해서는 새로고침을 해주세요.
+      <p className="text-red-500 text-center mb-8">
+        경매 종료 이후 결과를 반영하는데 시간이 걸리는 경우가 있습니다. 최신
+        정보를 확인하기 위해서는 새로고침을 해주세요.
       </p>
 
       <Tabs

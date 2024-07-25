@@ -149,12 +149,17 @@
 
 .blinking {
   color: red;
-  animation: blinkingText 1.5s infinite;
+  animation: blinkingText 2s infinite;
 }
 
 @keyframes blinkingText {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-
