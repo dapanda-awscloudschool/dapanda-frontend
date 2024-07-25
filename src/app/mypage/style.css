@@ -146,3 +146,15 @@
   align-items: center;
   gap: 10px;
 }
+
+.blinking {
+  color: red;
+  animation: blinkingText 1.5s infinite;
+}
+
+@keyframes blinkingText {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
