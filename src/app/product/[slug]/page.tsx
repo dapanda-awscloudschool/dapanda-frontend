@@ -19,6 +19,18 @@ const formatDate = (dateString: string) => {
   return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분${seconds}초`;
 };
 
+const formatDateWithoutSeconds = (dateString: string) => {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분`;
+};
+
 const formatTimeDifference = (ms: number) => {
   const totalSeconds = Math.ceil(ms / 1000);
   const totalMinutes = Math.ceil(totalSeconds / 60);
@@ -53,7 +65,7 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16 mt-5">
-      <div className="w-full lg:w-1/2  top-5 h-max relative">
+      <div className="w-full lg:w-1/2 lg:sticky top-20 h-max relative">
         <ProductImages product={product} />
       </div>
       <div className="w-full lg:w-1/2 flex flex-col gap-6 mt-8">
@@ -89,7 +101,9 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
             마지막 입찰 시간:
           </h3>
           <h2 className="font-medium text-xl">
-            {product.last_bid_date ? formatDate(product.last_bid_date) : ""}
+            {product.last_bid_date
+              ? formatDateWithoutSeconds(product.last_bid_date)
+              : ""}
           </h2>
         </div>
         <div className="flex items-center gap-4">
