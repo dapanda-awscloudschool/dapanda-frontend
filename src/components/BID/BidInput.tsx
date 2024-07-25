@@ -36,6 +36,7 @@ const BidInput = ({
   const [result, setResult] = useState<IResult | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [checkStartTime, setCheckStartTime] = useState<number | null>(null); // 새로운 상태 변수 추가
   const router = useRouter();
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +55,7 @@ const BidInput = ({
 
     setBidPrice(inputValue);
     setIsLoading(true);
+    setCheckStartTime(Date.now()); // 입찰 시작 시간 설정
 
     const bidinfo = JSON.stringify({
       bidProductId: productId,
@@ -97,28 +99,34 @@ const BidInput = ({
         setResult(check);
       } else {
         console.error("CheckRequest failed, received error response or null");
-        if (retryCount < 20) {
+        if (retryCount < 20 && Date.now() - (checkStartTime ?? 0) < 10000) {
+          // 10초 이내일 경우에만 재시도
           setRetryCount(retryCount + 1);
           setTimeout(() => checkBidResult(data), 500); // 0.5초 후 재시도
         } else {
           Swal.fire({
             icon: "error",
             title: "에러",
-            text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
+            text: "입찰이 실패했습니다. 새로고침 후 다시 시도해 주세요.",
+          }).then(() => {
+            window.location.reload(); // 페이지 새로고침
           });
           setIsLoading(false);
         }
       }
     } catch (error) {
       console.error("Error during check request:", error);
-      if (retryCount < 20) {
+      if (retryCount < 20 && Date.now() - (checkStartTime ?? 0) < 10000) {
+        // 10초 이내일 경우에만 재시도
         setRetryCount(retryCount + 1);
         setTimeout(() => checkBidResult(data), 500); // 0.5초 후 재시도
       } else {
         Swal.fire({
           icon: "error",
           title: "에러",
-          text: "재시도 횟수를 초과했습니다. 다시 시도해 주세요.",
+          text: "입찰이 실패했습니다. 새로고침 후 다시 시도해 주세요.",
+        }).then(() => {
+          window.location.reload(); // 페이지 새로고침
         });
         setIsLoading(false);
       }
