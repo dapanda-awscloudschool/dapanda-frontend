@@ -14,8 +14,9 @@ const formatDate = (dateString: string) => {
   const day = String(date.getDate()).padStart(2, "0");
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0"); // 초 단위 추가
 
-  return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분`;
+  return `${year}년 ${month}월 ${day}일 ${hours}시${minutes}분${seconds}초`;
 };
 
 const formatTimeDifference = (ms: number) => {
@@ -52,7 +53,7 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16 mt-5">
-      <div className="w-full lg:w-1/2 top-20 h-max relative">
+      <div className="w-full lg:w-1/2  top-5 h-max relative">
         <ProductImages product={product} />
       </div>
       <div className="w-full lg:w-1/2 flex flex-col gap-6 mt-8">
