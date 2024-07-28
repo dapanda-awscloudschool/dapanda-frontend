@@ -6,6 +6,7 @@ import { getProductNoView } from "@/app/product/[slug]/action";
 import Image from "next/image";
 import { formatCurrency } from "@/components/formatCurrency";
 import BidInput from "@/components/BID/BidInput";
+import Swal from "sweetalert2";
 
 interface IProduct {
   product_id: number;
@@ -49,9 +50,11 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
   const [product, setProduct] = useState<IProduct | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [popupDisplayed, setPopupDisplayed] = useState<boolean>(false);
   const [bidPrice, setBidPrice] = useState<number>(0);
   const [userIsTyping, setUserIsTyping] = useState<boolean>(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -68,6 +71,19 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
         }
       } catch (error) {
         setError("데이터를 불러오는 중 오류가 발생했습니다.");
+        if (!popupDisplayed) {
+          Swal.fire({
+            icon: "info",
+            title: "경매 종료",
+            text: "해당 물품의 경매가 종료되었거나 데이터가 없습니다.",
+            confirmButtonText: "확인",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              router.push("/"); // 메인 페이지로 리다이렉션
+            }
+          });
+          setPopupDisplayed(true); // 팝업이 한 번 표시되었음을 기록
+        }
       } finally {
         setLoading(false);
       }
@@ -79,7 +95,27 @@ const BidPage = ({ params }: { params: { slug: number } }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [params.slug, userIsTyping]);
+  }, [params.slug, userIsTyping, router, popupDisplayed]);
+
+  useEffect(() => {
+    if (product) {
+      const now = new Date();
+      const endDate = new Date(product.end_date);
+
+      if (now > endDate) {
+        Swal.fire({
+          icon: "info",
+          title: "경매 종료",
+          text: "해당 물품의 경매가 종료되었습니다.",
+          confirmButtonText: "확인",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push("/"); // Redirect to main page
+          }
+        });
+      }
+    }
+  }, [product, router]);
 
   if (loading) {
     return <div>Loading...</div>;

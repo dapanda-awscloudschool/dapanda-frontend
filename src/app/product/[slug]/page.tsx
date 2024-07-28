@@ -5,6 +5,9 @@ import ProductImages from "@/components/ProductImages";
 import { getProductDetail } from "./action";
 import { formatCurrency } from "@/components/formatCurrency";
 import useSWR from "swr";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -52,14 +55,26 @@ const formatTimeDifference = (ms: number) => {
   return parts.join(" ");
 };
 
-// Usage example
 const SinglePage = ({ params }: { params: { slug: number } }) => {
+  const router = useRouter();
   const { data: product, error } = useSWR(`/api/product/${params.slug}`, () =>
     getProductDetail(params.slug)
   );
 
-  if (error) return <div>Failed to load product</div>;
-  if (!product) return <div>Loading...</div>;
+  useEffect(() => {
+    if (error) {
+      Swal.fire({
+        icon: "info",
+        title: "경매 종료",
+        text: "해당 물품의 경매가 종료되었습니다.",
+        confirmButtonText: "확인",
+      }).then(() => {
+        router.push("/"); // 메인 페이지로 리다이렉션
+      });
+    }
+  }, [error, router]);
+
+  if (!product) return <div className="text-center">Loading...</div>;
 
   const remainingTime = new Date(product.end_date).getTime() - Date.now();
 

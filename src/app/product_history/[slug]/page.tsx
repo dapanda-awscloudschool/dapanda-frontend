@@ -73,7 +73,7 @@ const ProductHistoryPage = ({ params }: { params: { slug: string } }) => {
 
   return (
     <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative flex flex-col lg:flex-row gap-16 mt-5">
-      <div className="w-full lg:w-1/2 lg:sticky top-20 h-max relative">
+      <div className="w-full lg:w-1/2 top-3 h-max relative">
         <ProductImages product={product} isSoldOut={true} />
       </div>
       <div className="w-full lg:w-1/2 flex flex-col gap-6">
