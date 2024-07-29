@@ -83,7 +83,7 @@ const SinglePage = ({ params }: { params: { slug: number } }) => {
       <div className="w-full lg:w-1/2 top-3 h-max relative">
         <ProductImages product={product} />
       </div>
-      <div className="w-full lg:w-1/2 flex flex-col gap-6 mt-8">
+      <div className="w-full lg:w-1/2 flex flex-col gap-6">
         <h1 className="text-4xl font-medium">{product.product_name}</h1>
         <p className="text-gray-500">{product.product_info}</p>
         <div className="h-[2px] bg-gray-100" />

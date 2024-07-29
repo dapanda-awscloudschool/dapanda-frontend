@@ -18,9 +18,9 @@ const ProductImages = ({ product, isSoldOut = false }: ProductImagesProps) => {
   const [index, setIndex] = useState(0);
   const images = Array.from({ length: product.file_count }, (_, i) => ({
     id: i + 1,
-    url: `https://d3jzg5ylljnsnd.cloudfront.net/${product.product_id}/${
-      i + 1
-    }.jpg`,
+    url: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${
+      product.product_id
+    }/${i + 1}.jpg`,
   }));
 
   // 디폴트 이미지 설정
