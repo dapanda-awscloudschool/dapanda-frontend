@@ -105,10 +105,10 @@ const MyPage = () => {
   const memberId = userData[0]?.memberId;
 
   const [profile, setProfile] = useState<IMember>({
-    name: "이름",
+    name: "name",
     phone_num: 0,
-    email: "name@domain.com",
-    address: "서울특별시 마포구 독막로112",
+    email: "",
+    address: "",
   });
   const [wishList, setWishList] = useState<IWishlist[]>([]);
   const [history, setHistory] = useState<Historyproduct[]>([]);
@@ -471,7 +471,6 @@ const MyPage = () => {
                 <div className="ml-4">
                   <p className="font-semibold">{item.product_name}</p>
                   <p>현재 입찰가: {formatCurrency(item.highest_price)}</p>
-                  <p>입찰 횟수: {item.num_bid}</p>
                   <p>
                     상태:{" "}
                     {isExpired(item.end_date)
