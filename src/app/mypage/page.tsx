@@ -153,7 +153,7 @@ const MyPage = () => {
               product_name: item.product.product_name,
               price: item.product.highest_price,
               my_bid: null,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product.product_id}/1.jpg`,
+              imageUrl: `https://d3jzg5ylljnsnd.cloudfront.net/${item.product.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -174,7 +174,7 @@ const MyPage = () => {
           setHistory(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
+              imageUrl: `https://d3jzg5ylljnsnd.cloudfront.net/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -195,7 +195,7 @@ const MyPage = () => {
           setBHistory(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
+              imageUrl: `https://d3jzg5ylljnsnd.cloudfront.net/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -216,7 +216,7 @@ const MyPage = () => {
           setSaleBid(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
+              imageUrl: `https://d3jzg5ylljnsnd.cloudfront.net/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -237,7 +237,7 @@ const MyPage = () => {
           setMyBid(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
+              imageUrl: `https://d3jzg5ylljnsnd.cloudfront.net/${item.product_id}/1.jpg`,
             }))
           );
         } else {
@@ -255,7 +255,7 @@ const MyPage = () => {
           const shuffled = shuffleArray(
             data.map((item) => ({
               ...item,
-              imageUrl: `https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com/${item.product_id}/1.jpg`,
+              imageUrl: `https://d3jzg5ylljnsnd.cloudfront.net/${item.product_id}/1.jpg`,
             }))
           );
           setRecommendedProducts(shuffled.slice(0, 2));

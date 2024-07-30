@@ -80,7 +80,7 @@ const Slider = () => {
     },
   ]);
 
-  const imgUrl = "https://dapanda-files-test.s3.ap-northeast-2.amazonaws.com"; // 이미지 URL 설정
+  const imgUrl = "https://d3jzg5ylljnsnd.cloudfront.net"; // 이미지 URL 설정
 
   useEffect(() => {
     const fetchProductList = async () => {

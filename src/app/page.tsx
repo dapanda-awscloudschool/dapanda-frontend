@@ -60,7 +60,7 @@ const HomePage = () => {
         <ProductList
           searchParams={{}}
           maxItems={3} // 인기 상품 3개로 제한
-          sortCriteria="num_bid"
+          sortCriteria="views"
           sortOrder="desc"
         />
       </div>
